@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+  - functions
+
+nodeLinker: hoisted
+
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - protobufjs
+  - sharp
+  - unrs-resolver

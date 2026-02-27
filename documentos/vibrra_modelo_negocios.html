@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBRRA — Modelo de Negocios</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --gold:    #FFE566;
+  --gold-m:  #D4A017;
+  --gold-dk: #8B6010;
+  --ink:     #05050A;
+  --deep:    #09090F;
+  --card:    #0F0F18;
+  --card2:   #141420;
+  --edge:    #1C1C2C;
+  --text:    #F0F0FF;
+  --muted:   #8888AA;
+  --faint:   #0C0C16;
+
+  --c1: #FFE566;  /* clientes */
+  --c2: #00D9A3;  /* anfitriones */
+  --c3: #A78BFA;  /* empresarios */
+  --c4: #FF8C42;  /* VIBRRA */
+  --c5: #60C0F0;  /* tech */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── noise ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 999; opacity: .5;
+}
+
+/* ═══════ HERO ═══════ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 80px 60px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--edge);
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(212,160,23,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(0,217,163,.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,229,102,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,229,102,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold-m); margin-bottom: 20px;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 900; line-height: .95;
+  letter-spacing: -3px; margin-bottom: 32px;
+  position: relative;
+}
+
+.hero-title span { color: var(--gold); font-style: italic; }
+
+.hero-subtitle {
+  font-size: 18px; color: #A8A8CC;
+  max-width: 560px; line-height: 1.6;
+  font-weight: 400; margin-bottom: 48px;
+}
+
+.hero-pills {
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+
+.pill {
+  padding: 8px 18px; border-radius: 24px;
+  border: 1px solid; font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+}
+.pill:hover { transform: translateY(-2px); }
+
+.pill-gold   { color: var(--gold); border-color: rgba(255,229,102,.3); }
+.pill-green  { color: var(--c2);   border-color: rgba(0,217,163,.3); }
+.pill-purple { color: var(--c3);   border-color: rgba(167,139,250,.3); }
+.pill-orange { color: var(--c4);   border-color: rgba(255,140,66,.3); }
+
+.hero-stat-row {
+  position: absolute; bottom: 48px; right: 80px;
+  display: flex; gap: 48px;
+}
+
+.hero-stat { text-align: right; }
+.hero-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px; font-weight: 900; line-height: 1;
+  color: var(--gold); display: block;
+}
+.hero-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--muted); margin-top: 4px;
+}
+
+/* ═══════ SECTION WRAPPER ═══════ */
+section {
+  padding: 80px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.sec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 4px;
+  color: var(--gold-m); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sec-label::after {
+  content: ''; flex: 1; max-width: 60px;
+  height: 1px; background: var(--edge);
+}
+
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 900; letter-spacing: -1.5px;
+  margin-bottom: 8px; line-height: 1;
+}
+.sec-title em { color: var(--gold); font-style: italic; }
+
+.sec-desc {
+  font-size: 15px; color: #B0B0CC;
+  max-width: 600px; line-height: 1.7;
+  margin-bottom: 48px; font-weight: 400;
+}
+
+/* ═══════ BUSINESS MODEL CANVAS ═══════ */
+.canvas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 3px;
+  background: var(--edge);
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.canvas-cell {
+  background: var(--card);
+  padding: 20px;
+  transition: background .2s;
+  cursor: default;
+  position: relative;
+}
+
+.canvas-cell:hover { background: var(--card2); }
+
+.canvas-cell.span2 { grid-column: span 2; }
+.canvas-cell.bottom { grid-row: 2; }
+
+.canvas-cell-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.canvas-cell-title {
+  font-size: 13px; font-weight: 700;
+  margin-bottom: 14px; line-height: 1.2;
+  color: #D0D0F0;
+}
+
+.canvas-item {
+  display: flex; gap: 8px;
+  font-size: 11px; color: #9090B8;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  line-height: 1.4;
+  align-items: flex-start;
+}
+
+.canvas-item-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 4px;
+}
+
+/* ═══════ VALUE PROPS ═══════ */
+.vp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--edge);
+  border-radius: 12px; overflow: hidden;
+}
+
+.vp-card {
+  background: var(--card);
+  padding: 32px 28px;
+  position: relative; overflow: hidden;
+  transition: background .2s;
+}
+.vp-card:hover { background: var(--card2); }
+
+.vp-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.vp-card.cliente::before  { background: var(--c1); }
+.vp-card.anfitrion::before { background: var(--c2); }
+.vp-card.empresario::before { background: var(--c3); }
+
+.vp-actor {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 16px;
+}
+.vp-card.cliente .vp-actor    { color: var(--c1); }
+.vp-card.anfitrion .vp-actor  { color: var(--c2); }
+.vp-card.empresario .vp-actor { color: var(--c3); }
+
+.vp-icon { font-size: 36px; margin-bottom: 14px; display: block; }
+
+.vp-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 12px; line-height: 1.2;
+}
+
+.vp-desc {
+  font-size: 12px; color: #A0A0C0;
+  line-height: 1.7; margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.vp-items { list-style: none; }
+.vp-item {
+  font-size: 11px; color: #9898BB;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  display: flex; align-items: center; gap: 8px;
+}
+.vp-item::before { content: '→'; color: var(--edge); font-size: 10px; }
+.vp-card.cliente .vp-item::before  { color: rgba(255,229,102,.4); }
+.vp-card.anfitrion .vp-item::before { color: rgba(0,217,163,.4); }
+.vp-card.empresario .vp-item::before { color: rgba(167,139,250,.4); }
+
+/* ═══════ REVENUE STREAMS ═══════ */
+.rev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px; margin-bottom: 40px;
+}
+
+.rev-card {
+  background: var(--card);
+  border: 1px solid var(--edge);
+  border-radius: 12px; padding: 28px;
+  position: relative; overflow: hidden;
+}
+
+.rev-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  height: 2px; border-radius: 0 0 12px 12px;
+}
+
+.rev-card.primary::after  { background: linear-gradient(90deg, var(--c4), var(--gold)); width: 100%; }
+.rev-card.secondary::after { background: linear-gradient(90deg, var(--c2), var(--c5)); width: 60%; }
+.rev-card.tertiary::after  { background: linear-gradient(90deg, var(--c3), #F472B6); width: 35%; }
+.rev-card.future::after    { background: var(--edge); width: 20%; }
+
+.rev-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; text-transform: uppercase;
+  letter-spacing: 2px; padding: 3px 8px;
+  border-radius: 3px; border: 1px solid;
+  display: inline-block; margin-bottom: 14px;
+}
+
+.rev-name {
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 8px;
+  color: #E8E8FF;
+}
+
+.rev-formula {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--gold);
+  background: rgba(255,229,102,.06);
+  border: 1px solid rgba(255,229,102,.12);
+  padding: 10px 14px; border-radius: 6px;
+  margin: 14px 0; line-height: 1.6;
+}
+
+.rev-desc {
+  font-size: 12px; color: #A0A0C0;
+  line-height: 1.6; font-weight: 400;
+}
+
+/* ═══════ PROYECCIONES ═══════ */
+.proj-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.proj-table th {
+  text-align: left; padding: 12px 16px;
+  background: rgba(255,229,102,.06);
+  border-bottom: 1px solid rgba(255,229,102,.2);
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--gold);
+  font-weight: 500;
+}
+
+.proj-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--edge);
+  color: #9898BB;
+}
+
+.proj-table tr:last-child td { border-bottom: none; }
+.proj-table tr:hover td { background: rgba(255,255,255,.02); }
+
+.proj-table td.highlight {
+  color: var(--gold); font-weight: 500;
+}
+
+.proj-table td.positive { color: var(--c2); }
+.proj-table td.label    { color: var(--text); font-weight: 500; }
+
+/* ═══════ UNIT ECONOMICS ═══════ */
+.ue-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px; background: var(--edge);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.ue-card {
+  background: var(--card);
+  padding: 24px 20px;
+}
+
+.ue-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; text-transform: uppercase;
+  letter-spacing: 2px; color: #8080AA;
+  margin-bottom: 8px;
+}
+
+.ue-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 900; color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.ue-sub {
+  font-size: 11px; color: #9090B8; font-weight: 400;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ═══════ COST STRUCTURE ═══════ */
+.cost-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cost-block {
+  background: var(--card);
+  border: 1px solid var(--edge);
+  border-radius: 12px; padding: 28px;
+}
+
+.cost-title {
+  font-size: 14px; font-weight: 700;
+  margin-bottom: 20px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--edge);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.cost-row {
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  font-size: 12px;
+}
+
+.cost-row-name { color: #A0A0C0; }
+.cost-row-val  { font-family: 'DM Mono', monospace; color: var(--text); }
+.cost-row-val.free { color: var(--c2); }
+.cost-row-val.low  { color: var(--gold); }
+
+/* ═══════ COMPETITIVE MOAT ═══════ */
+.moat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px; background: var(--edge);
+  border-radius: 12px; overflow: hidden;
+}
+
+.moat-card {
+  background: var(--card);
+  padding: 28px 24px;
+}
+
+.moat-icon  { font-size: 32px; margin-bottom: 12px; display: block; }
+.moat-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #E0E0FF; }
+.moat-desc  { font-size: 11px; color: #A0A0C0; line-height: 1.6; font-weight: 400; }
+
+/* ═══════ FLYWHEEL ═══════ */
+.flywheel {
+  display: flex; align-items: center;
+  justify-content: center; gap: 0;
+  flex-wrap: wrap; padding: 40px 0;
+  position: relative;
+}
+
+.fw-step {
+  background: var(--card);
+  border: 1px solid var(--edge);
+  border-radius: 10px; padding: 20px 18px;
+  text-align: center; width: 160px;
+  flex-shrink: 0; transition: all .25s;
+  cursor: default;
+}
+.fw-step:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,229,102,.2);
+  box-shadow: 0 12px 32px rgba(0,0,0,.5);
+}
+
+.fw-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 900;
+  color: rgba(255,229,102,.15); display: block; margin-bottom: 8px;
+}
+
+.fw-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+.fw-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.fw-desc { font-size: 10px; color: #9898BB; line-height: 1.4; font-weight: 400; }
+
+.fw-arrow {
+  font-size: 20px; color: var(--edge);
+  padding: 0 8px; flex-shrink: 0;
+  transform: rotate(0deg);
+}
+
+/* ═══════ KEY METRICS ═══════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px; background: var(--edge);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.kpi-card {
+  background: var(--card);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.kpi-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 900;
+  color: var(--gold); display: block;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.kpi-note {
+  font-size: 10px; color: #8888AA;
+  font-weight: 400; line-height: 1.3;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ═══════ RISK TABLE ═══════ */
+.risk-grid {
+  display: grid; gap: 8px;
+}
+
+.risk-row {
+  background: var(--card);
+  border: 1px solid var(--edge);
+  border-radius: 8px; padding: 16px 20px;
+  display: grid; grid-template-columns: 200px 1fr 120px 200px;
+  gap: 16px; align-items: center;
+  transition: background .2s;
+}
+.risk-row:hover { background: var(--card2); }
+
+.risk-name { font-size: 13px; font-weight: 600; color: #D8D8F8; }
+.risk-desc { font-size: 11px; color: #A0A0C0; line-height: 1.4; font-weight: 400; }
+
+.risk-level {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 4px;
+  text-align: center; border: 1px solid;
+}
+.risk-level.alto   { color: #FF4A4A; border-color: rgba(255,74,74,.3); background: rgba(255,74,74,.06); }
+.risk-level.medio  { color: var(--c4); border-color: rgba(255,140,66,.3); background: rgba(255,140,66,.06); }
+.risk-level.bajo   { color: var(--c2); border-color: rgba(0,217,163,.3); background: rgba(0,217,163,.06); }
+
+.risk-mitigation { font-size: 11px; color: #A0A0C0; line-height: 1.4; font-weight: 400; }
+
+/* ═══════ NAV ═══════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(5,5,10,.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--edge);
+  padding: 0 80px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 900;
+  color: var(--gold); letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex; gap: 0;
+}
+
+.nav-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted);
+  padding: 0 16px; height: 56px;
+  display: flex; align-items: center;
+  cursor: pointer; transition: color .2s;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.nav-link:hover { color: var(--gold); border-bottom-color: var(--gold-m); }
+
+/* ═══════ DIVIDER ═══════ */
+.divider {
+  height: 1px; background: var(--edge);
+  margin: 40px 0;
+}
+
+/* ═══════ SCENARIO BAR ═══════ */
+.scenario-bar {
+  display: flex; gap: 8px;
+  background: var(--card); border: 1px solid var(--edge);
+  border-radius: 8px; padding: 4px;
+  margin-bottom: 28px; width: fit-content;
+}
+
+.scenario-btn {
+  padding: 8px 18px; border-radius: 5px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  cursor: pointer; transition: all .2s; color: var(--muted);
+  border: none; background: none;
+}
+.scenario-btn.active {
+  background: rgba(255,229,102,.08);
+  color: var(--gold);
+  border: 1px solid rgba(255,229,102,.2);
+}
+
+.scenario-data { display: none; }
+.scenario-data.active { display: block; }
+
+/* ═══════ FOOTER ═══════ */
+footer {
+  padding: 48px 80px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--edge);
+}
+
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 900; color: var(--gold);
+}
+
+.footer-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--muted); text-align: right;
+}
+
+/* ═══════ ANIMATIONS ═══════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow { animation: fadeUp .6s ease .1s both; }
+.hero-title   { animation: fadeUp .6s ease .2s both; }
+.hero-subtitle { animation: fadeUp .6s ease .3s both; }
+.hero-pills   { animation: fadeUp .6s ease .4s both; }
+
+@media (max-width: 1200px) {
+  section { padding: 48px 40px; }
+  .hero   { padding: 100px 40px 60px; }
+  nav     { padding: 0 40px; }
+  footer  { padding: 40px; }
+  .vp-grid { grid-template-columns: 1fr; }
+  .rev-grid { grid-template-columns: 1fr; }
+  .ue-grid  { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .cost-grid { grid-template-columns: 1fr; }
+  .moat-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">VIBRRA</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#canvas">Canvas</a>
+    <a class="nav-link" href="#propuesta">Propuesta</a>
+    <a class="nav-link" href="#ingresos">Ingresos</a>
+    <a class="nav-link" href="#proyecciones">Proyecciones</a>
+    <a class="nav-link" href="#moat">Ventajas</a>
+    <a class="nav-link" href="#riesgos">Riesgos</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" style="padding-top: 136px;">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-eyebrow">Modelo de negocios · v1.0 · Colombia 2025</div>
+  <h1 class="hero-title">
+    El jukebox<br>
+    que <span>todos</span><br>
+    controlan
+  </h1>
+  <p class="hero-subtitle">
+    <span style="color:var(--gold)">VIBRRA</span> es una plataforma de intermediación que convierte la <span style="color:var(--c1)">selección musical</span> en un mecanismo de <span style="color:var(--c2)">monetización para bares</span> y en <span style="color:var(--c3)">entretenimiento participativo</span> para sus clientes.
+  </p>
+  <div class="hero-pills">
+    <span class="pill pill-gold">📱 Clientes</span>
+    <span class="pill pill-green">🏢 Anfitriones</span>
+    <span class="pill pill-purple">📣 Empresarios</span>
+    <span class="pill pill-orange">⚙️ VIBRRA (Operador)</span>
+  </div>
+
+  <div class="hero-stat-row">
+    <div class="hero-stat">
+      <span class="hero-stat-num">30%</span>
+      <div class="hero-stat-label">de cada transacción</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">$15K</span>
+      <div class="hero-stat-label">suscripción / mes</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">3</span>
+      <div class="hero-stat-label">fuentes de ingreso</div>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">~$0</span>
+      <div class="hero-stat-label">costo firebase piloto</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ BUSINESS MODEL CANVAS ═══════ -->
+<section id="canvas">
+  <div class="sec-label">01 — Visión general</div>
+  <h2 class="sec-title">Business Model <em>Canvas</em></h2>
+  <p class="sec-desc">Los nueve bloques que definen cómo VIBRRA crea, entrega y captura valor.</p>
+
+  <div class="canvas-grid">
+
+    <!-- Fila 1 -->
+    <div class="canvas-cell">
+      <div class="canvas-cell-label" style="color: var(--c5);">Socios clave</div>
+      <div class="canvas-cell-title" style="color:var(--c5)">Key Partners</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>Google / Firebase — infraestructura sin costo inicial</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>Wompi / Bancolombia — pasarela de pagos colombiana</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>YouTube — fuente de contenido musical</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>OSA / SAYCO-ACINPRO — derechos de autor (responsabilidad del anfitrión)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>Establecimientos piloto — validación del modelo</div>
+    </div>
+
+    <div class="canvas-cell span2">
+      <div class="canvas-cell-label" style="color: var(--c4);">Actividades clave</div>
+      <div class="canvas-cell-title" style="color:var(--c4)">Key Activities</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Desarrollo y mantenimiento de la Plataforma Flutter + Chrome Extension</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Onboarding y soporte técnico a anfitriones</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Verificación de documentación legal de establecimientos (OSA)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Procesamiento de retiros y gestión de tesorería</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Adquisición de nuevos establecimientos y Empresarios</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Cumplimiento tributario DIAN (facturación electrónica, retenciones)</div>
+    </div>
+
+    <div class="canvas-cell span2">
+      <div class="canvas-cell-label" style="color: var(--c1);">Propuesta de valor</div>
+      <div class="canvas-cell-title" style="color:var(--c1)">Value Proposition</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c1)"></div><strong style="color:var(--c1)">Cliente:</strong> Control sobre la música del bar. Entretenimiento participativo.</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div><strong style="color:var(--c2)">Anfitrión:</strong> Nueva fuente de ingresos sin inversión en hardware. Datos de su público.</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c3)"></div><strong style="color:var(--c3)">Empresario:</strong> Publicidad segmentada en contexto de ocio nocturno con audiencia cautiva.</div>
+    </div>
+
+    <div class="canvas-cell">
+      <div class="canvas-cell-label" style="color: var(--c2);">Relación con clientes</div>
+      <div class="canvas-cell-title" style="color:var(--c2)">Customer Relationships</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>App autoservicio para Clientes</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>Onboarding presencial para Anfitriones (piloto)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>Panel analítico de rendimiento por Establecimiento</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>Alertas proactivas de vencimiento de documentos</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>Soporte via WhatsApp y email</div>
+    </div>
+
+    <div class="canvas-cell">
+      <div class="canvas-cell-label" style="color: var(--c2);">Segmentos</div>
+      <div class="canvas-cell-title" style="color:var(--c2)">Customer Segments</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c1)"></div>Jóvenes 18–35 en bares/discotecas</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>Bares, discotecas, restaurantes-bar (Colombia)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c3)"></div>Marcas de licor, bebidas, eventos</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c3)"></div>Artistas / promotores musicales</div>
+    </div>
+
+    <div class="canvas-cell">
+      <div class="canvas-cell-label" style="color: var(--c4);">Recursos clave</div>
+      <div class="canvas-cell-title" style="color:var(--c4)">Key Resources</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Plataforma tecnológica (Flutter + Firebase)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Codebase Flutter: extensión Chrome + app móvil</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Red de establecimientos activos (efecto red)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Datos de comportamiento musical del público</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Contratos legales y compliance</div>
+    </div>
+
+    <div class="canvas-cell">
+      <div class="canvas-cell-label" style="color: var(--c5);">Canales</div>
+      <div class="canvas-cell-title" style="color:var(--c5)">Channels</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>QR físico en la mesa / barra del establecimiento</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>App stores (Google Play + App Store)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>Landing page vibrra.live</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>Venta directa puerta a puerta (anfitriones)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c5)"></div>Redes sociales + mapa público de bares</div>
+    </div>
+
+    <!-- Fila 2 -->
+    <div class="canvas-cell span2 bottom" style="border-top: 2px solid rgba(255,74,74,.3)">
+      <div class="canvas-cell-label" style="color: #FF8080;">Estructura de costos</div>
+      <div class="canvas-cell-title" style="color:#FF8080">Cost Structure</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:#FF8080"></div>Firebase (Firestore, Functions, RTDB): ~$0 en piloto, ~$2.35 USD/mes a 200 establecimientos</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:#FF8080"></div>Desarrollo de software: costo de oportunidad (tiempo del fundador)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:#FF8080"></div>Cuenta desarrollador Google Play ($25 única vez) + Apple ($99/año)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:#FF8080"></div>Wompi: 2,49% + $900 COP por transacción (trasladado al cliente)</div>
+      <div class="canvas-item"><div class="canvas-item-dot" style="background:#FF8080"></div>Contabilidad + compliance DIAN: contador externo</div>
+    </div>
+
+    <div class="canvas-cell span3 bottom" style="border-top: 2px solid rgba(0,217,163,.3)">
+      <div class="canvas-cell-label" style="color: var(--c2);">Fuentes de ingreso</div>
+      <div class="canvas-cell-title" style="color:var(--c2)">Revenue Streams</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px;">
+        <div>
+          <div style="font-size:11px; color:var(--c4); font-weight:600; margin-bottom:6px;">① Comisión de pujas</div>
+          <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>30% de cada puja — principal ingreso</div>
+          <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c4)"></div>Modelo de ingresos variables con actividad</div>
+        </div>
+        <div>
+          <div style="font-size:11px; color:var(--c2); font-weight:600; margin-bottom:6px;">② Suscripción mensual</div>
+          <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>$15.000 COP / establecimiento / mes</div>
+          <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c2)"></div>Ingreso recurrente predecible</div>
+        </div>
+        <div>
+          <div style="font-size:11px; color:var(--c3); font-weight:600; margin-bottom:6px;">③ Publicidad</div>
+          <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c3)"></div>CPM en contexto de ocio nocturno</div>
+          <div class="canvas-item"><div class="canvas-item-dot" style="background:var(--c3)"></div>Segmentación por comportamiento</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════ PROPUESTA DE VALOR ═══════ -->
+<section id="propuesta">
+  <div class="sec-label">02 — Actores</div>
+  <h2 class="sec-title">Propuesta de <em>valor</em></h2>
+  <p class="sec-desc">Cada actor recibe un beneficio concreto. <span style="color:var(--gold)">VIBRRA</span> es un ecosistema de <span style="color:var(--c2)">tres lados</span> donde <span style="color:var(--c1)">todos ganan</span>.</p>
+
+  <!-- FLYWHEEL -->
+  <div style="text-align:center; margin-bottom: 48px;">
+    <div style="font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--muted); margin-bottom:24px;">Efecto volante — el ciclo de crecimiento</div>
+    <div class="flywheel">
+      <div class="fw-step">
+        <span class="fw-num">1</span>
+        <span class="fw-icon">🏢</span>
+        <div class="fw-name" style="color:var(--c2)">Más bares</div>
+        <div class="fw-desc">Anfitriones nuevos activan VIBRRA en su local</div>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-step">
+        <span class="fw-num">2</span>
+        <span class="fw-icon">🗺️</span>
+        <div class="fw-name" style="color:var(--c5)">Mapa crece</div>
+        <div class="fw-desc">El mapa público muestra más opciones para salir</div>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-step">
+        <span class="fw-num">3</span>
+        <span class="fw-icon">📱</span>
+        <div class="fw-name" style="color:var(--c1)">Más usuarios</div>
+        <div class="fw-desc">Clientes descargan la app para elegir a dónde ir</div>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-step">
+        <span class="fw-num">4</span>
+        <span class="fw-icon">🎵</span>
+        <div class="fw-name" style="color:var(--gold)">Más pujas</div>
+        <div class="fw-desc">Clientes pujan → bares generan más ingresos</div>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-step">
+        <span class="fw-num">5</span>
+        <span class="fw-icon">📣</span>
+        <div class="fw-name" style="color:var(--c3)">Dato + Publicidad</div>
+        <div class="fw-desc">Datos de audiencia → Empresarios invierten</div>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-step" style="border-color: rgba(255,229,102,.2);">
+        <span class="fw-num">6</span>
+        <span class="fw-icon">🔄</span>
+        <div class="fw-name" style="color:var(--gold)">Reinversión</div>
+        <div class="fw-desc">VIBRRA escala → atrae más bares → vuelve al paso 1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vp-grid">
+    <div class="vp-card cliente">
+      <div class="vp-actor">Para el Cliente</div>
+      <span class="vp-icon">🎵</span>
+      <div class="vp-title">Tú decides qué suena</div>
+      <p class="vp-desc">Por primera vez, el cliente no tiene que gritar al DJ ni depender del gusto del barman. Con VIBRRA, escaneás el QR y tu canción puede sonar en minutos.</p>
+      <ul class="vp-items">
+        <li class="vp-item">Control real sobre la playlist del bar</li>
+        <li class="vp-item">Transparencia: ves la cola en tiempo real</li>
+        <li class="vp-item">Dedicatorias visibles en la pantalla</li>
+        <li class="vp-item">Batallas de canciones entre grupos</li>
+        <li class="vp-item">Sin descarga obligatoria para usar (modo web)</li>
+      </ul>
+    </div>
+
+    <div class="vp-card anfitrion">
+      <div class="vp-actor">Para el Anfitrión</div>
+      <span class="vp-icon">💰</span>
+      <div class="vp-title">Ingresos sin esfuerzo adicional</div>
+      <p class="vp-desc">El anfitrión ya tiene la música puesta. VIBRRA convierte esa música en un sistema de monetización que funciona solo, sin contratar DJ adicional.</p>
+      <ul class="vp-items">
+        <li class="vp-item">70% de cada puja — ingreso directo</li>
+        <li class="vp-item">Cero hardware adicional — solo el PC del local</li>
+        <li class="vp-item">Dashboard con analytics de cada noche</li>
+        <li class="vp-item">Retiro mensual del saldo consolidado</li>
+        <li class="vp-item">Los clientes están más tiempo y más comprometidos</li>
+        <li class="vp-item">Datos del perfil musical de su público</li>
+      </ul>
+    </div>
+
+    <div class="vp-card empresario">
+      <div class="vp-actor">Para el Empresario</div>
+      <span class="vp-icon">🎯</span>
+      <div class="vp-title">Audiencia cautiva en ocio</div>
+      <p class="vp-desc">El contexto del bar es el más receptivo para publicidad de bebidas, eventos y entretenimiento. VIBRRA da acceso a esa audiencia con segmentación de comportamiento real.</p>
+      <ul class="vp-items">
+        <li class="vp-item">Impresiones en pantalla del bar — muy visible</li>
+        <li class="vp-item">Segmentación por géneros, ciudad, horario</li>
+        <li class="vp-item">Sin acceso a datos personales — privacidad GDPR</li>
+        <li class="vp-item">Canciones patrocinadas con identificación de marca</li>
+        <li class="vp-item">Métricas reales de impresiones y reproducción</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FUENTES DE INGRESO ═══════ -->
+<section id="ingresos">
+  <div class="sec-label">03 — Monetización</div>
+  <h2 class="sec-title">Fuentes de <em>ingreso</em></h2>
+  <p class="sec-desc">Tres fuentes de ingreso en distintas fases de madurez, con diferente naturaleza: variable, recurrente y publicitaria.</p>
+
+  <div class="rev-grid">
+
+    <div class="rev-card primary">
+      <div class="rev-badge" style="color:var(--c4); border-color:rgba(255,140,66,.3);">① Principal · Activo desde Fase 3</div>
+      <div class="rev-name">Comisión de intermediación — 30%</div>
+      <div class="rev-formula">
+        Ingreso VIBRRA = Σ(valor_puja × 0.30)<br>
+        Anfitrión recibe = Σ(valor_puja × 0.70)<br>
+        Ejemplo: $10.000 puja → $3.000 VIBRRA + $7.000 Anfitrión
+      </div>
+      <p class="rev-desc">Es el <span style="color:var(--c4)">motor principal</span> del negocio. Se genera en <span style="color:var(--c2)">tiempo real</span> con cada puja confirmada. No tiene costo variable adicional para VIBRRA — la comisión de Wompi ya fue descontada al momento de la recarga del cliente. Cuantas más pujas, más ingresos. Crece directamente con la actividad de los bares.</p>
+    </div>
+
+    <div class="rev-card secondary">
+      <div class="rev-badge" style="color:var(--c2); border-color:rgba(0,217,163,.3);">② Recurrente · Activo desde Fase 3</div>
+      <div class="rev-name">Suscripción mensual del Establecimiento</div>
+      <div class="rev-formula">
+        Ingreso = N_establecimientos × $15.000 COP/mes<br>
+        10 est → $150.000/mes · 50 est → $750.000/mes<br>
+        100 est → $1.500.000/mes
+      </div>
+      <p class="rev-desc">Ingreso base <span style="color:var(--c2)">recurrente y predecible</span>. Da <span style="color:var(--gold)">estabilidad financiera</span> independientemente del volumen de pujas. Primer mes gratuito (trial). Este ingreso cubre los costos operativos de Firebase, contabilidad y soporte desde muy pocos establecimientos. Actúa como "suelo" de ingresos garantizados.</p>
+    </div>
+
+    <div class="rev-card tertiary">
+      <div class="rev-badge" style="color:var(--c3); border-color:rgba(167,139,250,.3);">③ Publicitario · Fase 5+</div>
+      <div class="rev-name">Módulo de Empresarios — CPM / CPR</div>
+      <div class="rev-formula">
+        Modelo CPM: precio × (impresiones/1000)<br>
+        Modelo CPR: precio × reproducciones_verificadas<br>
+        Estimado: $5.000–$15.000 COP por 1.000 impresiones
+      </div>
+      <p class="rev-desc">Fuente futura de alto margen. Las marcas de bebidas y eventos pagan por aparecer en la pantalla del bar en el momento exacto en que sus clientes objetivo están tomando decisiones de consumo. Sin ningún costo variable para VIBRRA más allá del tiempo de moderación de campañas.</p>
+    </div>
+
+    <div class="rev-card future">
+      <div class="rev-badge" style="color:var(--muted); border-color:var(--edge);">④ Exploración futura</div>
+      <div class="rev-name">Líneas de ingreso en exploración</div>
+      <div class="rev-formula">
+        · Precio premium de conexión (comisión 10%)<br>
+        · API para promotores de eventos<br>
+        · White-label para cadenas de bares<br>
+        · VIBRRA Pro: plan avanzado de analytics
+      </div>
+      <p class="rev-desc">No se incluyen en las proyecciones actuales. Representan opcionalidad de crecimiento una vez consolidada la base de establecimientos. La plataforma técnica ya soporta estas extensiones sin cambios de arquitectura.</p>
+    </div>
+
+  </div>
+
+  <!-- Unit economics -->
+  <div style="font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--muted); margin-bottom:16px;">Economía unitaria por establecimiento activo (estimados conservadores)</div>
+  <div class="ue-grid">
+    <div class="ue-card">
+      <div class="ue-label">Sesiones / semana</div>
+      <div class="ue-val">3</div>
+      <div class="ue-sub">Vie + Sáb + 1 entre semana</div>
+    </div>
+    <div class="ue-card">
+      <div class="ue-label">Transacciones / sesión</div>
+      <div class="ue-val">35</div>
+      <div class="ue-sub">Pujas + conexiones + canciones</div>
+    </div>
+    <div class="ue-card">
+      <div class="ue-label">Puja promedio</div>
+      <div class="ue-val">$3K</div>
+      <div class="ue-sub">COP — precio mínimo razonable</div>
+    </div>
+    <div class="ue-card">
+      <div class="ue-label">Ingreso VIBRRA / est / mes</div>
+      <div class="ue-val">$38K</div>
+      <div class="ue-sub">COP = 3×4×35×$3K×30%</div>
+    </div>
+    <div class="ue-card">
+      <div class="ue-label">+ Suscripción</div>
+      <div class="ue-val">$15K</div>
+      <div class="ue-sub">COP fijos por establecimiento</div>
+    </div>
+    <div class="ue-card" style="background:rgba(255,229,102,.04); border: 1px solid rgba(255,229,102,.15);">
+      <div class="ue-label" style="color:var(--gold)">Total / est / mes</div>
+      <div class="ue-val">$53K</div>
+      <div class="ue-sub" style="color:var(--gold-m)">COP por establecimiento activo</div>
+    </div>
+    <div class="ue-card">
+      <div class="ue-label">Costo Firebase / est</div>
+      <div class="ue-val">~$0</div>
+      <div class="ue-sub">Dentro del free tier en piloto</div>
+    </div>
+    <div class="ue-card" style="background:rgba(0,217,163,.04); border: 1px solid rgba(0,217,163,.15);">
+      <div class="ue-label" style="color:var(--c2)">Margen bruto / est</div>
+      <div class="ue-val" style="color:var(--c2)">~95%</div>
+      <div class="ue-sub" style="color:var(--c2)">El costo marginal es casi cero</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ PROYECCIONES ═══════ -->
+<section id="proyecciones">
+  <div class="sec-label">04 — Escenarios financieros</div>
+  <h2 class="sec-title">Proyecciones de <em>ingreso</em></h2>
+  <p class="sec-desc">Tres escenarios de crecimiento. El modelo es ligero: el ingreso escala con los establecimientos, los costos casi no.</p>
+
+  <div class="scenario-bar">
+    <button class="scenario-btn active" onclick="showScenario('conservador')">Conservador</button>
+    <button class="scenario-btn" onclick="showScenario('moderado')">Moderado</button>
+    <button class="scenario-btn" onclick="showScenario('optimista')">Optimista</button>
+  </div>
+
+  <div class="scenario-data active" id="sc-conservador">
+    <div style="font-size:12px; color:var(--muted); margin-bottom:20px; font-family:'DM Mono',monospace;">
+      Supuestos: <span style="color:var(--c1)">3 sesiones/semana</span>, <span style="color:var(--c2)">25 pujas/sesión</span> a <span style="color:var(--gold)">$3.000 COP</span> promedio. Crecimiento <span style="color:var(--muted)">lento</span> por tratarse del primer año.
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="proj-table">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Establecimientos</th>
+          <th>Ingreso comisiones/mes</th>
+          <th>Ingreso suscripciones/mes</th>
+          <th>Total mensual</th>
+          <th>Acumulado</th>
+          <th>Firebase costo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="label">Mes 1–4 (dev)</td><td>0</td><td>$0</td><td>$0</td><td class="highlight">$0</td><td>$0</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 5 (piloto)</td><td>3</td><td>$81.000</td><td>$0 (trial)</td><td class="highlight">$81.000</td><td>$81.000</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 6</td><td>3</td><td>$81.000</td><td>$45.000</td><td class="highlight">$126.000</td><td>$207.000</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 7</td><td>6</td><td>$162.000</td><td>$90.000</td><td class="highlight">$252.000</td><td>$459.000</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 8</td><td>10</td><td>$270.000</td><td>$150.000</td><td class="highlight">$420.000</td><td>$879.000</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 9</td><td>15</td><td>$405.000</td><td>$225.000</td><td class="highlight">$630.000</td><td>$1.509.000</td><td class="low">~$2.000</td></tr>
+        <tr><td class="label">Mes 12</td><td>25</td><td>$675.000</td><td>$375.000</td><td class="highlight">$1.050.000</td><td>~$4.200.000</td><td class="low">~$4.000</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:16px; padding:14px 18px; background:rgba(255,229,102,.04); border:1px solid rgba(255,229,102,.12); border-radius:8px; font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">
+      En el escenario conservador, VIBRRA alcanza ~$1.3M COP/mes al final del primer año con 25 establecimientos activos (considerando los 6 tipos de transacción). El punto de equilibrio operativo se alcanza con solo 6–8 establecimientos activos.
+    </div>
+  </div>
+
+  <div class="scenario-data" id="sc-moderado">
+    <div style="font-size:12px; color:var(--muted); margin-bottom:20px; font-family:'DM Mono',monospace;">
+      Supuestos: <span style="color:var(--c1)">4 sesiones/semana</span>, <span style="color:var(--c2)">40 pujas/sesión</span> a <span style="color:var(--gold)">$3.500 COP</span> promedio. Crecimiento <span style="color:var(--c2)">acelerado</span> post-piloto por referencias entre anfitriones.
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="proj-table">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Establecimientos</th>
+          <th>Ingreso comisiones/mes</th>
+          <th>Ingreso suscripciones/mes</th>
+          <th>Total mensual</th>
+          <th>Acumulado</th>
+          <th>Firebase costo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="label">Mes 5 (piloto)</td><td>3</td><td>$201.600</td><td>$0 (trial)</td><td class="highlight">$201.600</td><td>$201.600</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 6</td><td>5</td><td>$336.000</td><td>$75.000</td><td class="highlight">$411.000</td><td>$612.600</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 7</td><td>12</td><td>$806.400</td><td>$180.000</td><td class="highlight">$986.400</td><td>$1.598.000</td><td class="free">$0</td></tr>
+        <tr><td class="label">Mes 8</td><td>20</td><td>$1.344.000</td><td>$300.000</td><td class="highlight">$1.644.000</td><td>$3.243.000</td><td class="low">~$2.000</td></tr>
+        <tr><td class="label">Mes 9</td><td>35</td><td>$2.352.000</td><td>$525.000</td><td class="highlight">$2.877.000</td><td>$6.120.000</td><td class="low">~$4.000</td></tr>
+        <tr><td class="label">Mes 12</td><td>60</td><td>$4.032.000</td><td>$900.000</td><td class="highlight">$4.932.000</td><td>~$20.000.000</td><td class="low">~$8.000</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:16px; padding:14px 18px; background:rgba(0,217,163,.04); border:1px solid rgba(0,217,163,.12); border-radius:8px; font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">
+      Escenario moderado: $4.9M COP/mes en el mes 12 con 60 establecimientos. El efecto red de referencias entre anfitriones es el driver clave de este escenario.
+    </div>
+  </div>
+
+  <div class="scenario-data" id="sc-optimista">
+    <div style="font-size:12px; color:var(--muted); margin-bottom:20px; font-family:'DM Mono',monospace;">
+      Supuestos: <span style="color:var(--c1)">5 sesiones/semana</span>, <span style="color:var(--c2)">60 pujas/sesión</span> a <span style="color:var(--gold)">$5.000 COP</span> promedio. Expansión a <span style="color:var(--c3)">múltiples ciudades</span> desde mes 6. Módulo de Empresarios activo desde mes 8.
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="proj-table">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Establecimientos</th>
+          <th>Comisiones + Suscripción</th>
+          <th>Publicidad (Empresarios)</th>
+          <th>Total mensual</th>
+          <th>Nota</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="label">Mes 5</td><td>5</td><td>$660.000</td><td>$0</td><td class="highlight">$660.000</td><td class="label">Piloto Caldas</td></tr>
+        <tr><td class="label">Mes 6</td><td>15</td><td>$1.980.000</td><td>$0</td><td class="highlight">$1.980.000</td><td class="label">Manizales + Pereira</td></tr>
+        <tr><td class="label">Mes 7</td><td>30</td><td>$3.960.000</td><td>$0</td><td class="highlight">$3.960.000</td><td class="label">+Medellín</td></tr>
+        <tr><td class="label">Mes 8</td><td>50</td><td>$6.600.000</td><td>$500.000</td><td class="highlight">$7.100.000</td><td class="label">Empresarios beta</td></tr>
+        <tr><td class="label">Mes 9</td><td>80</td><td>$10.560.000</td><td>$1.500.000</td><td class="highlight">$12.060.000</td><td class="label">+Bogotá</td></tr>
+        <tr><td class="label">Mes 12</td><td>200</td><td>$26.400.000</td><td>$5.000.000</td><td class="highlight">$31.400.000</td><td class="label">Nacional</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:16px; padding:14px 18px; background:rgba(167,139,250,.04); border:1px solid rgba(167,139,250,.12); border-radius:8px; font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">
+      Escenario optimista: $31.4M COP/mes al año 1 con 200 establecimientos. El costo Firebase en este escenario sería ~$35 USD/mes — un 0.05% del ingreso. Modelo extremadamente escalable.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ ESTRUCTURA DE COSTOS ═══════ -->
+<section>
+  <div class="sec-label">05 — Estructura de costos</div>
+  <h2 class="sec-title">Costos <em>reales</em></h2>
+  <p class="sec-desc">El modelo es deliberadamente ligero. La infraestructura casi no tiene costo a escala de piloto, y escala muy lentamente respecto al ingreso.</p>
+
+  <div class="cost-grid">
+    <div class="cost-block">
+      <div class="cost-title">
+        <span>⚙️</span> Infraestructura técnica (mensual)
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Firebase — piloto (≤10 establecimientos)</span>
+        <span class="cost-row-val free">$0 COP</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Firebase — 50 establecimientos</span>
+        <span class="cost-row-val free">$0 COP</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Firebase — 200 establecimientos</span>
+        <span class="cost-row-val low">~$10.000 COP</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Dominio vibrra.live</span>
+        <span class="cost-row-val low">~$6.000 COP/mes</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">YouTube Data API (búsquedas)</span>
+        <span class="cost-row-val free">$0 (dentro de cuota free)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Google Maps Platform</span>
+        <span class="cost-row-val free">$0 (dentro de crédito mensual)</span>
+      </div>
+    </div>
+
+    <div class="cost-block">
+      <div class="cost-title">
+        <span>🏢</span> Costos operativos / legales (mensual)
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Contador externo (obligaciones DIAN)</span>
+        <span class="cost-row-val">~$150.000–$300.000 COP</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Apps stores (desarrollador Apple)</span>
+        <span class="cost-row-val">~$35.000 COP/mes (amortizado)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Apps stores (desarrollador Google)</span>
+        <span class="cost-row-val free">$0 (pago único $25 USD)</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Wompi (comisión pasarela)</span>
+        <span class="cost-row-val">Trasladada al cliente en recarga</span>
+      </div>
+      <div class="cost-row">
+        <span class="cost-row-name">Soporte a anfitriones (tiempo propio)</span>
+        <span class="cost-row-val">Costo de oportunidad</span>
+      </div>
+      <div class="cost-row" style="border-top: 1px solid rgba(255,229,102,.15); margin-top:8px; padding-top:12px;">
+        <span class="cost-row-name" style="color:var(--text); font-weight:600;">Total estimado (piloto real)</span>
+        <span class="cost-row-val low">~$300.000–$500.000 COP/mes</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px; padding:18px 24px; background:rgba(0,217,163,.04); border:1px solid rgba(0,217,163,.15); border-radius:10px; font-size:12px; color:var(--c2); font-family:'DM Mono',monospace;">
+    <strong style="color:var(--c2)">Punto de equilibrio operativo:</strong> Con solo <span style="color:var(--gold)">8–12 establecimientos</span> activos pagando suscripción ($120.000–$180.000 COP) más sus comisiones de pujas (~$216.000–$324.000 COP/mes), VIBRRA cubre todos sus costos fijos reales. Todo lo demás es margen neto.
+  </div>
+</section>
+
+<!-- ═══════ VENTAJAS COMPETITIVAS ═══════ -->
+<section id="moat">
+  <div class="sec-label">06 — Posicionamiento</div>
+  <h2 class="sec-title">Ventajas <em>competitivas</em></h2>
+  <p class="sec-desc">Las barreras de entrada que VIBRRA construye con el tiempo. Algunas son estructurales desde el día 1, otras emergen con la red.</p>
+
+  <div style="margin-bottom: 40px;">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-val">~$0</span>
+        <div class="kpi-label">Hardware requerido</div>
+        <div class="kpi-note">Solo el PC que ya tiene el bar</div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-val">100ms</span>
+        <div class="kpi-label">Latencia tiempo real</div>
+        <div class="kpi-note">RTDB WebSocket — casi instantáneo</div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-val">2.35$</span>
+        <div class="kpi-label">Costo Firebase / mes</div>
+        <div class="kpi-note">USD a 200 establecimientos</div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-val">95%+</span>
+        <div class="kpi-label">Margen bruto</div>
+        <div class="kpi-note">Costo marginal casi cero</div>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-val">3</span>
+        <div class="kpi-label">Actores en red</div>
+        <div class="kpi-note">Mercado multilateral — difícil de replicar</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="moat-grid">
+    <div class="moat-card">
+      <span class="moat-icon">🕸️</span>
+      <div class="moat-title">Efecto de red multilateral</div>
+      <p class="moat-desc">Más bares → más usuarios que descargan la app → más datos para Empresarios → más ingresos para VIBRRA → puede mejorar el producto. Un competidor que llegue solo con tecnología similar no tiene la red. El producto mejora exponencialmente con cada nuevo establecimiento.</p>
+    </div>
+    <div class="moat-card">
+      <span class="moat-icon">📊</span>
+      <div class="moat-title">Datos de comportamiento musical</div>
+      <p class="moat-desc">Con el tiempo, VIBRRA acumula un corpus único de datos sobre qué canciones se pujan en qué tipo de bar, a qué hora, con qué frecuencia, y qué perfil de usuario las puja. Esto no se compra ni se replica — se construye con tiempo y establecimientos activos.</p>
+    </div>
+    <div class="moat-card">
+      <span class="moat-icon">⚡</span>
+      <div class="moat-title">Cero costos de cambio para el cliente</div>
+      <p class="moat-desc">El cliente no tiene que instalar nada obligatorio — escanea el QR y ya está. Esto elimina la fricción de adopción. Para el anfitrión, los datos históricos, el QR ya impreso y el contrato generan lealtad. Cambiar de plataforma significa perder el historial de su establecimiento.</p>
+    </div>
+    <div class="moat-card">
+      <span class="moat-icon">🔒</span>
+      <div class="moat-title">Compliance como barrera de entrada</div>
+      <p class="moat-desc">VIBRRA verificó el framework legal (OSA, Ley 1801/2016, DIAN, Wompi) antes del lanzamiento. Un competidor nuevo debe replicar este trabajo. Además, el ecosistema de confianza con Wompi/Bancolombia no es trivial de establecer para una startup sin historial.</p>
+    </div>
+    <div class="moat-card">
+      <span class="moat-icon">🏗️</span>
+      <div class="moat-title">Arquitectura técnica ventajosa</div>
+      <p class="moat-desc">La separación diseñada de RTDB (tiempo real) y Firestore (permanencia económica) garantiza que ninguna falla técnica afecta el dinero. La extensión Chrome + QR permanente es un modelo de distribución que no requiere inversión de marketing por establecimiento.</p>
+    </div>
+    <div class="moat-card">
+      <span class="moat-icon">🇨🇴</span>
+      <div class="moat-title">First-mover en Colombia</div>
+      <p class="moat-desc">El mercado de bares nocturno en Colombia es enorme — Bogotá, Medellín, Cali, Barranquilla suman miles de establecimientos. No existe un competidor directo con la misma propuesta de valor. El tiempo es la ventaja: cada mes sin competidor es un mes de red construida.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ MÉTRICAS CLAVE ═══════ -->
+<section>
+  <div class="sec-label">07 — Métricas clave</div>
+  <h2 class="sec-title">KPIs del <em>negocio</em></h2>
+  <p class="sec-desc">Los indicadores que definen la salud de VIBRRA. Se dividen en métricas de crecimiento, retención y rentabilidad.</p>
+
+  <div style="overflow-x:auto;">
+  <table class="proj-table">
+    <thead>
+      <tr>
+        <th>Métrica</th>
+        <th>Definición</th>
+        <th>Meta piloto (3 meses)</th>
+        <th>Meta escala (12 meses)</th>
+        <th>Palanca</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label">Establecimientos activos</td>
+        <td>Locales con al menos 1 sesión en los últimos 30 días</td>
+        <td class="highlight">3</td>
+        <td class="positive">50+</td>
+        <td>Ventas directas</td>
+      </tr>
+      <tr>
+        <td class="label">Sesiones / est / semana</td>
+        <td>Promedio de sesiones activas por establecimiento</td>
+        <td class="highlight">≥ 2</td>
+        <td class="positive">≥ 3</td>
+        <td>Engagement anfitrión</td>
+      </tr>
+      <tr>
+        <td class="label">Pujas / sesión</td>
+        <td>Número de pujas exitosas por sesión</td>
+        <td class="highlight">≥ 15</td>
+        <td class="positive">≥ 30</td>
+        <td>UX de la app</td>
+      </tr>
+      <tr>
+        <td class="label">Puja promedio (COP)</td>
+        <td>Valor medio de cada puja exitosa</td>
+        <td class="highlight">≥ $2.000</td>
+        <td class="positive">≥ $3.500</td>
+        <td>Precios mínimos</td>
+      </tr>
+      <tr>
+        <td class="label">Retención anfitriones</td>
+        <td>% que renueva al segundo mes</td>
+        <td class="highlight">≥ 80%</td>
+        <td class="positive">≥ 90%</td>
+        <td>Soporte + ROI visible</td>
+      </tr>
+      <tr>
+        <td class="label">NPS anfitriones</td>
+        <td>Net Promoter Score — escala 0-10</td>
+        <td class="highlight">≥ 7</td>
+        <td class="positive">≥ 8.5</td>
+        <td>Onboarding + ROI</td>
+      </tr>
+      <tr>
+        <td class="label">Saldo disponible promedio</td>
+        <td>Saldo que el anfitrión tiene al momento del retiro</td>
+        <td class="highlight">≥ $50.000</td>
+        <td class="positive">≥ $200.000</td>
+        <td>Actividad en sesiones</td>
+      </tr>
+      <tr>
+        <td class="label">Costo de adquisición / est (CAC)</td>
+        <td>Tiempo + recursos para incorporar un establecimiento</td>
+        <td class="highlight">Solo tiempo</td>
+        <td class="positive">LTV &gt;&gt; CAC</td>
+        <td>Referencias entre anfitriones</td>
+      </tr>
+      <tr>
+        <td class="label">LTV estimado / establecimiento</td>
+        <td>Ingresos por est en 12 meses (escenario base)</td>
+        <td>—</td>
+        <td class="positive">~$504.000 COP</td>
+        <td>Retención + pujas</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ═══════ RIESGOS ═══════ -->
+<section id="riesgos">
+  <div class="sec-label">08 — Gestión de riesgos</div>
+  <h2 class="sec-title">Riesgos y <em>mitigaciones</em></h2>
+  <p class="sec-desc">Los riesgos conocidos del negocio, con su nivel de impacto y la estrategia de mitigación para cada uno.</p>
+
+  <div class="risk-grid">
+    <div class="risk-row" style="background:var(--card2)">
+      <span style="font-size:11px; color:var(--muted); font-weight:700; font-family:'DM Mono',monospace;">RIESGO</span>
+      <span style="font-size:11px; color:var(--muted); font-weight:700; font-family:'DM Mono',monospace;">DESCRIPCIÓN</span>
+      <span style="font-size:11px; color:var(--muted); font-weight:700; font-family:'DM Mono',monospace;">NIVEL</span>
+      <span style="font-size:11px; color:var(--muted); font-weight:700; font-family:'DM Mono',monospace;">MITIGACIÓN</span>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">⚖️ Reclamación OSA</div>
+      <div class="risk-desc">La OSA o un titular de derechos reclama a VIBRRA directamente por la reproducción de música en los bares.</div>
+      <div class="risk-level medio">Medio</div>
+      <div class="risk-mitigation">Contrato de servicio que traslada la responsabilidad al anfitrión. Bloqueo técnico si el certificado OSA está vencido. Términos legales explícitos.</div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">📺 YouTube restricciones</div>
+      <div class="risk-desc">Google restringe el uso de la YouTube IFrame API en contextos comerciales de reproducción en locales.</div>
+      <div class="risk-level alto">Alto</div>
+      <div class="risk-mitigation">Monitoreo de los Terms of Service de YouTube. Cláusula contractual que el anfitrión es responsable de las licencias. Plan B: Spotify Web Playback SDK o integración directa MP3 licensed.</div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">💳 Aprobación Wompi</div>
+      <div class="risk-desc">El proceso de aprobación de la cuenta Wompi puede demorar 2–4 semanas y en casos excepcionales ser rechazada.</div>
+      <div class="risk-level medio">Medio</div>
+      <div class="risk-mitigation">Iniciar el proceso desde la Fase 2 (mes 3). Plan B: PayU o Mercado Pago como alternativa. Desarrollar el MVP con saldos ficticios hasta tener la cuenta lista.</div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">📉 Baja adopción clientes</div>
+      <div class="risk-desc">Los clientes del bar no escanean el QR — la dinámica de pujas no se activa y el anfitrión no genera ingresos.</div>
+      <div class="risk-level medio">Medio</div>
+      <div class="risk-mitigation">QR físico visible en la mesa (no solo en la barra). Anfitrión explica la dinámica verbalmente. Primera semana: VIBRRA otorga saldo de bienvenida para reducir fricción.</div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">🔌 Dependencia de Chrome</div>
+      <div class="risk-desc">Google podría cambiar la política de extensiones Chrome (Manifest V3) o el acceso a YouTube desde extensiones.</div>
+      <div class="risk-level medio">Medio</div>
+      <div class="risk-mitigation">La extensión ya usa Manifest V3. El control de YouTube es solo inyección de DOM local — no es scraping. Plan de respaldo: app Electron como alternativa a la extensión.</div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">👥 Competidor</div>
+      <div class="risk-desc">Una startup con capital levanta una plataforma similar en Colombia antes de que VIBRRA consolide su red.</div>
+      <div class="risk-level bajo">Bajo</div>
+      <div class="risk-mitigation">El efecto de red y los datos son barreras reales. Foco en Caldas primero para consolidar antes de escalar. La velocidad de ejecución es la principal defensa.</div>
+    </div>
+
+    <div class="risk-row">
+      <div class="risk-name">📋 Regulación</div>
+      <div class="risk-desc">Cambios en regulación de pasarelas de pago (Superfinanciera) o en las obligaciones tributarias de plataformas digitales.</div>
+      <div class="risk-level bajo">Bajo</div>
+      <div class="risk-mitigation">Contador externo especializado en tech. Seguimiento de normativa DIAN y Superfinanciera. La arquitectura financiera está diseñada para adaptarse a cambios en retenciones.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">VIBRRA</div>
+    <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:6px;">Modelo de Negocios v1.0 · Colombia · 2025</div>
+  </div>
+  <div class="footer-note">
+    Proyecciones basadas en estimados conservadores.<br>
+    Los resultados reales dependen de la ejecución.<br>
+    © 2025 VIBRRA — Documento confidencial
+  </div>
+</footer>
+
+<script>
+function showScenario(name) {
+  document.querySelectorAll('.scenario-data').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sc-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

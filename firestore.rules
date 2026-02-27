@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Usuarios ────────────────────────────────────────────────────────────
+    match /Usuarios/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Anfitriones ─────────────────────────────────────────────────────────
+    match /Anfitriones/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Negocios ────────────────────────────────────────────────────────────
+    match /Negocios/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && resource == null || resource.data.owner_uid == request.auth.uid;
+    }
+
+    // ── Sesiones ────────────────────────────────────────────────────────────
+    match /Sesiones/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ── Cola ─────────────────────────────────────────────────────────────────
+    match /Cola/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ── Pujas ────────────────────────────────────────────────────────────────
+    match /Pujas/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // ── Transacciones ────────────────────────────────────────────────────────
+    match /Transacciones/{docId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+
+    // ── Retiros ──────────────────────────────────────────────────────────────
+    match /Retiros/{docId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+
+    // ── Configuracion (read-only) ────────────────────────────────────────────
+    match /Configuracion/{docId} {
+      allow read: if true;
+    }
+
+    // ── QR Login tokens ──────────────────────────────────────────────────────
+    match /qr_login_tokens/{tokenId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}

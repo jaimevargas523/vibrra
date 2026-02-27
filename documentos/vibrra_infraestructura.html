@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBRRA — Infraestructura Tecnológica</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
+:root {
+  --gold:    #FFE566;
+  --gold-m:  #D4A017;
+  --gold-dk: #A97010;
+  --black:   #080808;
+  --dark:    #101010;
+  --card:    #161616;
+  --border:  #222;
+  --text:    #E8E8E8;
+  --muted:   #666;
+
+  --client:   #FFE566;
+  --ext:      #FF6B6B;
+  --firebase: #FF8C42;
+  --rtdb:     #00D9A3;
+  --fn:       #A78BFA;
+  --external: #60C0F0;
+  --storage:  #F472B6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID DE FONDO ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,229,102,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,229,102,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+header {
+  position: relative;
+  z-index: 10;
+  padding: 32px 48px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: -1px;
+}
+.logo-sub {
+  font-size: 12px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 4px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── CANVAS AREA ── */
+.canvas {
+  position: relative;
+  z-index: 1;
+  padding: 40px 48px 60px;
+}
+
+/* ── SVG CONNECTORS ── */
+.svg-lines {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── LAYERS ── */
+.layer {
+  margin-bottom: 0;
+}
+
+.layer-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.layer-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.nodes-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+/* ── NODE CARDS ── */
+.node {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all .25s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  z-index: 5;
+  min-width: 160px;
+}
+
+.node:hover {
+  transform: translateY(-3px);
+  border-color: #333;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6);
+}
+
+.node.active {
+  transform: translateY(-3px);
+}
+
+.node-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+  line-height: 1;
+}
+
+.node-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.node-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.node-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* colores por tipo */
+.node.client    { border-top: 3px solid var(--client); }
+.node.ext       { border-top: 3px solid var(--ext); }
+.node.firebase  { border-top: 3px solid var(--firebase); }
+.node.rtdb      { border-top: 3px solid var(--rtdb); }
+.node.fn        { border-top: 3px solid var(--fn); }
+.node.external  { border-top: 3px solid var(--external); }
+.node.storage   { border-top: 3px solid var(--storage); }
+
+.node.client   .node-name { color: var(--client); }
+.node.ext      .node-name { color: var(--ext); }
+.node.firebase .node-name { color: var(--firebase); }
+.node.rtdb     .node-name { color: var(--rtdb); }
+.node.fn       .node-name { color: var(--fn); }
+.node.external .node-name { color: var(--external); }
+.node.storage  .node-name { color: var(--storage); }
+
+.node.client   .node-badge { background: rgba(255,229,102,.12); color: var(--client); }
+.node.ext      .node-badge { background: rgba(255,107,107,.12); color: var(--ext); }
+.node.firebase .node-badge { background: rgba(255,140,66,.12);  color: var(--firebase); }
+.node.rtdb     .node-badge { background: rgba(0,217,163,.12);   color: var(--rtdb); }
+.node.fn       .node-badge { background: rgba(167,139,250,.12); color: var(--fn); }
+.node.external .node-badge { background: rgba(96,192,240,.12);  color: var(--external); }
+.node.storage  .node-badge { background: rgba(244,114,182,.12); color: var(--storage); }
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  position: fixed;
+  top: 0; right: -440px;
+  width: 420px;
+  height: 100vh;
+  background: #0E0E0E;
+  border-left: 1px solid var(--border);
+  z-index: 100;
+  transition: right .35s cubic-bezier(.4,0,.2,1);
+  overflow-y: auto;
+  padding: 32px 28px;
+}
+
+.detail-panel.open { right: 0; }
+
+.detail-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.detail-close:hover { border-color: var(--gold); color: var(--gold); }
+
+.detail-icon { font-size: 40px; margin-bottom: 16px; }
+.detail-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.detail-type {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+.detail-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #CCC;
+  margin-bottom: 24px;
+}
+
+.detail-section {
+  margin-bottom: 20px;
+}
+.detail-section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-item {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  align-items: flex-start;
+}
+.detail-item-key {
+  font-family: 'JetBrains Mono', monospace;
+  color: #B0C4FF;
+  min-width: 130px;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.detail-item-val {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.detail-flow {
+  background: rgba(255,255,255,.03);
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 2;
+  color: #AAA;
+  border: 1px solid var(--border);
+}
+.detail-flow .step { color: var(--gold); margin-right: 6px; }
+.detail-flow .arrow { color: var(--muted); }
+
+.connects-to {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.connect-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ── FLOW ANIMATION LINES ── */
+@keyframes flowRight {
+  0%   { stroke-dashoffset: 100; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+.flow-line {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  stroke-dashoffset: 100;
+  animation: flowRight 3s linear infinite;
+}
+
+/* ── OVERLAY ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.overlay.active { opacity: 1; pointer-events: all; }
+
+/* ── SCENARIO TABS ── */
+.scenario-bar {
+  position: relative;
+  z-index: 10;
+  padding: 0 48px;
+  background: var(--dark);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+.scenario-tab {
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all .2s;
+  font-family: 'JetBrains Mono', monospace;
+}
+.scenario-tab:hover { color: var(--text); }
+.scenario-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.scenario-section { display: none; }
+.scenario-section.active { display: block; }
+
+/* ── FLOW DESCRIPTION BANNER ── */
+.flow-banner {
+  background: rgba(255,229,102,.04);
+  border: 1px solid rgba(255,229,102,.12);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  font-size: 12px;
+  color: #CCC;
+  line-height: 1.6;
+  font-family: 'JetBrains Mono', monospace;
+}
+.flow-banner strong { color: var(--gold); }
+
+/* ── PULSE DOT ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(1.5); }
+}
+.pulse {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--rtdb);
+  animation: pulse 2s ease-in-out infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">VIBRRA</div>
+    <div class="logo-sub">Infraestructura Tecnológica — v3.0</div>
+  </div>
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:var(--client)"></div>Clientes / App</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--ext)"></div>Extensión Chrome</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--firebase)"></div>Firestore</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--rtdb)"></div>Realtime DB</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--fn)"></div>Functions</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--external)"></div>Externos</div>
+  </div>
+</header>
+
+<div class="scenario-bar">
+  <div class="scenario-tab active" onclick="showScenario('arq')">🏗 Arquitectura general</div>
+  <div class="scenario-tab" onclick="showScenario('puja')">🎵 Flujo de puja</div>
+  <div class="scenario-tab" onclick="showScenario('sesion')">🔐 Inicio de sesión</div>
+  <div class="scenario-tab" onclick="showScenario('recarga')">💳 Recarga Wompi</div>
+  <div class="scenario-tab" onclick="showScenario('cierre')">🔒 Cierre de sesión</div>
+</div>
+
+<div class="canvas">
+
+  <!-- ══ ARQUITECTURA GENERAL ══ -->
+  <div id="sec-arq" class="scenario-section active">
+
+    <!-- CAPA 1: CLIENTES -->
+    <div class="layer">
+      <div class="layer-label">Capa 1 — Interfaces de usuario</div>
+      <div class="nodes-row">
+        <div class="node client" id="n-app" onclick="showDetail('app')">
+          <span class="node-badge">Flutter</span>
+          <span class="node-icon">📱</span>
+          <div class="node-name">App VIBRRA</div>
+          <div class="node-desc">Clientes · Anfitriones<br>Mobile + Web</div>
+        </div>
+        <div class="node ext" id="n-ext" onclick="showDetail('ext')">
+          <span class="node-badge">Chrome</span>
+          <span class="node-icon">🖥️</span>
+          <div class="node-name">Extensión Chrome</div>
+          <div class="node-desc">Control del jukebox<br>PC del anfitrión</div>
+        </div>
+        <div class="node client" id="n-superadmin" onclick="showDetail('superadmin')">
+          <span class="node-badge">Flutter Web</span>
+          <span class="node-icon">⚙️</span>
+          <div class="node-name">Panel Superadmin</div>
+          <div class="node-desc">VIBRRA internamente<br>Gestión global</div>
+        </div>
+        <div class="node client" id="n-empresarios" onclick="showDetail('empresarios')">
+          <span class="node-badge">Flutter</span>
+          <span class="node-icon">📣</span>
+          <div class="node-name">Módulo Empresarios</div>
+          <div class="node-desc">Campañas · CRM<br>En construcción</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPA 2: FIREBASE CORE -->
+    <div class="layer">
+      <div class="layer-label">Capa 2 — Firebase Backend</div>
+      <div class="nodes-row">
+        <div class="node firebase" id="n-auth" onclick="showDetail('auth')">
+          <span class="node-badge">Auth</span>
+          <span class="node-icon">🔑</span>
+          <div class="node-name">Firebase Auth</div>
+          <div class="node-desc">Email/pass · Custom Token<br>para extensión</div>
+        </div>
+        <div class="node firebase" id="n-firestore" onclick="showDetail('firestore')">
+          <span class="node-badge">Firestore</span>
+          <span class="node-icon">🗄️</span>
+          <div class="node-name">Firestore</div>
+          <div class="node-desc">Economía permanente<br>28 colecciones</div>
+        </div>
+        <div class="node rtdb" id="n-rtdb" onclick="showDetail('rtdb')">
+          <span class="node-badge">RTDB</span>
+          <span class="node-icon">⚡</span>
+          <div class="node-name">Realtime DB</div>
+          <div class="node-desc">Cola · Sesión viva<br>Volátil — ~100ms</div>
+        </div>
+        <div class="node fn" id="n-functions" onclick="showDetail('functions')">
+          <span class="node-badge">Functions</span>
+          <span class="node-icon">⚙️</span>
+          <div class="node-name">Cloud Functions</div>
+          <div class="node-desc">12 funciones<br>Triggers + Jobs</div>
+        </div>
+        <div class="node storage" id="n-storage" onclick="showDetail('storage')">
+          <span class="node-badge">Storage</span>
+          <span class="node-icon">🗂️</span>
+          <div class="node-name">Firebase Storage</div>
+          <div class="node-desc">QR PNG · Fotos<br>Campañas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPA 3: SERVICIOS EXTERNOS -->
+    <div class="layer">
+      <div class="layer-label">Capa 3 — Servicios externos</div>
+      <div class="nodes-row">
+        <div class="node external" id="n-youtube" onclick="showDetail('youtube')">
+          <span class="node-badge">API</span>
+          <span class="node-icon">▶️</span>
+          <div class="node-name">YouTube</div>
+          <div class="node-desc">Reproducción · Búsqueda<br>IFrame API</div>
+        </div>
+        <div class="node external" id="n-wompi" onclick="showDetail('wompi')">
+          <span class="node-badge">Wompi</span>
+          <span class="node-icon">💳</span>
+          <div class="node-name">Wompi / Bancolombia</div>
+          <div class="node-desc">Nequi · PSE · Tarjeta<br>2.49% + $900</div>
+        </div>
+        <div class="node external" id="n-osa" onclick="showDetail('osa')">
+          <span class="node-badge">OSA</span>
+          <span class="node-icon">🎼</span>
+          <div class="node-name">SAYCO / ACINPRO</div>
+          <div class="node-desc">Derechos de autor<br>Ley 23/1982</div>
+        </div>
+        <div class="node external" id="n-dian" onclick="showDetail('dian')">
+          <span class="node-badge">DIAN</span>
+          <span class="node-icon">🧾</span>
+          <div class="node-name">DIAN / Facturación</div>
+          <div class="node-desc">Factura electrónica<br>IVA · Retención</div>
+        </div>
+        <div class="node external" id="n-gmaps" onclick="showDetail('gmaps')">
+          <span class="node-badge">Google</span>
+          <span class="node-icon">🗺️</span>
+          <div class="node-name">Google Maps</div>
+          <div class="node-desc">Mapa de establecimientos<br>Flutter plugin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN DE STATS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:8px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">Latencia tiempo real</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--rtdb);">~100ms</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">RTDB → todos los clientes</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">Progreso canción</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--gold);">0 ops</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">Calculado localmente cada 500ms</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">Colecciones Firestore</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--firebase);">28</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">Core + Stats + CRM</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">Costo a escala (200 est)</div>
+        <div style="font-family:'Playfair Display',serif;font-size:28px;color:var(--fn);">~$2.35</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">USD/mes total Firebase</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FLUJO DE PUJA ══ -->
+  <div id="sec-puja" class="scenario-section">
+    <div class="flow-banner">
+      <strong>Flujo de puja</strong> — Un cliente quiere que su canción suene primero.<br>
+      La puja pasa por RTDB (para velocidad y atomicidad), y el dinero se escribe en Firestore de forma <strong>inmediata e independiente</strong>.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;">
+
+      <div style="display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr;gap:0;align-items:center;">
+
+        <div class="node client" style="cursor:default">
+          <span class="node-icon">📱</span>
+          <div class="node-name">App Cliente</div>
+          <div class="node-desc">Toca "Pujar"<br>Ingresa monto</div>
+        </div>
+        <div style="text-align:center;color:var(--muted);font-size:20px;">→</div>
+        <div class="node rtdb" style="cursor:default">
+          <span class="node-icon">⚡</span>
+          <div class="node-name">RTDB Transaction</div>
+          <div class="node-desc">runTransaction()<br>Atómico — ~80ms</div>
+        </div>
+        <div style="text-align:center;color:var(--muted);font-size:20px;">→</div>
+        <div class="node firebase" style="cursor:default">
+          <span class="node-icon">🗄️</span>
+          <div class="node-name">Firestore batch</div>
+          <div class="node-desc">Pujas/{id}<br>Movimientos/{id}<br>increment saldo</div>
+        </div>
+        <div style="text-align:center;color:var(--muted);font-size:20px;">→</div>
+        <div class="node ext" style="cursor:default">
+          <span class="node-icon">🖥️</span>
+          <div class="node-name">Extensión Chrome</div>
+          <div class="node-desc">onSnapshot RTDB<br>Reordena cola</div>
+        </div>
+        <div style="text-align:center;color:var(--muted);font-size:20px;">→</div>
+        <div class="node client" style="cursor:default">
+          <span class="node-icon">📱</span>
+          <div class="node-name">Todos los clientes</div>
+          <div class="node-desc">onSnapshot RTDB<br>UI actualizada</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:16px;">Línea de tiempo</div>
+        <div class="detail-flow">
+          <div><span class="step">T+0ms</span>   Cliente toca "Pujar $3.000"</div>
+          <div><span class="step">T+20ms</span>  <span class="arrow">→</span> runTransaction() en RTDB cola/{itemId}</div>
+          <div><span class="step">T+80ms</span>  <span class="arrow">→</span> Si ganó: saldo cliente decrementado localmente</div>
+          <div><span class="step">T+80ms</span>  <span class="arrow">→</span> Firestore batch: Pujas/{id} + Movimientos/{id} + increment retiro_pendiente</div>
+          <div><span class="step">T+100ms</span> <span class="arrow">→</span> RTDB notifica a Extensión Chrome (WebSocket)</div>
+          <div><span class="step">T+120ms</span> <span class="arrow">→</span> Extensión reordena cola en memoria</div>
+          <div><span class="step">T+130ms</span> <span class="arrow">→</span> RTDB actualizado → todos los clientes ven el nuevo orden</div>
+          <div><span class="step">T+130ms</span> <span class="arrow">→</span> Si posición == 0: push "¡Tu canción es la siguiente!"</div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:rgba(0,217,163,.06);border-radius:8px;border:1px solid rgba(0,217,163,.2);font-size:12px;color:#00D9A3;font-family:'JetBrains Mono',monospace;">
+          <span class="pulse"></span> El dinero está en Firestore desde T+80ms. Si el anfitrión apaga el PC en T+81ms, el dinero ya existe.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INICIO DE SESIÓN (Extensión) ══ -->
+  <div id="sec-sesion" class="scenario-section">
+    <div class="flow-banner">
+      <strong>Login QR de la extensión Chrome</strong> — Similar a WhatsApp Web. El anfitrión usa la app para autenticar la extensión en el PC del bar, sin escribir credenciales.
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;">
+      <div class="node client" style="cursor:default">
+        <span class="node-icon">🖥️</span>
+        <div class="node-name">Extensión Chrome</div>
+        <div class="node-desc">Genera QR temporal<br>Válido 2 minutos</div>
+      </div>
+      <div class="node firebase" style="cursor:default">
+        <span class="node-icon">⚙️</span>
+        <div class="node-name">Function generateExtensionToken</div>
+        <div class="node-desc">Crea customToken<br>Escribe en RTDB sesiones_qr/{token}</div>
+      </div>
+      <div class="node client" style="cursor:default">
+        <span class="node-icon">📱</span>
+        <div class="node-name">App Flutter (móvil)</div>
+        <div class="node-desc">Escanea QR<br>Llama Function</div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:16px;">Secuencia completa</div>
+      <div class="detail-flow">
+        <div><span class="step">1.</span> Anfitrión abre extensión → genera token aleatorio → muestra QR</div>
+        <div><span class="step">2.</span> Extensión escucha RTDB: <span style="color:#B0C4FF">sesiones_qr/{token}</span></div>
+        <div><span class="step">3.</span> Anfitrión escanea QR con la app Flutter en su celular</div>
+        <div><span class="step">4.</span> App llama <span style="color:#A78BFA">generateExtensionToken(uid, establecimientos)</span></div>
+        <div><span class="step">5.</span> Function crea customToken con Firebase Admin SDK</div>
+        <div><span class="step">6.</span> Function escribe en RTDB: <span style="color:#B0C4FF">{ customToken, uid, establecimientos, expira: now+120s, usado: false }</span></div>
+        <div><span class="step">7.</span> Extensión detecta el cambio → <span style="color:#FFE566">signInWithCustomToken(token)</span></div>
+        <div><span class="step">8.</span> Extensión guarda en <span style="color:#FF6B6B">chrome.storage.local</span>: refreshToken + establecimientos</div>
+        <div><span class="step">9.</span> Si tiene múltiples establecimientos → selector → lista para operar</div>
+      </div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="padding:12px;background:rgba(255,107,107,.06);border-radius:8px;border:1px solid rgba(255,107,107,.15);font-size:11px;color:#FF6B6B;font-family:'JetBrains Mono',monospace;">
+          El token QR expira en 2 minutos y se invalida tras el primer uso. No hay contraseñas viajando por la red.
+        </div>
+        <div style="padding:12px;background:rgba(255,229,102,.06);border-radius:8px;border:1px solid rgba(255,229,102,.15);font-size:11px;color:var(--gold);font-family:'JetBrains Mono',monospace;">
+          El refreshToken en chrome.storage.local mantiene la sesión activa 30 días sin volver a escanear.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RECARGA WOMPI ══ -->
+  <div id="sec-recarga" class="scenario-section">
+    <div class="flow-banner">
+      <strong>Flujo de recarga de saldo</strong> — El cliente recarga desde la app con Nequi, PSE o tarjeta. Wompi procesa el pago y notifica a Firebase vía webhook.
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:center;margin-bottom:24px;">
+      <div class="node client" style="cursor:default">
+        <span class="node-icon">📱</span>
+        <div class="node-name">App Cliente</div>
+        <div class="node-desc">Selecciona monto<br>Elige método</div>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:20px;">→</div>
+      <div class="node external" style="cursor:default">
+        <span class="node-icon">💳</span>
+        <div class="node-name">Wompi API</div>
+        <div class="node-desc">Checkout URL<br>Nequi deeplink</div>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:20px;">→</div>
+      <div class="node fn" style="cursor:default">
+        <span class="node-icon">⚙️</span>
+        <div class="node-name">wompiWebhook</div>
+        <div class="node-desc">Valida HMAC<br>Acredita saldo</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:16px;">Secuencia + cálculo económico</div>
+      <div class="detail-flow">
+        <div><span class="step">1.</span> Cliente selecciona recargar $20.000 COP</div>
+        <div><span class="step">2.</span> App crea transacción vía Wompi API → recibe checkout URL</div>
+        <div><span class="step">3.</span> Cliente completa pago en Nequi / PSE / tarjeta</div>
+        <div><span class="step">4.</span> Wompi envía POST webhook a Firebase Function <span style="color:#A78BFA">wompiWebhook</span></div>
+        <div><span class="step">5.</span> Function valida firma HMAC (seguridad)</div>
+        <div><span class="step">6.</span> Si estado == APPROVED:</div>
+        <div style="padding-left:20px;"><span class="step">→</span> Descuenta comisión Wompi: $20.000 - ($20.000 × 2.49% + $900) = <span style="color:#00D9A3">$18.602 acreditados</span></div>
+        <div style="padding-left:20px;"><span class="step">→</span> Si hay bono activo (ej: 15% primer mes): $18.602 × 1.15 = <span style="color:var(--gold)">$21.392 saldo</span></div>
+        <div><span class="step">7.</span> Escribe Firestore: Transacciones/{id} + Clientes/{uid}.saldo += monto</div>
+        <div><span class="step">8.</span> App recibe actualización vía onSnapshot → UI actualizada en tiempo real</div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:rgba(96,192,240,.06);border-radius:8px;border:1px solid rgba(96,192,240,.2);font-size:11px;color:#60C0F0;font-family:'JetBrains Mono',monospace;">
+        Wompi cubre: Nequi, PSE, Botón Bancolombia, Visa, Mastercard. Una sola integración. Sandbox disponible para pruebas sin dinero real.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CIERRE DE SESIÓN ══ -->
+  <div id="sec-cierre" class="scenario-section">
+    <div class="flow-banner">
+      <strong>Cierre de sesión</strong> — Dos escenarios: el anfitrión cierra manualmente, o nunca cierra y el detector de inactividad actúa tras 3h sin cambio de canción.
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+      <div style="background:var(--card);border:1px solid rgba(0,217,163,.3);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--rtdb);margin-bottom:14px;letter-spacing:1px;">✓ CIERRE MANUAL</div>
+        <div class="detail-flow" style="font-size:11px;">
+          <div><span class="step">1.</span> Anfitrión presiona "Finalizar sesión" en extensión</div>
+          <div><span class="step">2.</span> Extensión llama <span style="color:#A78BFA">cerrarSesion(estId)</span></div>
+          <div><span class="step">3.</span> Function lee datos acumulados en RTDB</div>
+          <div><span class="step">4.</span> Batch Firestore:</div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">Sesiones/{id}</span> — resumen de la noche</div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">Stats_Establecimientos/{id}</span></div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">Stats_Canciones/{vid}</span></div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">Stats_Horarios/{id}</span></div>
+          <div><span class="step">5.</span> <span style="color:#FF6B6B">remove(sesiones/{estId})</span> — RTDB limpio</div>
+          <div><span class="step">6.</span> sesion_activa = false en Firestore</div>
+          <div><span class="step">7.</span> Clientes ven "Sesión finalizada"</div>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid rgba(255,229,102,.2);border-radius:12px;padding:20px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);margin-bottom:14px;letter-spacing:1px;">⚠ INACTIVIDAD (PC apagado)</div>
+        <div class="detail-flow" style="font-size:11px;">
+          <div><span class="step">1.</span> Anfitrión apaga el PC — sin cerrar sesión</div>
+          <div><span class="step">2.</span> El dinero ya está en Firestore (por puja)</div>
+          <div><span class="step">3.</span> <span style="color:#A78BFA">detectarSesionesInactivas</span> corre cada hora</div>
+          <div><span class="step">4.</span> Verifica <span style="color:#B0C4FF">ultima_actividad</span> de cada sesión</div>
+          <div><span class="step">5.</span> Si sin cambio de canción por > 3h:</div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">→</span> toma stats del RTDB</div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">→</span> escribe Sesiones/{id} + Stats_*</div>
+          <div style="padding-left:16px;"><span style="color:#B0C4FF">→</span> cierre_tipo = "inactividad"</div>
+          <div style="padding-left:16px;"><span style="color:#FF6B6B">→</span> remove(sesiones/{estId})</div>
+          <div><span class="step">6.</span> sesion_activa = false automáticamente</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:rgba(255,229,102,.05);border-radius:6px;border:1px solid rgba(255,229,102,.1);font-size:10px;color:var(--gold);font-family:'JetBrains Mono',monospace;">
+          ultima_actividad se actualiza con cada cambio de canción — ~1 write RTDB cada 5-6 min. No hay heartbeat cada 30s.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /canvas -->
+
+<!-- ── OVERLAY ── -->
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+
+<!-- ── DETAIL PANEL ── -->
+<div class="detail-panel" id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">✕</button>
+  <div id="detailContent"></div>
+</div>
+
+<script>
+// ── DATOS DE DETALLE ──────────────────────────────────────────────────
+const details = {
+  app: {
+    icon: '📱', name: 'App VIBRRA', type: 'Flutter · iOS · Android · Web',
+    desc: 'Aplicación principal de VIBRRA. Corre en dispositivos móviles y en navegador. Sirve a todos los tipos de usuario con guards de navegación según el rol.',
+    sections: [
+      { title: 'Tecnología', items: [
+        ['Framework', 'Flutter (Dart)'],
+        ['Estado', 'Bloc + Clean Architecture'],
+        ['Auth', 'Firebase Auth (email/pass)'],
+        ['DB', 'Firestore + Realtime DB'],
+        ['Mapas', 'Google Maps Flutter plugin'],
+        ['Pagos', 'Wompi SDK + WebView'],
+      ]},
+      { title: 'Módulos', items: [
+        ['Cliente', 'Sesión QR, cola, pujas, saldo'],
+        ['Anfitrión', 'Login QR extensión, stats, retiros'],
+        ['Superadmin', 'Gestión global, campañas'],
+        ['Empresarios', 'Campañas publicitarias (WIP)'],
+      ]},
+    ],
+    connects: ['Firebase Auth', 'Firestore', 'Realtime DB', 'Wompi', 'Google Maps'],
+  },
+  ext: {
+    icon: '🖥️', name: 'Extensión Chrome', type: 'Chrome Extension · JavaScript',
+    desc: 'El corazón del jukebox. Corre en el PC del bar, controla YouTube y escucha el RTDB para saber qué reproducir. Comunica ambos mundos: las pujas de los clientes con el reproductor físico.',
+    sections: [
+      { title: 'Tecnología', items: [
+        ['Plataforma', 'Chrome Extension Manifest V3'],
+        ['Auth', 'Firebase Custom Token (QR)'],
+        ['Storage', 'chrome.storage.local'],
+        ['YouTube', 'IFrame Player API'],
+        ['RTDB', 'Firebase Realtime SDK (WebSocket)'],
+      ]},
+      { title: 'Responsabilidades', items: [
+        ['Reproducción', 'Controla YouTube IFrame API'],
+        ['Cola', 'Escucha RTDB cola en tiempo real'],
+        ['QR flotante', 'div fixed sobre YouTube — legal'],
+        ['Heartbeat', '1 write RTDB por cambio de canción'],
+        ['Cierre', 'Llama cerrarSesion() o detecta inactividad'],
+      ]},
+    ],
+    connects: ['Realtime DB', 'Firebase Auth', 'YouTube', 'Cloud Functions'],
+  },
+  firestore: {
+    icon: '🗄️', name: 'Cloud Firestore', type: 'Firebase · NoSQL · Persistente',
+    desc: 'Base de datos principal para todo lo permanente. Datos económicos, perfiles, estadísticas, documentación legal. Todo lo que no puede perderse vive aquí.',
+    sections: [
+      { title: 'Colecciones core (economía)', items: [
+        ['Anfitriones/{uid}', 'Perfil + docs legales + suscripción'],
+        ['Establecimientos/{id}', '34 campos — identidad, precios, economía, docs'],
+        ['Pujas/{id}', 'Cada puja ganada — escritura inmediata'],
+        ['Sesiones/{id}', 'Resumen al cerrar sesión'],
+        ['Transacciones/{id}', 'Recargas Wompi'],
+        ['Bonos/{id}', 'Trazabilidad DIAN — Art. 107 E.T.'],
+      ]},
+      { title: 'Colecciones stats + CRM', items: [
+        ['Stats_Canciones/{vid}', 'Ranking global de canciones'],
+        ['Stats_Establecimientos/{id}', 'Rendimiento del local'],
+        ['Stats_Plataforma/global', 'Métricas de toda la plataforma'],
+        ['Perfiles/{uid}', 'Comportamiento inferido (CRM)'],
+        ['Segmentos/{nombre}', 'Calculados nightly — 10 segmentos'],
+        ['Campanas/{id}', 'Campañas publicitarias de empresarios'],
+      ]},
+    ],
+    connects: ['App VIBRRA', 'Cloud Functions', 'Panel Superadmin'],
+  },
+  rtdb: {
+    icon: '⚡', name: 'Firebase Realtime DB', type: 'RTDB · WebSocket · Volátil',
+    desc: 'El bus de tiempo real de VIBRRA. Latencia ~100ms. Todo lo que vive aquí durante la sesión se destruye al cerrarla. Nunca se almacena dinero aquí.',
+    sections: [
+      { title: 'Estructura en sesión', items: [
+        ['sesiones/{estId}/estado/', 'activa, cancion_actual, ultima_actividad'],
+        ['sesiones/{estId}/cola/', 'Items ordenados por puja_mayor'],
+        ['sesiones/{estId}/presencia/', 'Usuarios conectados (onDisconnect)'],
+        ['sesiones/{estId}/reacciones/', 'Emojis a canciones — efímeros'],
+        ['sesiones/{estId}/leaderboard/', 'DJ noche, canción más pujada'],
+        ['sesiones/{estId}/batalla/', 'Votación entre 2 canciones'],
+        ['sesiones_qr/{token}/', 'Auth extensión — expira 2 min'],
+      ]},
+      { title: 'Reglas clave', items: [
+        ['runTransaction()', 'Pujas atómicas — nadie se roba la posición'],
+        ['onDisconnect()', 'Limpieza automática de presencia al desconectar'],
+        ['ultima_actividad', '1 write por cambio de canción (~40/noche)'],
+        ['remove()', 'Todo el nodo se destruye al cerrar sesión'],
+      ]},
+    ],
+    connects: ['App VIBRRA', 'Extensión Chrome', 'Cloud Functions'],
+  },
+  functions: {
+    icon: '⚙️', name: 'Cloud Functions', type: 'Node.js · Firebase Functions v2',
+    desc: '12 funciones que orquestan toda la lógica de negocio: triggers de Firestore, jobs programados, webhooks externos y la lógica de sesión.',
+    sections: [
+      { title: 'Functions de sesión', items: [
+        ['generateExtensionToken', 'onCall — QR login extensión'],
+        ['cerrarSesion', 'onCall — batch stats a Firestore'],
+        ['detectarSesionesInactivas', 'onSchedule cada hora — 3h sin canción'],
+      ]},
+      { title: 'Functions económicas', items: [
+        ['wompiWebhook', 'onRequest — valida HMAC, acredita saldo'],
+        ['verificarDocumentosVencimiento', 'onSchedule 9am — alerta OSA/docs'],
+        ['facturarCampanas', 'onSchedule 1am — descuenta presupuesto'],
+      ]},
+      { title: 'Functions de datos', items: [
+        ['resetBeneficiosMensuales', 'onSchedule día 1 — 3 canciones + 2 conexiones'],
+        ['actualizarPerfil', 'onDocumentCreated Eventos/stream'],
+        ['recalcularSegmentos', 'onSchedule 3am — 10 segmentos CRM'],
+        ['deteccionChurn', 'onSchedule 10am — 14 y 30 días inactivo'],
+        ['procesarEncuestas', 'onSchedule medianoche'],
+        ['limpiarEventosAntiguos', 'onSchedule día 1 — 90 días TTL'],
+      ]},
+    ],
+    connects: ['Firestore', 'Realtime DB', 'Wompi', 'App VIBRRA'],
+  },
+  auth: {
+    icon: '🔑', name: 'Firebase Auth', type: 'Firebase Authentication',
+    desc: 'Gestiona la identidad de todos los usuarios. Los clientes se autentican con email/contraseña. La extensión Chrome usa Custom Tokens generados por Functions.',
+    sections: [
+      { title: 'Métodos de autenticación', items: [
+        ['Email/Password', 'Clientes, Anfitriones, Superadmin'],
+        ['Custom Token', 'Extensión Chrome — generado vía QR'],
+        ['Anonymous', 'Anónimos — device_id tracking en Firestore'],
+      ]},
+      { title: 'Seguridad', items: [
+        ['Firestore Rules', 'Cada colección valida rol del usuario'],
+        ['RTDB Rules', 'Solo puede escribir en su propio nodo'],
+        ['Custom Claims', 'rol: superadmin para guards en app'],
+      ]},
+    ],
+    connects: ['App VIBRRA', 'Extensión Chrome', 'Cloud Functions', 'Firestore'],
+  },
+  storage: {
+    icon: '🗂️', name: 'Firebase Storage', type: 'Cloud Storage · Firebase',
+    desc: 'Almacenamiento de archivos binarios: imágenes QR de establecimientos, fotos de portada, creatividades de campañas publicitarias.',
+    sections: [
+      { title: 'Contenido almacenado', items: [
+        ['QR PNG', 'vibrra.live/neg/{id} — para imprimir en el bar'],
+        ['foto_portada_url', 'Imagen del establecimiento en el mapa'],
+        ['Campañas', 'Banners y videos de empresarios'],
+        ['Logo anfitrión', 'Visible en el QR flotante de YouTube'],
+      ]},
+    ],
+    connects: ['App VIBRRA', 'Extensión Chrome', 'Firestore'],
+  },
+  youtube: {
+    icon: '▶️', name: 'YouTube IFrame API', type: 'Google · JavaScript API',
+    desc: 'La fuente de música de VIBRRA. La extensión Chrome inyecta el IFrame Player sobre youtube.com y lo controla programáticamente. El QR flotante es un div con position:fixed — legal, solo modifica el DOM local.',
+    sections: [
+      { title: 'Uso en VIBRRA', items: [
+        ['Búsqueda', 'YouTube Data API v3 — buscar canciones'],
+        ['Reproducción', 'IFrame Player API — loadVideoById()'],
+        ['QR flotante', 'div inyectado sobre youtube.com'],
+        ['Evento ENDED', 'Dispara el cambio de canción automático'],
+        ['duracion_ms', 'Se obtiene de la API al cargar el video'],
+      ]},
+      { title: 'Consideraciones legales', items: [
+        ['IFrame API', 'Uso comercial requiere licencia YouTube Premium'],
+        ['OSA', 'SAYCO/ACINPRO cubre la música en el establecimiento'],
+        ['Contrato', 'Anfitrión declara ser responsable de las licencias'],
+      ]},
+    ],
+    connects: ['Extensión Chrome'],
+  },
+  wompi: {
+    icon: '💳', name: 'Wompi / Bancolombia', type: 'Pasarela de pagos · Colombia',
+    desc: 'Pasarela de pagos de Bancolombia. Una sola integración cubre Nequi, PSE, Botón Bancolombia y tarjetas. Genera confianza por el respaldo de Bancolombia.',
+    sections: [
+      { title: 'Métodos disponibles', items: [
+        ['Nequi', 'Deeplink directo — más popular en Colombia'],
+        ['PSE', 'Débito bancario — todos los bancos'],
+        ['Botón Bancolombia', 'Débito Bancolombia'],
+        ['Tarjeta', 'Visa, Mastercard, crédito/débito'],
+      ]},
+      { title: 'Costos', items: [
+        ['Comisión', '2.49% + $900 COP por transacción'],
+        ['Quién paga', 'Se descuenta del saldo a acreditar'],
+        ['Sandbox', 'Disponible para pruebas sin dinero real'],
+        ['Webhook', 'HTTPS POST a Cloud Function con firma HMAC'],
+      ]},
+    ],
+    connects: ['App VIBRRA', 'Cloud Functions (wompiWebhook)', 'Firestore'],
+  },
+  osa: {
+    icon: '🎼', name: 'OSA — SAYCO/ACINPRO', type: 'Derechos de autor · Colombia',
+    desc: 'Organización Sayco Acinpro — única entidad legal para licenciar el 99% de la música en Colombia. El certificado OSA es el único documento que VIBRRA verifica activamente: sin él, no se puede abrir sesión.',
+    sections: [
+      { title: 'Relación con VIBRRA', items: [
+        ['Responsable', 'El anfitrión — no VIBRRA'],
+        ['Bloqueo', 'doc_sayco_acinpro_vigente == false → sin sesión'],
+        ['Alerta', '30, 15 y 5 días antes del vencimiento (push)'],
+        ['Base legal', 'Ley 23/1982 Art. 158-159'],
+        ['Renovación', 'Anual — pago a OSA según tarifa del establecimiento'],
+      ]},
+    ],
+    connects: ['Establecimientos/{id}', 'Cloud Functions (verificarDocumentosVencimiento)'],
+  },
+  dian: {
+    icon: '🧾', name: 'DIAN / Facturación', type: 'Obligaciones tributarias · Colombia',
+    desc: 'VIBRRA opera como intermediario y agente retenedor. Emite factura electrónica por cada comisión cobrada al anfitrión y retiene en la fuente según el tipo de persona.',
+    sections: [
+      { title: 'Obligaciones de VIBRRA', items: [
+        ['IVA 19%', 'Sobre el 30% de comisión (intermediación)'],
+        ['Retención fuente', '3.5% - 6% según tipo de anfitrión'],
+        ['ICA', 'En municipio de registro de VIBRRA'],
+        ['Factura electrónica', 'Por cada comisión cobrada'],
+        ['Suscripción $15K', 'Excluida de IVA — SaaS (DIAN 190/2024)'],
+      ]},
+    ],
+    connects: ['Anfitriones/Movimientos', 'Transacciones', 'Cloud Functions'],
+  },
+  gmaps: {
+    icon: '🗺️', name: 'Google Maps', type: 'Google Maps Platform · Flutter',
+    desc: 'Permite que los clientes descubran establecimientos VIBRRA activos en su ciudad antes de salir. Visualización de bares con sesión activa, precio de conexión y géneros musicales.',
+    sections: [
+      { title: 'Uso en VIBRRA', items: [
+        ['Plugin', 'google_maps_flutter'],
+        ['Datos', 'Firestore: lat, lng, sesion_activa, visible_en_mapa'],
+        ['Filtros', 'Ciudad, barrio, género, precio, activo ahora'],
+        ['Perfil', 'Tap en marcador → Establecimientos/{id}/Perfil_Publico'],
+      ]},
+    ],
+    connects: ['App VIBRRA', 'Firestore (Establecimientos)'],
+  },
+  superadmin: {
+    icon: '⚙️', name: 'Panel Superadmin', type: 'Flutter Web · Interno VIBRRA',
+    desc: 'Panel interno de VIBRRA para gestionar toda la plataforma. Acceso restringido por guard de rol superadmin en Firestore.',
+    sections: [
+      { title: 'Funcionalidades', items: [
+        ['Establecimientos', 'Activar/desactivar, ver estado docs'],
+        ['Retiros', 'Aprobar retiros pendientes de anfitriones'],
+        ['Métricas', 'Stats globales, ingresos, retención'],
+        ['Campañas', 'Aprobar/rechazar campañas de empresarios'],
+        ['Impuestos', 'Configurar tarifas ICA por municipio'],
+        ['Usuarios', 'Gestión de cuentas y roles'],
+      ]},
+    ],
+    connects: ['Firestore', 'Cloud Functions'],
+  },
+  empresarios: {
+    icon: '📣', name: 'Módulo Empresarios', type: 'Flutter · En construcción',
+    desc: 'Módulo para empresas que quieren poner publicidad en los bares VIBRRA. Compran contra segmentos de CRM sin ver datos individuales.',
+    sections: [
+      { title: 'Funcionalidades planeadas', items: [
+        ['Registro', 'Razón social, NIT, saldo'],
+        ['Campañas', 'Banner, video corto, canción patrocinada'],
+        ['Segmentos', 'Comprar contra: reggaetoneros, vip, etc.'],
+        ['Métricas', 'Impresiones, clicks, CTR'],
+        ['Facturación', 'Descuento diario automático del presupuesto'],
+      ]},
+    ],
+    connects: ['Firestore (Campanas)', 'Cloud Functions', 'Firebase Storage'],
+  },
+};
+
+function showDetail(id) {
+  const d = details[id];
+  if (!d) return;
+
+  let html = `
+    <div class="detail-icon">${d.icon}</div>
+    <div class="detail-name">${d.name}</div>
+    <div class="detail-type">${d.type}</div>
+    <div class="detail-desc">${d.desc}</div>
+  `;
+
+  if (d.sections) {
+    d.sections.forEach(sec => {
+      html += `<div class="detail-section">
+        <div class="detail-section-title">${sec.title}</div>`;
+      sec.items.forEach(([k, v]) => {
+        html += `<div class="detail-item">
+          <span class="detail-item-key">${k}</span>
+          <span class="detail-item-val">${v}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  }
+
+  if (d.connects) {
+    html += `<div class="detail-section">
+      <div class="detail-section-title">Se conecta con</div>
+      <div class="connects-to">
+        ${d.connects.map(c => `<span class="connect-chip">${c}</span>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('active');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+}
+
+function showScenario(name) {
+  document.querySelectorAll('.scenario-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

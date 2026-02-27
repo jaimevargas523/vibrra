@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBRRA — Roadmap de Lanzamiento</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --gold:    #FFE566;
+  --gold-m:  #D4A017;
+  --gold-dk: #8B6010;
+  --ink:     #06060A;
+  --deep:    #0C0C12;
+  --card:    #12121A;
+  --card2:   #16161F;
+  --border:  #1E1E2A;
+  --text:    #E2E2EE;
+  --muted:   #55556A;
+  --faint:   #1A1A26;
+
+  /* fases */
+  --f0: #60C0F0;   /* setup */
+  --f1: #00D9A3;   /* MVP */
+  --f2: #FFE566;   /* monetización */
+  --f3: #FF8C42;   /* piloto */
+  --f4: #A78BFA;   /* escala */
+  --f5: #F472B6;   /* crecimiento */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ── noise texture overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: .6;
+}
+
+/* ── HEADER ── */
+.header {
+  padding: 56px 64px 48px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: 'ROADMAP';
+  position: absolute;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Playfair Display', serif;
+  font-size: 120px;
+  font-weight: 900;
+  color: rgba(255,229,102,.03);
+  letter-spacing: -4px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.header-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.header-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.header-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.meta-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.meta-val {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* ── FASE LEGEND ── */
+.fase-legend {
+  padding: 20px 64px;
+  background: var(--deep);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.fase-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.fase-chip.active, .fase-chip:hover {
+  border-color: currentColor;
+  background: rgba(255,255,255,.03);
+}
+
+.fase-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 200px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 32px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-item {
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: all .2s;
+  border-left: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-item:hover {
+  background: var(--faint);
+}
+
+.sidebar-item.active {
+  background: var(--faint);
+}
+
+.sidebar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+
+.sidebar-item.active .sidebar-dot,
+.sidebar-item:hover .sidebar-dot {
+  transform: scale(1.3);
+}
+
+.sidebar-info {}
+.sidebar-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 1px;
+}
+.sidebar-name {
+  font-size: 13px;
+  font-weight: 500;
+}
+.sidebar-dur {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.sidebar-progress {
+  margin: 0 28px 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.sp-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.sp-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.sp-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--gold);
+  width: 15%;
+  transition: width 1s ease;
+}
+.sp-val {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* ── CONTENT AREA ── */
+.content {
+  padding: 0;
+}
+
+/* ── FASE SECTION ── */
+.fase-section {
+  display: none;
+  padding: 40px 56px;
+  animation: fadeIn .3s ease;
+}
+
+.fase-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── FASE HEADER ── */
+.fase-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fase-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 80px;
+  font-weight: 900;
+  line-height: 1;
+  opacity: .12;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.fase-title-block {}
+.fase-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.fase-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.fase-subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.fase-meta-block {
+  flex-shrink: 0;
+  text-align: right;
+}
+.fase-duracion {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.fase-duracion-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.fase-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 1px solid;
+  display: inline-block;
+}
+
+/* ── TASK GRID ── */
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+/* ── TASK CARD ── */
+.task {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+}
+
+.task:hover {
+  border-color: #2A2A38;
+  background: var(--card2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+
+.task.done {
+  opacity: .65;
+}
+.task.done .task-name::after {
+  content: ' ✓';
+  color: var(--gold);
+}
+
+.task.blocker {
+  border-left: 3px solid #FF4A4A;
+}
+
+.task-area {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  opacity: .6;
+}
+
+.task-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.task-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.task-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.task-effort {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.04);
+  color: var(--muted);
+}
+
+.task-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid;
+  opacity: .7;
+}
+
+/* ── MILESTONE ── */
+.milestone {
+  background: linear-gradient(135deg, rgba(255,229,102,.06), rgba(255,229,102,.02));
+  border: 1px solid rgba(255,229,102,.2);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.milestone-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.milestone-body {}
+.milestone-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--gold-m);
+  margin-bottom: 3px;
+}
+.milestone-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 3px;
+}
+.milestone-desc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── RISK / DEPENDENCY BOX ── */
+.info-box {
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.info-box.risk {
+  background: rgba(255,74,74,.06);
+  border: 1px solid rgba(255,74,74,.2);
+  color: #FF8080;
+}
+.info-box.dep {
+  background: rgba(167,139,250,.06);
+  border: 1px solid rgba(167,139,250,.2);
+  color: #C4B5FD;
+}
+.info-box.tip {
+  background: rgba(0,217,163,.06);
+  border: 1px solid rgba(0,217,163,.2);
+  color: #6EE7D0;
+}
+.info-box-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+  opacity: .8;
+}
+
+/* ── TIMELINE SUMMARY ── */
+.timeline-bar {
+  padding: 32px 56px;
+  background: var(--deep);
+  border-top: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tl-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.tl-phases {
+  display: flex;
+  gap: 4px;
+  min-width: 600px;
+}
+
+.tl-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.tl-bar {
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: opacity .2s;
+}
+
+.tl-bar:hover { opacity: .85; }
+
+.tl-name {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+
+.tl-months {
+  display: flex;
+  gap: 4px;
+  min-width: 600px;
+  margin-bottom: 8px;
+}
+.tl-month {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  text-align: center;
+  opacity: .5;
+}
+
+/* ── DEPENDENCIES SECTION ── */
+.dep-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.dep-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.dep-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dep-list {
+  list-style: none;
+}
+.dep-list li {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dep-list li::before {
+  content: '→';
+  color: var(--border);
+  font-size: 10px;
+}
+
+/* animación de entrada */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.task { animation: slideIn .3s ease both; }
+.task:nth-child(1) { animation-delay: .05s; }
+.task:nth-child(2) { animation-delay: .1s; }
+.task:nth-child(3) { animation-delay: .15s; }
+.task:nth-child(4) { animation-delay: .2s; }
+.task:nth-child(5) { animation-delay: .25s; }
+.task:nth-child(6) { animation-delay: .3s; }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-eyebrow">Plan de lanzamiento · 2025–2026</div>
+  <div class="header-title">De la arquitectura<br>al <em>primer bar en vivo</em></div>
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="meta-label">Duración total</span>
+      <span class="meta-val">~9 meses</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Fases</span>
+      <span class="meta-val">6 fases</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Meta inicial</span>
+      <span class="meta-val">3 establecimientos piloto</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Estado actual</span>
+      <span class="meta-val">Arquitectura definida ✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE BAR -->
+<div class="timeline-bar">
+  <div class="tl-title">Vista de tiempo — 9 meses</div>
+  <div class="tl-months">
+    <div class="tl-month" style="width:66px">M1</div>
+    <div class="tl-month" style="width:66px">M2</div>
+    <div class="tl-month" style="width:120px">M3–M4</div>
+    <div class="tl-month" style="width:100px">M5–M5.5</div>
+    <div class="tl-month" style="width:140px">M6–M8</div>
+    <div class="tl-month" style="width:120px">M9+</div>
+  </div>
+  <div class="tl-phases">
+    <div class="tl-phase" onclick="showFase(0)">
+      <div class="tl-bar" style="background:rgba(96,192,240,.25);color:#60C0F0;width:66px">F0</div>
+      <div class="tl-name">Setup</div>
+    </div>
+    <div class="tl-phase" onclick="showFase(1)">
+      <div class="tl-bar" style="background:rgba(0,217,163,.2);color:#00D9A3;width:66px">F1</div>
+      <div class="tl-name">Auth</div>
+    </div>
+    <div class="tl-phase" onclick="showFase(2)">
+      <div class="tl-bar" style="background:rgba(255,229,102,.2);color:#FFE566;width:120px">F2 — MVP Core</div>
+      <div class="tl-name">Jukebox + Pujas</div>
+    </div>
+    <div class="tl-phase" onclick="showFase(3)">
+      <div class="tl-bar" style="background:rgba(255,140,66,.2);color:#FF8C42;width:100px">F3 — Pagos</div>
+      <div class="tl-name">Wompi + Saldos</div>
+    </div>
+    <div class="tl-phase" onclick="showFase(4)">
+      <div class="tl-bar" style="background:rgba(167,139,250,.2);color:#A78BFA;width:140px">F4 — Piloto</div>
+      <div class="tl-name">3 bares reales</div>
+    </div>
+    <div class="tl-phase" onclick="showFase(5)">
+      <div class="tl-bar" style="background:rgba(244,114,182,.2);color:#F472B6;width:120px">F5 — Escala</div>
+      <div class="tl-name">Crecimiento</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div style="padding:0 28px 20px;font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);">Fases</div>
+
+    <div class="sidebar-item active" onclick="showFase(0)" id="sid-0">
+      <div class="sidebar-dot" style="background:var(--f0)"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-num">FASE 0</div>
+        <div class="sidebar-name" style="color:var(--f0)">Setup & Fundamentos</div>
+        <div class="sidebar-dur">2–3 semanas</div>
+      </div>
+    </div>
+    <div class="sidebar-item" onclick="showFase(1)" id="sid-1">
+      <div class="sidebar-dot" style="background:var(--f1)"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-num">FASE 1</div>
+        <div class="sidebar-name" style="color:var(--f1)">Autenticación</div>
+        <div class="sidebar-dur">2–3 semanas</div>
+      </div>
+    </div>
+    <div class="sidebar-item" onclick="showFase(2)" id="sid-2">
+      <div class="sidebar-dot" style="background:var(--f2)"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-num">FASE 2</div>
+        <div class="sidebar-name" style="color:var(--f2)">MVP Core — Jukebox</div>
+        <div class="sidebar-dur">6–8 semanas</div>
+      </div>
+    </div>
+    <div class="sidebar-item" onclick="showFase(3)" id="sid-3">
+      <div class="sidebar-dot" style="background:var(--f3)"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-num">FASE 3</div>
+        <div class="sidebar-name" style="color:var(--f3)">Monetización</div>
+        <div class="sidebar-dur">3–4 semanas</div>
+      </div>
+    </div>
+    <div class="sidebar-item" onclick="showFase(4)" id="sid-4">
+      <div class="sidebar-dot" style="background:var(--f4)"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-num">FASE 4</div>
+        <div class="sidebar-name" style="color:var(--f4)">Piloto Real</div>
+        <div class="sidebar-dur">4–6 semanas</div>
+      </div>
+    </div>
+    <div class="sidebar-item" onclick="showFase(5)" id="sid-5">
+      <div class="sidebar-dot" style="background:var(--f5)"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-num">FASE 5</div>
+        <div class="sidebar-name" style="color:var(--f5)">Escala</div>
+        <div class="sidebar-dur">Continuo</div>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:16px 28px"></div>
+
+    <div class="sidebar-progress">
+      <div class="sp-label">Completado</div>
+      <div class="sp-bar"><div class="sp-fill" id="progressFill"></div></div>
+      <div class="sp-val" id="progressVal">Arquitectura — 15%</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══════════════════════════════ FASE 0 ═══ -->
+    <div class="fase-section active" id="fase-0">
+      <div class="fase-header">
+        <div style="display:flex;align-items:flex-start">
+          <div class="fase-num" style="color:var(--f0)">0</div>
+          <div class="fase-title-block">
+            <div class="fase-eyebrow">Punto de partida</div>
+            <div class="fase-title" style="color:var(--f0)">Setup &amp; Fundamentos</div>
+            <div class="fase-subtitle">Configurar el entorno de trabajo, los proyectos Firebase, la estructura de repositorios y los acuerdos legales básicos antes de escribir la primera línea de código productivo.</div>
+          </div>
+        </div>
+        <div class="fase-meta-block">
+          <div class="fase-duracion" style="color:var(--f0)">2–3 sem</div>
+          <div class="fase-duracion-label">duración</div>
+          <div class="fase-status" style="color:var(--f0);border-color:var(--f0)">En curso</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-icon">🏗️</div>
+        <div class="milestone-body">
+          <div class="milestone-label">Milestone F0</div>
+          <div class="milestone-name">Entorno listo para desarrollar</div>
+          <div class="milestone-desc">Repos, Firebase, Firebase Emulators, CI básico. El equipo puede correr el proyecto localmente.</div>
+        </div>
+      </div>
+
+      <div class="task-grid">
+        <div class="task done">
+          <div class="task-area">Arquitectura</div>
+          <div class="task-name">Definir arquitectura completa</div>
+          <div class="task-desc">Firestore schema, RTDB structure, Functions, modelo de negocio, costos, documentación legal. Plasmado en documento maestro.</div>
+          <div class="task-footer">
+            <span class="task-effort">~20h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f0);border-color:var(--f0)">Completo ✓</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Firebase</div>
+          <div class="task-name">Crear proyectos Firebase DEV y PROD</div>
+          <div class="task-desc">Dos proyectos separados: vibrra-dev (emulators locales + Blaze) y vibrra-prod. Configurar .env para cada entorno en Flutter y Functions.</div>
+          <div class="task-footer">
+            <span class="task-effort">~4h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f0);border-color:rgba(96,192,240,.4)">Firebase</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Repositorio</div>
+          <div class="task-name">Estructura de monorepo</div>
+          <div class="task-desc">Organizar: /app (Flutter), /extension (Chrome), /functions (Node.js), /docs. Gitignore, secrets en GitHub Secrets, branch strategy (main/dev/feature).</div>
+          <div class="task-footer">
+            <span class="task-effort">~3h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--muted);border-color:var(--border)">Git</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Flutter</div>
+          <div class="task-name">Scaffold del proyecto Flutter</div>
+          <div class="task-desc">Clean Architecture base: carpetas domain/data/presentation por módulo. Bloc, go_router, firebase_core, AppColors/AppFonts/AppSizes. flavors dev/prod.</div>
+          <div class="task-footer">
+            <span class="task-effort">~6h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Firestore</div>
+          <div class="task-name">Definir Firestore Security Rules v1</div>
+          <div class="task-desc">Reglas base: solo el propio usuario puede leer/escribir su data. Anfitriones solo pueden escribir su establecimiento. Superadmin con custom claim.</div>
+          <div class="task-footer">
+            <span class="task-effort">~4h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--firebase);border-color:rgba(255,140,66,.3)">Firestore</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Legal</div>
+          <div class="task-name">Términos y condiciones + contrato anfitrión</div>
+          <div class="task-desc">Redactar T&C básicos, política de privacidad (Ley 1581/2012) y contrato de servicio para anfitriones que incluya cláusula de responsabilidad OSA.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:#FF8080;border-color:rgba(255,74,74,.3)">Legal</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box risk">
+        <div class="info-box-title">⚠ Dependencia crítica</div>
+        Firebase Blaze (plan de pago) debe estar activo antes de arrancar — Cloud Functions no funcionan en el plan gratuito Spark. El costo a escala es mínimo pero la cuenta de facturación debe estar configurada.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════ FASE 1 ═══ -->
+    <div class="fase-section" id="fase-1">
+      <div class="fase-header">
+        <div style="display:flex;align-items:flex-start">
+          <div class="fase-num" style="color:var(--f1)">1</div>
+          <div class="fase-title-block">
+            <div class="fase-eyebrow">Identidad de usuarios</div>
+            <div class="fase-title" style="color:var(--f1)">Autenticación completa</div>
+            <div class="fase-subtitle">Todos los tipos de usuario pueden registrarse, iniciar sesión y ser reconocidos por el sistema. Incluye el flujo QR de la extensión Chrome, que es el más complejo.</div>
+          </div>
+        </div>
+        <div class="fase-meta-block">
+          <div class="fase-duracion" style="color:var(--f1)">2–3 sem</div>
+          <div class="fase-duracion-label">duración</div>
+          <div class="fase-status" style="color:var(--muted);border-color:var(--border)">Pendiente</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-icon">🔑</div>
+        <div class="milestone-body">
+          <div class="milestone-label">Milestone F1</div>
+          <div class="milestone-name">Todos los usuarios pueden autenticarse</div>
+          <div class="milestone-desc">Cliente entra con email, anfitrión loguea la extensión vía QR, superadmin accede al panel. Sin esto no hay nada más.</div>
+        </div>
+      </div>
+
+      <div class="task-grid">
+        <div class="task">
+          <div class="task-area">App · Cliente</div>
+          <div class="task-name">Auth email/contraseña — Clientes</div>
+          <div class="task-desc">Registro, login, forgot password, email verification. Crear documento en Clientes/{uid} al registrarse con saldo: 0, beneficios iniciales.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span><span class="tag" style="color:var(--f1);border-color:rgba(0,217,163,.3)">Auth</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Anfitrión</div>
+          <div class="task-name">Auth email/contraseña — Anfitriones</div>
+          <div class="task-desc">Registro con validación de datos del negocio. Crear Anfitriones/{uid} + al menos un Establecimientos/{id} en el onboarding inicial.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span><span class="tag" style="color:var(--f1);border-color:rgba(0,217,163,.3)">Auth</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Functions</div>
+          <div class="task-name">generateExtensionToken</div>
+          <div class="task-desc">Function onCall: valida que el uid sea anfitrión activo, crea customToken con Firebase Admin SDK, escribe en RTDB sesiones_qr/{token} con expira: now+120s.</div>
+          <div class="task-footer">
+            <span class="task-effort">~6h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Extensión</div>
+          <div class="task-name">Chrome Extension — Flujo QR Login</div>
+          <div class="task-desc">Manifest V3: generar token aleatorio, mostrar QR, escuchar RTDB sesiones_qr/{token}, signInWithCustomToken, guardar en chrome.storage.local. Selector de establecimiento si hay múltiples.</div>
+          <div class="task-footer">
+            <span class="task-effort">~14h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--ext);border-color:rgba(255,107,107,.3)">Chrome</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Superadmin</div>
+          <div class="task-name">Crear superadmin + guard de rol</div>
+          <div class="task-desc">Script Dart para asignar custom claim rol:"superadmin". Guard en go_router que verifica el claim antes de permitir acceso al panel.</div>
+          <div class="task-footer">
+            <span class="task-effort">~4h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--muted);border-color:var(--border)">Admin</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Onboarding</div>
+          <div class="task-name">Onboarding de anfitrión — datos del establecimiento</div>
+          <div class="task-desc">Formulario multi-step: datos básicos, dirección/lat-lng, precios iniciales, upload foto portada. Registro de documentos legales (declarativo). Verifica OSA antes de activar.</div>
+          <div class="task-footer">
+            <span class="task-effort">~12h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box dep">
+        <div class="info-box-title">📌 Dependencia de F2</div>
+        El flujo QR de la extensión es el prerrequisito más crítico de todo el proyecto. Sin él la extensión no puede conectarse a Firebase y el jukebox no existe. Debe quedar 100% funcional antes de avanzar.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════ FASE 2 ═══ -->
+    <div class="fase-section" id="fase-2">
+      <div class="fase-header">
+        <div style="display:flex;align-items:flex-start">
+          <div class="fase-num" style="color:var(--f2)">2</div>
+          <div class="fase-title-block">
+            <div class="fase-eyebrow">El corazón del producto</div>
+            <div class="fase-title" style="color:var(--f2)">MVP Core — Jukebox</div>
+            <div class="fase-subtitle">La experiencia central: el anfitrión abre sesión, los clientes escanean el QR, buscan canciones, pujan y la extensión las reproduce en orden. Sin pagos reales todavía — solo el flujo.</div>
+          </div>
+        </div>
+        <div class="fase-meta-block">
+          <div class="fase-duracion" style="color:var(--f2)">6–8 sem</div>
+          <div class="fase-duracion-label">duración</div>
+          <div class="fase-status" style="color:var(--muted);border-color:var(--border)">Pendiente</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-icon">🎵</div>
+        <div class="milestone-body">
+          <div class="milestone-label">Milestone F2 — el más importante</div>
+          <div class="milestone-name">Primera canción reproducida por puja real</div>
+          <div class="milestone-desc">Un cliente puja una canción desde su celular y la extensión la reproduce en YouTube en el PC del bar. El producto existe.</div>
+        </div>
+      </div>
+
+      <div style="font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:12px;">Extensión Chrome</div>
+      <div class="task-grid">
+        <div class="task">
+          <div class="task-area">Extensión · YouTube</div>
+          <div class="task-name">Inyectar IFrame Player sobre youtube.com</div>
+          <div class="task-desc">Content Script que inyecta el YouTube IFrame API. Controla loadVideoById(), playVideo(), pauseVideo(). Detecta evento ENDED para cambiar de canción.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--ext);border-color:rgba(255,107,107,.3)">Chrome</span><span class="tag" style="color:var(--external);border-color:rgba(96,192,240,.3)">YouTube</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Extensión · QR</div>
+          <div class="task-name">QR flotante sobre YouTube</div>
+          <div class="task-desc">div con position:fixed que muestra el QR vibrra.live/neg/{id} mientras suena la canción. Configurable: tamaño, posición, opacidad. El anfitrión puede moverlo.</div>
+          <div class="task-footer">
+            <span class="task-effort">~6h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--ext);border-color:rgba(255,107,107,.3)">Chrome</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Extensión · RTDB</div>
+          <div class="task-name">Escuchar cola en RTDB y reproducir</div>
+          <div class="task-desc">onValue() en sesiones/{estId}/cola. Cuando el primer item cambia (ENDED o puja ganada), cargar el siguiente video. Escribir ultima_actividad al cambiar canción.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--rtdb);border-color:rgba(0,217,163,.3)">RTDB</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Extensión · Sesión</div>
+          <div class="task-name">Abrir y cerrar sesión de jukebox</div>
+          <div class="task-desc">Botones en popup de la extensión. Al abrir: crea nodo RTDB sesiones/{estId}, sesion_activa=true en Firestore. Al cerrar: llama cerrarSesion() Function.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--ext);border-color:rgba(255,107,107,.3)">Chrome</span><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin:20px 0 12px;">App Flutter — Cliente</div>
+      <div class="task-grid">
+        <div class="task">
+          <div class="task-area">App · Cliente</div>
+          <div class="task-name">Landing de sesión — escanear QR</div>
+          <div class="task-desc">vibrra.live/neg/{id} carga la sesión del establecimiento. Verifica si hay sesión activa. Si el precio_conexion > 0, solicita pago. Conecta al RTDB de la sesión.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Cliente</div>
+          <div class="task-name">Pantalla de cola en tiempo real</div>
+          <div class="task-desc">StreamBuilder sobre RTDB sesiones/{estId}/cola. Muestra las canciones ordenadas por monto puja. Barra de progreso calculada localmente cada 500ms sin Firebase.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--rtdb);border-color:rgba(0,217,163,.3)">RTDB</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Cliente</div>
+          <div class="task-name">Búsqueda de canciones (YouTube Data API)</div>
+          <div class="task-desc">Searchbar que consulta YouTube Data API v3. Muestra resultados con thumbnail, título, artista, duración. El cliente selecciona y confirma la puja.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--external);border-color:rgba(96,192,240,.3)">YouTube API</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Cliente</div>
+          <div class="task-name">Flujo de puja — runTransaction RTDB</div>
+          <div class="task-desc">runTransaction() en cola/{itemId}. Si ganó: actualiza saldo local, escribe Pujas/{id} + Movimientos/{id} + increment retiro_pendiente en Firestore batch.</div>
+          <div class="task-footer">
+            <span class="task-effort">~12h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--rtdb);border-color:rgba(0,217,163,.3)">RTDB</span><span class="tag" style="color:var(--firebase);border-color:rgba(255,140,66,.3)">Firestore</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin:20px 0 12px;">Functions de sesión</div>
+      <div class="task-grid">
+        <div class="task">
+          <div class="task-area">Functions</div>
+          <div class="task-name">cerrarSesion</div>
+          <div class="task-desc">Lee datos del RTDB, escribe batch: Sesiones/{id} (resumen), Stats_Establecimientos, Stats_Canciones, Stats_Horarios. Limpia RTDB. Actualiza sesion_activa=false.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Functions</div>
+          <div class="task-name">detectarSesionesInactivas</div>
+          <div class="task-desc">onSchedule cada hora. Verifica ultima_actividad. Si > 3h sin cambio de canción → cerrarSesionDesdeRTDB() con cierre_tipo="inactividad".</div>
+          <div class="task-footer">
+            <span class="task-effort">~6h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Consejo de implementación</div>
+        Desarrollar primero la extensión y el flujo RTDB con saldos ficticios (saldo: 99999 para testing). Esto permite probar el jukebox completo antes de integrar Wompi. Desacoplar desarrollo de pagos del desarrollo del core.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════ FASE 3 ═══ -->
+    <div class="fase-section" id="fase-3">
+      <div class="fase-header">
+        <div style="display:flex;align-items:flex-start">
+          <div class="fase-num" style="color:var(--f3)">3</div>
+          <div class="fase-title-block">
+            <div class="fase-eyebrow">Dinero real</div>
+            <div class="fase-title" style="color:var(--f3)">Monetización</div>
+            <div class="fase-subtitle">Integrar Wompi para recargas, activar las suscripciones de anfitriones y construir el panel de retiros. Aquí VIBRRA empieza a generar ingresos reales.</div>
+          </div>
+        </div>
+        <div class="fase-meta-block">
+          <div class="fase-duracion" style="color:var(--f3)">3–4 sem</div>
+          <div class="fase-duracion-label">duración</div>
+          <div class="fase-status" style="color:var(--muted);border-color:var(--border)">Pendiente</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-icon">💳</div>
+        <div class="milestone-body">
+          <div class="milestone-label">Milestone F3</div>
+          <div class="milestone-name">Primera recarga real con Nequi o PSE</div>
+          <div class="milestone-desc">Un cliente recarga saldo en dinero real y lo usa para pujar. El anfitrión ve su retiro_pendiente aumentar. VIBRRA cobra su 30%.</div>
+        </div>
+      </div>
+
+      <div class="task-grid">
+        <div class="task blocker">
+          <div class="task-area">Wompi · Crítico</div>
+          <div class="task-name">Crear cuenta Wompi y obtener API keys</div>
+          <div class="task-desc">Registro en wompi.com con datos de VIBRRA como empresa. Verificación de identidad (puede tardar 3–7 días hábiles). Obtener keys sandbox y producción.</div>
+          <div class="task-footer">
+            <span class="task-effort">~2h + espera</span>
+            <div class="task-tags"><span class="tag" style="color:#FF8080;border-color:rgba(255,74,74,.3)">Blocker</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Functions · Wompi</div>
+          <div class="task-name">wompiWebhook — recibir y validar pagos</div>
+          <div class="task-desc">onRequest HTTPS. Valida firma HMAC con secret key. Solo procesa estado APPROVED. Calcula saldo neto (descuenta 2.49%+$900). Aplica bono si aplica. Escribe Transacciones + increment saldo.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span><span class="tag" style="color:var(--external);border-color:rgba(96,192,240,.3)">Wompi</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Cliente</div>
+          <div class="task-name">Pantalla de recarga de saldo</div>
+          <div class="task-desc">Opciones de monto predefinidas ($5K, $10K, $20K, $50K, personalizado). Muestra bono si aplica. Abre Wompi checkout en WebView. Escucha onSnapshot del saldo para confirmar.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Anfitrión</div>
+          <div class="task-name">Panel de retiros del anfitrión</div>
+          <div class="task-desc">Muestra retiro_pendiente del establecimiento. Botón "Solicitar retiro" activo solo del 1 al 10 de cada mes (máx 1/mes). Crea Retiros/{id} con estado "solicitado".</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Suscripción</div>
+          <div class="task-name">Lógica de suscripción mensual ($15.000)</div>
+          <div class="task-desc">Al registrar establecimiento: suscripcion_estado="trial", suscripcion_inicio=now. Function mensual verifica si trial expiró (30 días) → cobra o suspende. Bloquea sesion_activa si suspendido.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Superadmin</div>
+          <div class="task-name">Panel de retiros — superadmin</div>
+          <div class="task-desc">Lista de retiros solicitados. Botón "Procesar" que actualiza estado a "procesado" y descuenta retiro_pendiente. Por ahora manual — en el futuro automatizado con API bancaria.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--muted);border-color:var(--border)">Admin</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box risk">
+        <div class="info-box-title">⚠ Riesgo — Cuenta Wompi</div>
+        La aprobación de la cuenta Wompi puede demorar más de lo esperado. Iniciar el proceso al comienzo de la Fase 2, no al comienzo de la 3. Si se retrasa, la Fase 2 se puede completar con saldos de prueba y la Fase 3 empieza con sandbox activo.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════ FASE 4 ═══ -->
+    <div class="fase-section" id="fase-4">
+      <div class="fase-header">
+        <div style="display:flex;align-items:flex-start">
+          <div class="fase-num" style="color:var(--f4)">4</div>
+          <div class="fase-title-block">
+            <div class="fase-eyebrow">Validación en el mundo real</div>
+            <div class="fase-title" style="color:var(--f4)">Piloto — 3 bares reales</div>
+            <div class="fase-subtitle">Poner VIBRRA en producción con 3 establecimientos aliados. Identificar fricciones reales, validar el modelo de pagos, obtener el primer ingreso real y ajustar antes de escalar.</div>
+          </div>
+        </div>
+        <div class="fase-meta-block">
+          <div class="fase-duracion" style="color:var(--f4)">4–6 sem</div>
+          <div class="fase-duracion-label">duración</div>
+          <div class="fase-status" style="color:var(--muted);border-color:var(--border)">Pendiente</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-icon">🍻</div>
+        <div class="milestone-body">
+          <div class="milestone-label">Milestone F4 — Go-Live</div>
+          <div class="milestone-name">3 establecimientos operando en producción</div>
+          <div class="milestone-desc">Clientes reales pagando pujas reales. Primer ingreso de VIBRRA. Primer retiro de un anfitrión. La tesis del negocio validada en campo.</div>
+        </div>
+      </div>
+
+      <div class="task-grid">
+        <div class="task">
+          <div class="task-area">Preparación</div>
+          <div class="task-name">Seleccionar 3 establecimientos aliados</div>
+          <div class="task-desc">Bares o discotecas en Caldas con dueños conocidos. Verificar que tengan certificado OSA vigente. Firmar contrato VIBRRA. Acuerdo de primer mes gratis + soporte presencial.</div>
+          <div class="task-footer">
+            <span class="task-effort">Gestión</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f4);border-color:rgba(167,139,250,.3)">Piloto</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Legal</div>
+          <div class="task-name">Registro establecimientos + docs legales</div>
+          <div class="task-desc">Ayudar a los anfitriones a completar el onboarding de documentación: OSA, Bomberos, Sanitario. Activar manualmente los 3 establecimientos en Firestore.</div>
+          <div class="task-footer">
+            <span class="task-effort">~4h/est</span>
+            <div class="task-tags"><span class="tag" style="color:#FF8080;border-color:rgba(255,74,74,.3)">Legal</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Operación</div>
+          <div class="task-name">Generar e imprimir QR físicos</div>
+          <div class="task-desc">Para cada establecimiento: generar QR PNG en Firebase Storage con vibrra.live/neg/{id}. Imprimir en formato mesa (10×10cm) y pendón (para la barra). Plastificados.</div>
+          <div class="task-footer">
+            <span class="task-effort">~2h/est</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f4);border-color:rgba(167,139,250,.3)">Operación</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Capacitación</div>
+          <div class="task-name">Capacitar anfitriones en el uso de la extensión</div>
+          <div class="task-desc">Sesión de 1h con cada anfitrión: instalar extensión, login QR, abrir sesión, controlar la cola, configurar precios, cerrar sesión. Guía rápida impresa.</div>
+          <div class="task-footer">
+            <span class="task-effort">~3h/est</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f4);border-color:rgba(167,139,250,.3)">Piloto</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Functions</div>
+          <div class="task-name">verificarDocumentosVencimiento</div>
+          <div class="task-desc">onSchedule 9am diario. Verifica doc_sayco_acinpro_vence de todos los establecimientos activos. Alerta a 30, 15, 5 días. Bloquea sesion si OSA venció. Recalcula docs_estado_general.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Monitoreo</div>
+          <div class="task-name">Dashboard básico de salud del piloto</div>
+          <div class="task-desc">Pantalla superadmin con: sesiones activas ahora, retiros_pendientes totales, errores en Functions (Firebase Alerts), usuarios activos hoy. Para monitorear el piloto en tiempo real.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--muted);border-color:var(--border)">Admin</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Analytics</div>
+          <div class="task-name">Functions de estadísticas — Stats_*</div>
+          <div class="task-desc">resetBeneficiosMensuales (día 1). recalcularSegmentos (3am). actualizarPerfil (trigger Eventos). limpiarEventosAntiguos (día 1). Necesarias para el dashboard del anfitrión.</div>
+          <div class="task-footer">
+            <span class="task-effort">~12h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Anfitrión</div>
+          <div class="task-name">Dashboard anfitrión — stats de la noche</div>
+          <div class="task-desc">Pantalla post-sesión: total recaudado, canciones reproducidas, puja máxima, usuario más activo. Histórico de sesiones. Gráfico de ingresos por semana.</div>
+          <div class="task-footer">
+            <span class="task-effort">~12h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="info-box-title">💡 Métrica de éxito del piloto</div>
+        Un piloto exitoso cumple: ≥ 3 sesiones por establecimiento con pujas reales, ≥ 1 retiro procesado por anfitrión, ≤ 2 bugs críticos por semana, NPS de anfitriones ≥ 7/10. Si se cumplen, se avanza a escala.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════ FASE 5 ═══ -->
+    <div class="fase-section" id="fase-5">
+      <div class="fase-header">
+        <div style="display:flex;align-items:flex-start">
+          <div class="fase-num" style="color:var(--f5)">5</div>
+          <div class="fase-title-block">
+            <div class="fase-eyebrow">Post-piloto</div>
+            <div class="fase-title" style="color:var(--f5)">Escala y diferenciación</div>
+            <div class="fase-subtitle">Abrir VIBRRA a más establecimientos, activar el mapa público para clientes, lanzar el módulo de empresarios y construir el CRM. VIBRRA pasa de piloto a producto.</div>
+          </div>
+        </div>
+        <div class="fase-meta-block">
+          <div class="fase-duracion" style="color:var(--f5)">Continuo</div>
+          <div class="fase-duracion-label">duración</div>
+          <div class="fase-status" style="color:var(--muted);border-color:var(--border)">Futuro</div>
+        </div>
+      </div>
+
+      <div class="milestone">
+        <div class="milestone-icon">🗺️</div>
+        <div class="milestone-body">
+          <div class="milestone-label">Milestone F5-A</div>
+          <div class="milestone-name">Mapa público de establecimientos VIBRRA</div>
+          <div class="milestone-desc">Los clientes pueden descubrir qué bares tienen VIBRRA activo en su ciudad antes de salir. Red effect: más clientes → más pujas → más valor para el anfitrión.</div>
+        </div>
+      </div>
+
+      <div class="task-grid">
+        <div class="task">
+          <div class="task-area">App · Descubrimiento</div>
+          <div class="task-name">Mapa de bares activos — Google Maps</div>
+          <div class="task-desc">Pantalla principal de la app: mapa con marcadores de establecimientos con sesion_activa=true. Tap en marcador → perfil público. Filtros: ciudad, barrio, activo ahora, género.</div>
+          <div class="task-footer">
+            <span class="task-effort">~14h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span><span class="tag" style="color:var(--external);border-color:rgba(96,192,240,.3)">Maps</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App · Social</div>
+          <div class="task-name">Perfil público del establecimiento</div>
+          <div class="task-desc">Antes de ir al bar: ver géneros populares, canción trending, precio de conexión, foto del local, noches activas este mes. "Agregar a favoritos" para notificación cuando abra.</div>
+          <div class="task-footer">
+            <span class="task-effort">~10h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f2);border-color:rgba(255,229,102,.3)">Flutter</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Features</div>
+          <div class="task-name">Dedicatorias</div>
+          <div class="task-desc">Cliente paga precio_dedicatoria → mensaje visible en la pantalla del bar cuando suena su canción. Extensión muestra el mensaje en overlay sobre YouTube.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f5);border-color:rgba(244,114,182,.3)">Feature</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Features</div>
+          <div class="task-name">Batallas de canciones</div>
+          <div class="task-desc">El anfitrión lanza una batalla: 2 canciones compiten, los clientes votan con puja. La más pujada en 60s suena primero. RTDB batalla/{id} con countdown.</div>
+          <div class="task-footer">
+            <span class="task-effort">~12h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f5);border-color:rgba(244,114,182,.3)">Feature</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Empresarios</div>
+          <div class="task-name">Módulo de campañas publicitarias</div>
+          <div class="task-desc">Empresas cargan saldo y crean campañas (banner/video). Segmentan por ciudad, tipo de bar, géneros. La extensión muestra el anuncio entre canciones. VIBRRA cobra CPM.</div>
+          <div class="task-footer">
+            <span class="task-effort">~30h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f5);border-color:rgba(244,114,182,.3)">Empresarios</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">CRM</div>
+          <div class="task-name">Segmentación de clientes (10 segmentos)</div>
+          <div class="task-desc">recalcularSegmentos: job nocturno que clasifica clientes en: reggaetoneros, rockeros, románticos, vip_spenders, cazaoferta, etc. Base para campañas y recomendaciones.</div>
+          <div class="task-footer">
+            <span class="task-effort">~12h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--fn);border-color:rgba(167,139,250,.3)">Functions</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">Ventas</div>
+          <div class="task-name">Landing page pública de VIBRRA</div>
+          <div class="task-desc">vibrra.live — home page para conseguir nuevos anfitriones. Explica el modelo, muestra los precios, formulario de interés. SEO básico. Link a la app stores.</div>
+          <div class="task-footer">
+            <span class="task-effort">~16h</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f5);border-color:rgba(244,114,182,.3)">Marketing</span></div>
+          </div>
+        </div>
+        <div class="task">
+          <div class="task-area">App Stores</div>
+          <div class="task-name">Publicar en Google Play y App Store</div>
+          <div class="task-desc">Preparar assets: screenshots, descripción, políticas de privacidad. Cuentas de desarrollador (Google: $25 una vez, Apple: $99/año). Proceso de revisión: ~1 semana Apple, ~3 días Google.</div>
+          <div class="task-footer">
+            <span class="task-effort">~8h + espera</span>
+            <div class="task-tags"><span class="tag" style="color:var(--f5);border-color:rgba(244,114,182,.3)">Distribución</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dep-grid">
+        <div class="dep-card">
+          <div class="dep-title">📊 KPIs de escala exitosa</div>
+          <ul class="dep-list">
+            <li>10 establecimientos en mes 6</li>
+            <li>50 establecimientos en mes 9</li>
+            <li>Retención anfitrión > 80% mes a mes</li>
+            <li>Puja promedio > $2.000 COP</li>
+            <li>3+ sesiones/semana por establecimiento</li>
+          </ul>
+        </div>
+        <div class="dep-card">
+          <div class="dep-title">⚙️ Deuda técnica a atender en F5</div>
+          <ul class="dep-list">
+            <li>Push notifications (FCM) para alertas docs</li>
+            <li>Factura electrónica DIAN automatizada</li>
+            <li>Tests automatizados (unit + integration)</li>
+            <li>Firebase App Check (anti-abuse)</li>
+            <li>Soporte offline básico (Flutter cache)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+function showFase(n) {
+  document.querySelectorAll('.fase-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('fase-' + n).classList.add('active');
+  document.getElementById('sid-' + n).classList.add('active');
+
+  // Actualizar sidebar border
+  const colors = ['var(--f0)','var(--f1)','var(--f2)','var(--f3)','var(--f4)','var(--f5)'];
+  document.getElementById('sid-' + n).style.borderLeftColor = colors[n];
+  for (let i = 0; i < 6; i++) {
+    if (i !== n) document.getElementById('sid-' + i).style.borderLeftColor = 'transparent';
+  }
+}
+
+// Inicializar border del sidebar
+document.getElementById('sid-0').style.borderLeftColor = 'var(--f0)';
+</script>
+</body>
+</html>

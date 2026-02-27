@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBRRA — Arquitectura de Base de Datos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --gold:    #FFE566;
+    --gold-mid:#D4A017;
+    --gold-dk: #A97010;
+    --black:   #0A0A0A;
+    --dark:    #111111;
+    --card:    #181818;
+    --border:  #2A2A2A;
+    --text:    #E8E8E8;
+    --muted:   #888;
+
+    --firestore: #FF6B35;
+    --rtdb:      #00C896;
+    --local:     #7B68EE;
+    --stats:     #FF4D8B;
+    --crm:       #00BFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 40px 48px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: -1px;
+  }
+
+  .logo span { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 12px; font-family: 'DM Sans', sans-serif; letter-spacing: 0; }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .leg-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 48px;
+    border-bottom: 1px solid var(--border);
+    background: var(--dark);
+  }
+
+  .tab {
+    padding: 14px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ── MAIN ── */
+  main { padding: 40px 48px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── INTRO CARDS ── */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .intro-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .intro-card h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .intro-card .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .intro-card p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* ── DB GRID ── */
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  .db-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+
+  .db-card:hover {
+    border-color: #3A3A3A;
+    transform: translateY(-2px);
+  }
+
+  .db-card.firestore { border-top: 3px solid var(--firestore); }
+  .db-card.rtdb      { border-top: 3px solid var(--rtdb); }
+  .db-card.stats     { border-top: 3px solid var(--stats); }
+  .db-card.crm       { border-top: 3px solid var(--crm); }
+  .db-card.local     { border-top: 3px solid var(--local); }
+
+  .db-card-header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .db-card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .db-card-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .badge.firestore { background: rgba(255,107,53,.15); color: var(--firestore); }
+  .badge.rtdb      { background: rgba(0,200,150,.12); color: var(--rtdb); }
+  .badge.stats     { background: rgba(255,77,139,.12); color: var(--stats); }
+  .badge.crm       { background: rgba(0,191,255,.12); color: var(--crm); }
+  .badge.local     { background: rgba(123,104,238,.12); color: var(--local); }
+  .badge.volatile  { background: rgba(255,165,0,.1); color: #FFA500; }
+
+  .db-card-body {
+    padding: 0 20px 16px;
+  }
+
+  .field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .field {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background .15s;
+  }
+
+  .field:hover { background: rgba(255,255,255,.03); }
+
+  .field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: #B0C4FF;
+    min-width: 160px;
+    flex-shrink: 0;
+  }
+
+  .field-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #7BD389;
+    min-width: 60px;
+    flex-shrink: 0;
+  }
+
+  .field-note {
+    font-size: 10.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .field.key .field-name { color: var(--gold); }
+  .field.computed .field-name { color: #FF9800; }
+  .field.important .field-name { color: #FF6B8A; }
+
+  .subcollection {
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+
+  .subcollection-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .subcollection-title::before {
+    content: '↳';
+    color: var(--gold-dk);
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .section-head h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .section-head .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .section-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+    max-width: 700px;
+  }
+
+  /* ── RTDB TREE ── */
+  .rtdb-tree {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--rtdb);
+    border-radius: 14px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 2;
+  }
+
+  .tree-node { padding-left: 20px; position: relative; }
+
+  .tree-node::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .tree-key { color: var(--rtdb); }
+  .tree-val { color: #B0C4FF; }
+  .tree-type { color: #7BD389; margin-left: 6px; font-size: 10px; }
+  .tree-comment { color: var(--muted); margin-left: 10px; font-size: 10px; }
+  .tree-volatile { color: #FFA500; font-size: 10px; margin-left: 8px; }
+
+  /* ── RULES TABLE ── */
+  .rules-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 24px;
+  }
+
+  .rules-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rules-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    vertical-align: top;
+  }
+
+  .rules-table tr:hover td { background: rgba(255,255,255,.02); }
+
+  .rules-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: rgba(255,255,255,.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #B0C4FF;
+  }
+
+  .tick { color: #00C896; }
+  .cross { color: #FF4D4D; }
+
+  /* ── FUNCTIONS LIST ── */
+  .fn-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .fn-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .fn-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .fn-trigger {
+    font-size: 10px;
+    color: #00C896;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .fn-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── SEARCH ── */
+  .search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .search-input:focus { border-color: var(--gold-dk); }
+  .search-input::placeholder { color: var(--muted); }
+
+  .filter-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--gold-dk);
+    color: var(--gold);
+  }
+
+  /* ── OVERVIEW DIAGRAM ── */
+  .overview-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    margin-bottom: 32px;
+    overflow-x: auto;
+  }
+
+  .ov-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .ov-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .ov-label {
+    font-size: 11px;
+    color: var(--muted);
+    width: 120px;
+    flex-shrink: 0;
+    padding-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .ov-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ov-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid;
+    cursor: default;
+    transition: opacity .2s;
+  }
+
+  .ov-chip:hover { opacity: .75; }
+  .ov-chip.firestore { border-color: var(--firestore); color: var(--firestore); background: rgba(255,107,53,.06); }
+  .ov-chip.rtdb      { border-color: var(--rtdb); color: var(--rtdb); background: rgba(0,200,150,.06); }
+  .ov-chip.stats     { border-color: var(--stats); color: var(--stats); background: rgba(255,77,139,.06); }
+  .ov-chip.crm       { border-color: var(--crm); color: var(--crm); background: rgba(0,191,255,.06); }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">VIBRRA <span>Database Architecture v3.0</span></div>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--firestore)"></div> Firestore (persistente)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--rtdb)"></div> Realtime DB (volátil)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--stats)"></div> Estadísticas</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--crm)"></div> CRM / Inteligencia</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--local)"></div> Local / Chrome</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview')">Resumen general</div>
+  <div class="tab" onclick="showTab('firestore')">Firestore core</div>
+  <div class="tab" onclick="showTab('rtdb')">Realtime DB</div>
+  <div class="tab" onclick="showTab('stats')">Estadísticas</div>
+  <div class="tab" onclick="showTab('crm')">CRM</div>
+  <div class="tab" onclick="showTab('functions')">Firebase Functions</div>
+  <div class="tab" onclick="showTab('rules')">Reglas & flujos</div>
+</div>
+
+<main>
+
+<!-- ══════════ OVERVIEW ══════════ -->
+<div id="tab-overview" class="section active">
+  <div class="intro-grid">
+    <div class="intro-card">
+      <h4>Colecciones Firestore</h4>
+      <div class="val">28</div>
+      <p>Incluyendo subcolecciones, estadísticas y CRM</p>
+    </div>
+    <div class="intro-card">
+      <h4>Nodos Realtime DB</h4>
+      <div class="val">8</div>
+      <p>Todos volátiles — se limpian al cerrar sesión</p>
+    </div>
+    <div class="intro-card">
+      <h4>Firebase Functions</h4>
+      <div class="val">10</div>
+      <p>Triggers + jobs programados + webhooks</p>
+    </div>
+  </div>
+
+  <div class="overview-wrap">
+    <div class="ov-title">Mapa de colecciones por dominio</div>
+
+    <div class="ov-row">
+      <div class="ov-label">👥 Usuarios</div>
+      <div class="ov-chips">
+        <div class="ov-chip firestore">Anfitriones</div>
+        <div class="ov-chip firestore">Clientes</div>
+        <div class="ov-chip firestore">Anonimos</div>
+        <div class="ov-chip firestore">Usuarios</div>
+        <div class="ov-chip firestore">Empresarios</div>
+      </div>
+    </div>
+
+    <div class="ov-row">
+      <div class="ov-label">🏠 Negocio</div>
+      <div class="ov-chips">
+        <div class="ov-chip firestore">Establecimientos</div>
+        <div class="ov-chip firestore">Establecimientos/Perfil_Publico</div>
+        <div class="ov-chip firestore">Configuracion/impuestos</div>
+      </div>
+    </div>
+
+    <div class="ov-row">
+      <div class="ov-label">💰 Economía</div>
+      <div class="ov-chips">
+        <div class="ov-chip firestore">Sesiones</div>
+        <div class="ov-chip firestore">Pujas</div>
+        <div class="ov-chip firestore">Transacciones</div>
+        <div class="ov-chip firestore">Bonos</div>
+        <div class="ov-chip firestore">Anfitriones/Movimientos</div>
+      </div>
+    </div>
+
+    <div class="ov-row">
+      <div class="ov-label">🎵 Contenido</div>
+      <div class="ov-chips">
+        <div class="ov-chip firestore">Historial/canciones</div>
+        <div class="ov-chip firestore">Favoritos/canciones</div>
+        <div class="ov-chip firestore">Clientes/Cola_Pendiente</div>
+        <div class="ov-chip firestore">Clientes/Playlists</div>
+      </div>
+    </div>
+
+    <div class="ov-row">
+      <div class="ov-label">⚡ Sesión viva</div>
+      <div class="ov-chips">
+        <div class="ov-chip rtdb">sesiones/estado</div>
+        <div class="ov-chip rtdb">sesiones/cola</div>
+        <div class="ov-chip rtdb">sesiones/presencia</div>
+        <div class="ov-chip rtdb">sesiones/reacciones</div>
+        <div class="ov-chip rtdb">sesiones/leaderboard</div>
+        <div class="ov-chip rtdb">sesiones/batalla</div>
+        <div class="ov-chip rtdb">sesiones_qr</div>
+      </div>
+    </div>
+
+    <div class="ov-row">
+      <div class="ov-label">📊 Analytics</div>
+      <div class="ov-chips">
+        <div class="ov-chip stats">Stats_Canciones</div>
+        <div class="ov-chip stats">Stats_Establecimientos</div>
+        <div class="ov-chip stats">Stats_Plataforma</div>
+        <div class="ov-chip stats">Stats_Clientes</div>
+        <div class="ov-chip stats">Stats_Horarios</div>
+      </div>
+    </div>
+
+    <div class="ov-row">
+      <div class="ov-label">🎯 CRM</div>
+      <div class="ov-chips">
+        <div class="ov-chip crm">Perfiles</div>
+        <div class="ov-chip crm">Segmentos</div>
+        <div class="ov-chip crm">Eventos/stream</div>
+        <div class="ov-chip crm">Encuestas</div>
+        <div class="ov-chip crm">Encuestas/Respuestas</div>
+        <div class="ov-chip crm">Campanas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Principios de diseño</h2>
+  </div>
+  <table class="rules-table">
+    <thead><tr><th>Principio</th><th>Detalle</th></tr></thead>
+    <tbody>
+      <tr><td><code>Firestore</code> = economía permanente</td><td>Saldos, pujas, retiros, historial, perfiles. Nunca se borra excepto por eliminación de cuenta.</td></tr>
+      <tr><td><code>Realtime DB</code> = sesión viva</td><td>Cola, estado canción, presencia, reacciones. Se destruye con <code>remove()</code> al cerrar sesión.</td></tr>
+      <tr><td>Progreso de canción = local</td><td><code>(now - inicio_timestamp) / duracion_ms</code> cada 500ms. Cero ops Firebase. 200 usuarios = 0 escrituras.</td></tr>
+      <tr><td>Estadísticas = pre-agregadas</td><td><code>FieldValue.increment()</code> en cada evento. Nunca se calculan en tiempo real desde datos crudos.</td></tr>
+      <tr><td>Nombres de colecciones</td><td>Mayúscula inicial (<code>Anfitriones</code>, <code>Pujas</code>). Campos en <code>snake_case</code>.</td></tr>
+      <tr><td>Cierre de sesión = batch atómico</td><td>La Function <code>cerrarSesion()</code> escribe todos los agregados en un solo batch. O todo o nada.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════ FIRESTORE ══════════ -->
+<div id="tab-firestore" class="section">
+  <div class="section-head">
+    <h2>Firestore — Colecciones core</h2>
+    <span class="count">18 colecciones</span>
+  </div>
+  <p class="section-desc">Datos económicos y persistentes. Nunca se borran excepto por eliminación explícita de cuenta.</p>
+
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Buscar colección o campo..." oninput="filterCards(this.value)">
+    <button class="filter-btn active" onclick="filterByType('all', this)">Todas</button>
+    <button class="filter-btn" onclick="filterByType('usuario', this)">Usuarios</button>
+    <button class="filter-btn" onclick="filterByType('economia', this)">Economía</button>
+    <button class="filter-btn" onclick="filterByType('contenido', this)">Contenido</button>
+  </div>
+
+  <div class="db-grid" id="firestore-grid">
+
+    <!-- ANFITRIONES -->
+    <div class="db-card firestore" data-type="economia" data-name="anfitriones">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Anfitriones/{uid}</div>
+          <div class="db-card-subtitle">Cuenta maestra del anfitrión — saldo consolidado de todos sus locales</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:4px 8px;">── Identidad ──</div>
+        <div class="field-list">
+          <div class="field key"><span class="field-name">uid</span><span class="field-type">string</span><span class="field-note">Firebase Auth UID</span></div>
+          <div class="field"><span class="field-name">nombre / email / telefono</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">activo / fecha_registro</span><span class="field-type">bool / timestamp</span></div>
+          <div class="field"><span class="field-name">cuenta_bancaria{}</span><span class="field-type">map</span><span class="field-note">banco, tipo, numero, titular</span></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;">── Tributario ──</div>
+        <div class="field-list">
+          <div class="field"><span class="field-name">rut / razon_social</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">tipo_persona</span><span class="field-type">string</span><span class="field-note">"natural" | "juridica"</span></div>
+          <div class="field"><span class="field-name">regimen_tributario</span><span class="field-type">string</span><span class="field-note">"simple" | "ordinario"</span></div>
+          <div class="field"><span class="field-name">tarifa_retencion</span><span class="field-type">number</span><span class="field-note">3.5 | 4.0 | 6.0 — auto</span></div>
+          <div class="field"><span class="field-name">municipio_fiscal / responsable_iva</span><span class="field-type">string / bool</span></div>
+        </div>
+        <div style="font-size:10px;color:#FFE566;text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;border-left:2px solid #FFE566;">── Saldo consolidado (suma de TODOS sus establecimientos) ──</div>
+        <div class="field-list">
+          <div class="field important"><span class="field-name">saldo_disponible</span><span class="field-type">number</span><span class="field-note">sum(establecimientos.generado_pendiente)</span></div>
+          <div class="field important"><span class="field-name">retiro_este_mes</span><span class="field-type">bool</span><span class="field-note">previene doble retiro — reset día 11</span></div>
+          <div class="field"><span class="field-name">ultimo_retiro_fecha</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">total_retirado_historico</span><span class="field-type">number</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Movimientos/{id} — extracto unificado</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">tipo / concepto</span><span class="field-type">string</span><span class="field-note">"ingreso"|"deduccion"|"retiro"|"bono"</span></div>
+            <div class="field"><span class="field-name">monto_bruto / monto_neto</span><span class="field-type">number</span></div>
+            <div class="field important"><span class="field-name">establecimiento_id</span><span class="field-type">string</span><span class="field-note">a qué local corresponde</span></div>
+            <div class="field"><span class="field-name">sesion_id / timestamp</span><span class="field-type">string / ts</span></div>
+            <div class="field"><span class="field-name">detalle{}</span><span class="field-type">map</span><span class="field-note">vibrra_30pct, wompi_fee, retencion, ica</span></div>
+          </div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">AuditLog/{id} — historial inmutable de cambios</div>
+          <div class="field-list">
+            <div class="field important"><span class="field-name">tipo_cambio</span><span class="field-type">string</span><span class="field-note">"datos_personales"|"datos_establecimiento"|"doc_legal"|"precio"|"retiro"|"estado_cuenta"</span></div>
+            <div class="field"><span class="field-name">establecimiento_id</span><span class="field-type">string</span><span class="field-note">null si es cambio personal</span></div>
+            <div class="field"><span class="field-name">campo</span><span class="field-type">string</span><span class="field-note">nombre exacto del campo cambiado</span></div>
+            <div class="field"><span class="field-name">valor_anterior / valor_nuevo</span><span class="field-type">any</span></div>
+            <div class="field"><span class="field-name">realizado_por / rol_autor</span><span class="field-type">string</span><span class="field-note">"anfitrion" | "superadmin"</span></div>
+            <div class="field"><span class="field-name">motivo</span><span class="field-type">string</span><span class="field-note">obligatorio si rol_autor == superadmin</span></div>
+            <div class="field"><span class="field-name">timestamp / ip</span><span class="field-type">timestamp / string</span></div>
+          </div>
+          <div style="margin-top:8px;padding:8px;background:rgba(255,229,102,.04);border-radius:6px;font-size:10px;color:var(--gold);font-family:'JetBrains Mono',monospace;">
+            Solo escritura vía Cloud Functions. El cliente nunca puede modificar ni eliminar entradas del AuditLog.
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- ESTABLECIMIENTOS -->
+    <div class="db-card firestore" data-type="economia" data-name="establecimientos">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Establecimientos/{id}</div>
+          <div class="db-card-subtitle">Local físico — precios, economía, suscripción y docs legales</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:4px 8px;">── Identidad ──</div>
+        <div class="field-list">
+          <div class="field key"><span class="field-name">id</span><span class="field-type">string</span><span class="field-note">Auto Firestore ID</span></div>
+          <div class="field"><span class="field-name">nombre / ciudad / barrio</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">direccion / telefono</span><span class="field-type">string</span><span class="field-note">Nuevos</span></div>
+          <div class="field"><span class="field-name">anfitrion_id</span><span class="field-type">string</span><span class="field-note">ref → Anfitriones/{uid}</span></div>
+          <div class="field"><span class="field-name">activo / fecha_registro</span><span class="field-type">bool / timestamp</span></div>
+          <div class="field"><span class="field-name">qr_imagen_url</span><span class="field-type">string</span><span class="field-note">PNG en Storage para imprimir</span></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;">── Precios ──</div>
+        <div class="field-list">
+          <div class="field important"><span class="field-name">precio_conexion</span><span class="field-type">number</span><span class="field-note">0 = gratis</span></div>
+          <div class="field important"><span class="field-name">precio_por_cancion</span><span class="field-type">number</span></div>
+          <div class="field important"><span class="field-name">precio_minimo_puja</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">precio_dedicatoria</span><span class="field-type">number</span></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;">── Economía ──</div>
+        <div class="field-list">
+          <div class="field"><span class="field-name">total_pujado</span><span class="field-type">number</span><span class="field-note">Acumulado histórico</span></div>
+          <div class="field"><span class="field-name">retiro_pendiente</span><span class="field-type">number</span><span class="field-note">Pendiente de retirar</span></div>
+          <div class="field"><span class="field-name">ultimo_retiro</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">pujas_mes</span><span class="field-type">number</span><span class="field-note">Acumulado del mes en curso</span></div>
+          <div class="field"><span class="field-name">pujas_mes_fecha</span><span class="field-type">timestamp</span><span class="field-note">Inicio del período actual</span></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;">── Suscripción VIBRRA ──</div>
+        <div class="field-list">
+          <div class="field important"><span class="field-name">suscripcion_estado</span><span class="field-type">string</span><span class="field-note">"trial"|"activa"|"suspendida"|"cancelada"</span></div>
+          <div class="field"><span class="field-name">suscripcion_inicio</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">suscripcion_proximo_cobro</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">suscripcion_meses_pagados</span><span class="field-type">number</span></div>
+        </div>
+        <div style="font-size:10px;color:#FF6B8A;text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;border-left:2px solid #FF6B8A;">── Documentación Legal (Art. 87 Ley 1801/2016) ──</div>
+        <div class="field-list">
+          <div class="field"><span class="field-name">doc_rut_nit</span><span class="field-type">string</span><span class="field-note">NIT del establecimiento</span></div>
+          <div class="field"><span class="field-name">doc_uso_suelo_estado</span><span class="field-type">string</span><span class="field-note">"vigente"|"pendiente"|"no_aplica"</span></div>
+          <div class="field"><span class="field-name">doc_licencia_funcionamiento</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">doc_matricula_mercantil_vigente</span><span class="field-type">bool</span><span class="field-note">Renovar antes 31/mar</span></div>
+          <div class="field"><span class="field-name">doc_matricula_mercantil_vence</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">doc_bomberos_vigente</span><span class="field-type">bool</span><span class="field-note">Concepto Técnico Bomberos — 1 año</span></div>
+          <div class="field"><span class="field-name">doc_bomberos_vence</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">doc_sanitario_vigente</span><span class="field-type">bool</span><span class="field-note">Secretaría de Salud — 1 año</span></div>
+          <div class="field"><span class="field-name">doc_sanitario_vence</span><span class="field-type">timestamp</span></div>
+          <div class="field important"><span class="field-name">doc_sayco_acinpro_vigente</span><span class="field-type">bool</span><span class="field-note">⚠ BLOQUEA sesión si false</span></div>
+          <div class="field important"><span class="field-name">doc_sayco_acinpro_vence</span><span class="field-type">timestamp</span><span class="field-note">Pago anual OSA — Ley 23/1982</span></div>
+          <div class="field"><span class="field-name">doc_licor_vigente</span><span class="field-type">bool</span><span class="field-note">Permiso expendio bebidas — 1 año</span></div>
+          <div class="field"><span class="field-name">doc_licor_vence</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">doc_horario_extendido</span><span class="field-type">bool</span><span class="field-note">¿Tiene permiso horario extendido?</span></div>
+          <div class="field"><span class="field-name">doc_horario_maxima</span><span class="field-type">string</span><span class="field-note">"02:00" | "03:00" según municipio</span></div>
+          <div class="field computed"><span class="field-name">docs_estado_general</span><span class="field-type">string</span><span class="field-note">"completo"|"advertencia"|"critico"</span></div>
+          <div class="field"><span class="field-name">docs_ultima_verificacion</span><span class="field-type">timestamp</span></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:10px 0 6px;padding:4px 8px;">── Mapa y visibilidad ──</div>
+        <div class="field-list">
+          <div class="field"><span class="field-name">lat / lng</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">sesion_activa</span><span class="field-type">bool</span><span class="field-note">Actualizado por extensión Chrome</span></div>
+          <div class="field"><span class="field-name">visible_en_mapa</span><span class="field-type">bool</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Perfil_Publico (doc único)</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">generos_populares</span><span class="field-type">array</span></div>
+            <div class="field"><span class="field-name">cancion_trending</span><span class="field-type">string</span></div>
+            <div class="field"><span class="field-name">rating_vibrra / total_sesiones_mes</span><span class="field-type">number</span></div>
+            <div class="field"><span class="field-name">foto_portada_url / horario</span><span class="field-type">string</span></div>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:rgba(255,77,139,.06);border-radius:8px;border:1px solid rgba(255,77,139,.2);font-size:11px;color:#FF6B8A;line-height:1.6;">
+          ⚠ <strong>Regla crítica:</strong> si <code>doc_sayco_acinpro_vigente == false</code>, la extensión Chrome no puede abrir sesión. Es el único doc que bloquea operación — Ley 23 de 1982, Art. 158-159.
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+
+    <!-- CLIENTES -->
+    <div class="db-card firestore" data-type="usuario" data-name="clientes">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Clientes/{uid}</div>
+          <div class="db-card-subtitle">Usuario registrado con beneficios VIBRRA</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field key"><span class="field-name">uid</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">nombre / email</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">saldo</span><span class="field-type">number</span><span class="field-note">COP disponible</span></div>
+          <div class="field important"><span class="field-name">conexiones_gratis_restantes</span><span class="field-type">number</span><span class="field-note">Reset mensual — 2/mes</span></div>
+          <div class="field important"><span class="field-name">canciones_gratis_restantes</span><span class="field-type">number</span><span class="field-note">Reset mensual — 3/mes</span></div>
+          <div class="field"><span class="field-name">acepta_publicidad</span><span class="field-type">bool</span></div>
+          <div class="field"><span class="field-name">acepta_encuestas</span><span class="field-type">bool</span></div>
+          <div class="field"><span class="field-name">version_terminos</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">establecimiento_primer_uso_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">device_id_origen</span><span class="field-type">string</span><span class="field-note">Device del anónimo que era</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Cola_Pendiente/{id} · Favoritos/{id} · Historial/{id} · Playlists/{estId}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANONIMOS -->
+    <div class="db-card firestore" data-type="usuario" data-name="anonimos">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Anonimos/{id}</div>
+          <div class="db-card-subtitle">Cliente sin cuenta — identificado por device ID</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field key"><span class="field-name">device_id</span><span class="field-type">string</span><span class="field-note">Persistente entre sesiones</span></div>
+          <div class="field"><span class="field-name">sesion_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">establecimiento_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">canciones_pedidas</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">total_pujado</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">se_registro</span><span class="field-type">bool</span><span class="field-note">¿Se convirtió en Cliente?</span></div>
+          <div class="field"><span class="field-name">timestamp</span><span class="field-type">timestamp</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PUJAS -->
+    <div class="db-card firestore" data-type="economia" data-name="pujas">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Pujas/{id}</div>
+          <div class="db-card-subtitle">Registro económico de cada puja ganada</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">cliente_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">establecimiento_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">sesion_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">cancion</span><span class="field-type">string</span><span class="field-note">Título</span></div>
+          <div class="field"><span class="field-name">youtube_video_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">monto</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">genero</span><span class="field-type">string</span><span class="field-note">Para stats</span></div>
+          <div class="field"><span class="field-name">duracion_ms</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">hora_del_dia</span><span class="field-type">number</span><span class="field-note">0-23</span></div>
+          <div class="field"><span class="field-name">dia_semana</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">timestamp</span><span class="field-type">timestamp</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESIONES -->
+    <div class="db-card firestore" data-type="economia" data-name="sesiones">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Sesiones/{id}</div>
+          <div class="db-card-subtitle">Resumen económico al cerrar cada sesión</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">establecimiento_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">total_recaudado</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">canciones_reproducidas</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">pico_usuarios</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">duracion_min</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">hora_inicio / hora_fin</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">dia_semana / ciudad</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">puja_maxima</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">tasa_reproduccion</span><span class="field-type">number</span><span class="field-note">reproducidas/pedidas</span></div>
+          <div class="field"><span class="field-name">usuarios_anonimos / clientes</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">nuevos_registros</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">canciones_compartidas</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">dedicatorias_enviadas</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">canciones_vetadas</span><span class="field-type">number</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACCIONES -->
+    <div class="db-card firestore" data-type="economia" data-name="transacciones">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Transacciones/{id}</div>
+          <div class="db-card-subtitle">Recargas procesadas por Wompi</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">uid</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">tipo_usuario</span><span class="field-type">string</span><span class="field-note">"cliente"|"anfitrion"|"empresario"</span></div>
+          <div class="field"><span class="field-name">wompi_id</span><span class="field-type">string</span><span class="field-note">Referencia Wompi</span></div>
+          <div class="field"><span class="field-name">monto</span><span class="field-type">number</span><span class="field-note">Pagado</span></div>
+          <div class="field"><span class="field-name">monto_acreditado</span><span class="field-type">number</span><span class="field-note">+ bono si aplica</span></div>
+          <div class="field"><span class="field-name">metodo_pago</span><span class="field-type">string</span><span class="field-note">"nequi"|"pse"|"bancolombia"|"tarjeta"</span></div>
+          <div class="field important"><span class="field-name">estado</span><span class="field-type">string</span><span class="field-note">"pendiente"|"aprobada"|"rechazada"</span></div>
+          <div class="field"><span class="field-name">timestamp</span><span class="field-type">timestamp</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BONOS -->
+    <div class="db-card firestore" data-type="economia" data-name="bonos">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Bonos/{id}</div>
+          <div class="db-card-subtitle">Trazabilidad de bonos — soporte DIAN</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">tipo</span><span class="field-type">string</span><span class="field-note">"bienvenida_cliente"|"fidelizacion"|"recarga"</span></div>
+          <div class="field"><span class="field-name">uid_beneficiario</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">monto_otorgado</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">monto_consumido</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">monto_expirado</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">consumos</span><span class="field-type">array</span><span class="field-note">Log de cada uso con sesion_id</span></div>
+          <div class="field important"><span class="field-name">estado</span><span class="field-type">string</span><span class="field-note">"activo"|"consumido"|"expirado"</span></div>
+          <div class="field computed"><span class="field-name">deducible_renta</span><span class="field-type">bool</span></div>
+          <div class="field computed"><span class="field-name">gasto_reconocido</span><span class="field-type">bool</span><span class="field-note">false hasta consumirse (diferidos)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USUARIOS SUPERADMIN -->
+    <div class="db-card firestore" data-type="usuario" data-name="usuarios">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Usuarios/{uid}</div>
+          <div class="db-card-subtitle">Equipo interno VIBRRA — superadmin</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field key"><span class="field-name">rol</span><span class="field-type">string</span><span class="field-note">"superadmin" — guard en app</span></div>
+          <div class="field"><span class="field-name">nombre / email</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">activo</span><span class="field-type">bool</span></div>
+          <div class="field"><span class="field-name">fecha_creacion</span><span class="field-type">timestamp</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPRESARIOS -->
+    <div class="db-card firestore" data-type="usuario" data-name="empresarios">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Empresarios/{uid}</div>
+          <div class="db-card-subtitle">Paga publicidad — módulo en construcción</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">nombre / email</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">razon_social / nit</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">saldo</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">activo</span><span class="field-type">bool</span></div>
+          <div class="field"><span class="field-name">campanas_activas</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">fecha_registro</span><span class="field-type">timestamp</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURACION -->
+    <div class="db-card firestore" data-type="economia" data-name="configuracion">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Configuracion/impuestos/{municipio}</div>
+          <div class="db-card-subtitle">Parámetros tributarios por municipio</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">ica_promil</span><span class="field-type">number</span><span class="field-note">Ej: 4.14 para Manizales</span></div>
+          <div class="field"><span class="field-name">retencion_pct</span><span class="field-type">number</span><span class="field-note">3.5 servicios Art. 392 E.T.</span></div>
+          <div class="field"><span class="field-name">nombre_municipio</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">activo</span><span class="field-type">bool</span></div>
+          <div class="field"><span class="field-name">ultima_actualizacion</span><span class="field-type">timestamp</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORIAL / FAVORITOS / PLAYLISTS -->
+    <div class="db-card firestore" data-type="contenido" data-name="historial favoritos playlists">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Historial · Favoritos · Cola_Pendiente · Playlists</div>
+          <div class="db-card-subtitle">Subcolecciones del cliente — scope global</div>
+        </div>
+        <span class="badge firestore">FIRESTORE</span>
+      </div>
+      <div class="db-card-body">
+        <div class="subcollection">
+          <div class="subcollection-title">Historial/{uid}/canciones/{id}</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">titulo / artista</span><span class="field-type">string</span></div>
+            <div class="field"><span class="field-name">youtube_video_id</span><span class="field-type">string</span></div>
+            <div class="field"><span class="field-name">establecimiento_id / nombre</span><span class="field-type">string</span></div>
+            <div class="field"><span class="field-name">fecha / monto_pujado</span><span class="field-type">timestamp / number</span></div>
+          </div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Favoritos/{uid}/canciones/{id}</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">titulo / artista / youtube_video_id</span><span class="field-type">string</span></div>
+          </div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Clientes/{uid}/Cola_Pendiente/{id}</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">titulo / artista / youtube_video_id</span><span class="field-type">string</span></div>
+            <div class="field"><span class="field-name">fecha_agregada</span><span class="field-type">timestamp</span><span class="field-note">Máx. 10 pendientes</span></div>
+          </div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Clientes/{uid}/Playlists/{establecimiento_id}</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">nombre</span><span class="field-type">string</span><span class="field-note">"Mi lista del Juernes"</span></div>
+            <div class="field"><span class="field-name">canciones</span><span class="field-type">array</span><span class="field-note">[{titulo, artista, video_id, orden}]</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ REALTIME DB ══════════ -->
+<div id="tab-rtdb" class="section">
+  <div class="section-head">
+    <h2>Firebase Realtime Database</h2>
+    <span class="count">Volátil — se destruye al cerrar sesión</span>
+  </div>
+  <p class="section-desc">Bus de eventos en tiempo real. Latencia ~100ms. Nunca persiste datos económicos. Al finalizar la sesión se ejecuta <code>remove()</code> y queda limpio.</p>
+
+  <div class="rtdb-tree">
+    <div><span class="tree-key">root/</span></div>
+
+    <div class="tree-node">
+      <div><span class="tree-key">sesiones/</span><span class="tree-comment">── una entrada por establecimiento activo</span></div>
+
+      <div class="tree-node">
+        <div><span class="tree-key">{establecimiento_id}/</span></div>
+
+        <div class="tree-node">
+          <div><span class="tree-key">estado/</span></div>
+          <div class="tree-node">
+            <div><span class="tree-key">activa</span><span class="tree-type">bool</span></div>
+            <div><span class="tree-key">ultima_actividad</span><span class="tree-type">number</span><span class="tree-comment">── serverTimestamp al cambiar canción — detecta inactividad</span></div>
+        <div><span class="tree-key">cierre_tipo</span><span class="tree-type">string</span><span class="tree-comment">── "manual" | "inactividad"</span></div>
+        <div><span class="tree-key">cancion_actual/</span></div>
+            <div class="tree-node">
+              <div><span class="tree-key">titulo</span><span class="tree-type">string</span></div>
+              <div><span class="tree-key">artista</span><span class="tree-type">string</span></div>
+              <div><span class="tree-key">youtube_video_id</span><span class="tree-type">string</span></div>
+              <div><span class="tree-key">duracion_ms</span><span class="tree-type">number</span></div>
+              <div><span class="tree-key">inicio_timestamp</span><span class="tree-type">number</span><span class="tree-comment">── clientes calculan progreso local</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-node">
+          <div><span class="tree-key">cola/</span></div>
+          <div class="tree-node">
+            <div><span class="tree-key">{item_id}/</span></div>
+            <div class="tree-node">
+              <div><span class="tree-key">titulo / artista / youtube_video_id</span><span class="tree-type">string</span></div>
+              <div><span class="tree-key">duracion_ms</span><span class="tree-type">number</span></div>
+              <div><span class="tree-key">puja_mayor</span><span class="tree-type">number</span><span class="tree-comment">── transacción atómica</span></div>
+              <div><span class="tree-key">cliente_id</span><span class="tree-type">string</span></div>
+              <div><span class="tree-key">tipo</span><span class="tree-type">string</span><span class="tree-comment">── "anfitrion"|"bono"|"normal"|"bloque"</span></div>
+              <div><span class="tree-key">timestamp</span><span class="tree-type">number</span></div>
+              <div><span class="tree-key">vetos/</span><span class="tree-comment">── mecánica de veto colectivo</span></div>
+              <div class="tree-node">
+                <div><span class="tree-key">total</span><span class="tree-type">number</span><span class="tree-comment">── si total > puja_mayor → vetada</span></div>
+                <div><span class="tree-key">{uid}</span><span class="tree-type">number</span><span class="tree-comment">── aporte de cada usuario al veto</span></div>
+              </div>
+              <div><span class="tree-key">dedicatoria/</span><span class="tree-comment">── opcional</span></div>
+              <div class="tree-node">
+                <div><span class="tree-key">mensaje / de / para</span><span class="tree-type">string</span></div>
+                <div><span class="tree-key">costo_pagado</span><span class="tree-type">number</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-node">
+          <div><span class="tree-key">presencia/</span></div>
+          <div class="tree-node">
+            <div><span class="tree-key">{usuario_id}/</span></div>
+            <div class="tree-node">
+              <div><span class="tree-key">conectado</span><span class="tree-type">bool</span><span class="tree-comment">── onDisconnect() limpia automáticamente</span></div>
+              <div><span class="tree-key">ultimo_ping</span><span class="tree-type">number</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-node">
+          <div><span class="tree-key">reacciones/</span><span class="tree-comment">── emojis a canciones en tiempo real</span></div>
+          <div class="tree-node">
+            <div><span class="tree-key">{cancion_item_id}/</span></div>
+            <div class="tree-node">
+              <div><span class="tree-key">{auto_id}</span><span class="tree-type">{ emoji, usuario_id, timestamp }</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tree-node">
+          <div><span class="tree-key">leaderboard/</span><span class="tree-comment">── calculado en memoria, se persiste al cerrar</span></div>
+          <div class="tree-node">
+            <div><span class="tree-key">dj_noche</span><span class="tree-type">{ uid, canciones, total_pujado }</span></div>
+            <div><span class="tree-key">cancion_mas_pujada</span><span class="tree-type">{ titulo, artista, monto }</span></div>
+            <div><span class="tree-key">puja_maxima</span><span class="tree-type">{ uid, monto, cancion }</span></div>
+          </div>
+        </div>
+
+        <div class="tree-node">
+          <div><span class="tree-key">batalla/</span><span class="tree-comment">── votación lanzada por el anfitrión</span></div>
+          <div class="tree-node">
+            <div><span class="tree-key">activa</span><span class="tree-type">bool</span></div>
+            <div><span class="tree-key">cancion_a / cancion_b</span><span class="tree-type">{ titulo, artista, video_id, votos }</span></div>
+            <div><span class="tree-key">expira</span><span class="tree-type">timestamp</span><span class="tree-comment">── timer configurable</span></div>
+            <div><span class="tree-key">ganadora</span><span class="tree-type">null | "a" | "b"</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="tree-node" style="margin-top:16px">
+      <div><span class="tree-key">sesiones_qr/</span><span class="tree-comment">── autenticación extensión Chrome — expira en 2 min</span></div>
+      <div class="tree-node">
+        <div><span class="tree-key">{token}/</span></div>
+        <div class="tree-node">
+          <div><span class="tree-key">custom_token</span><span class="tree-type">string</span><span class="tree-comment">── generado por Firebase Function</span></div>
+          <div><span class="tree-key">uid_anfitrion</span><span class="tree-type">string</span></div>
+          <div><span class="tree-key">establecimientos</span><span class="tree-type">array</span></div>
+          <div><span class="tree-key">expira</span><span class="tree-type">number</span><span class="tree-comment">── Date.now() + 120_000</span></div>
+          <div><span class="tree-key">usado</span><span class="tree-type">bool</span><span class="tree-comment">── se invalida tras primer uso</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; padding:12px 16px; background:rgba(255,165,0,.06); border-radius:8px; border:1px solid rgba(255,165,0,.2); font-size:11px; color:#FFA500;">
+      ⚡ Todo este árbol se destruye con <code style="color:#00C896">remove(ref(db, 'sesiones/{estId}'))</code> al cerrar sesión.<br>
+      📊 El progreso de canción NUNCA toca Firebase — se calcula con <code style="color:#00C896">(now - inicio_timestamp) / duracion_ms</code> cada 500ms en cada cliente.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ STATS ══════════ -->
+<div id="tab-stats" class="section">
+  <div class="section-head">
+    <h2>Colecciones de Estadísticas</h2>
+    <span class="count">8 colecciones / subcolecciones</span>
+  </div>
+  <p class="section-desc">Pre-agregadas con <code>FieldValue.increment()</code>. Nunca se calculan en tiempo real. La Function <code>cerrarSesion()</code> las actualiza en batch al terminar cada sesión.</p>
+
+  <div class="db-grid">
+
+    <div class="db-card stats">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Stats_Canciones/{youtube_video_id}</div>
+          <div class="db-card-subtitle">Ranking global de canciones en toda la plataforma</div>
+        </div>
+        <span class="badge stats">STATS</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">titulo / artista / genero</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">duracion_ms</span><span class="field-type">number</span></div>
+          <div class="field important"><span class="field-name">veces_pedida</span><span class="field-type">number</span><span class="field-note">Total histórico</span></div>
+          <div class="field important"><span class="field-name">veces_reproducida</span><span class="field-type">number</span><span class="field-note">vs pedida = tasa efectividad</span></div>
+          <div class="field"><span class="field-name">total_pujado</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">puja_maxima_historica</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">establecimientos_count</span><span class="field-type">number</span><span class="field-note">En cuántos bares ha sonado</span></div>
+          <div class="field computed"><span class="field-name">veces_compartida</span><span class="field-type">number</span><span class="field-note">Shares a redes sociales</span></div>
+          <div class="field"><span class="field-name">primera_vez / ultima_vez</span><span class="field-type">timestamp</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Por_Mes/{YYYY-MM}</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">veces_pedida / reproducida / total_pujado</span><span class="field-type">number</span></div>
+            <div class="field"><span class="field-name">establecimientos</span><span class="field-type">array</span><span class="field-note">IDs únicos ese mes</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card stats">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Stats_Establecimientos/{id}</div>
+          <div class="db-card-subtitle">Rendimiento acumulado del local</div>
+        </div>
+        <span class="badge stats">STATS</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">total_sesiones / horas_activo</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">total_recaudado / puja_promedio</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">pico_usuarios_simultaneos</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">total_usuarios_unicos</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">tasa_conversion_registro</span><span class="field-type">number</span><span class="field-note">% anónimos → clientes</span></div>
+          <div class="field computed"><span class="field-name">hora_pico / dia_pico</span><span class="field-type">string</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Por_Dia/{YYYY-MM-DD} · Canciones_Top/{video_id}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card stats">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Stats_Plataforma/global</div>
+          <div class="db-card-subtitle">Métricas globales de VIBRRA</div>
+        </div>
+        <span class="badge stats">STATS</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">total_sesiones / horas_activo</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">total_recaudado / pujas</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">total_usuarios_unicos</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">tasa_conversion_global</span><span class="field-type">number</span><span class="field-note">% anónimos → clientes</span></div>
+          <div class="field"><span class="field-name">ciudad_mas_activa</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">cancion_mas_pedida_id</span><span class="field-type">string</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Por_Mes/{YYYY-MM} · Stats_Horarios/{estId} · Stats_Clientes/{uid}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ CRM ══════════ -->
+<div id="tab-crm" class="section">
+  <div class="section-head">
+    <h2>CRM — Inteligencia de usuarios</h2>
+    <span class="count">6 colecciones</span>
+  </div>
+  <p class="section-desc">Perfiles de comportamiento para segmentación y campañas. Los Empresarios ven segmentos, nunca datos individuales. Cumple Ley 1581/2012 Colombia.</p>
+
+  <div class="db-grid">
+
+    <div class="db-card crm">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Perfiles/{uid}</div>
+          <div class="db-card-subtitle">Perfil de comportamiento — Clientes y Anónimos</div>
+        </div>
+        <span class="badge crm">CRM</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">edad_estimada</span><span class="field-type">string</span><span class="field-note">"18-24"|"25-34"|"35-44"|"45+"</span></div>
+          <div class="field"><span class="field-name">ciudad / barrio</span><span class="field-type">string</span><span class="field-note">Inferida por establecimientos</span></div>
+          <div class="field computed"><span class="field-name">nivel_socioeconomico</span><span class="field-type">string</span><span class="field-note">Inferido por monto de pujas</span></div>
+          <div class="field important"><span class="field-name">generos_favoritos</span><span class="field-type">array</span><span class="field-note">Ordenados por frecuencia</span></div>
+          <div class="field"><span class="field-name">artistas_top</span><span class="field-type">array</span><span class="field-note">Top 10</span></div>
+          <div class="field"><span class="field-name">energia_musical</span><span class="field-type">string</span><span class="field-note">Inferida por BPM promedio</span></div>
+          <div class="field"><span class="field-name">ticket_promedio / maximo</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">impulsividad</span><span class="field-type">string</span><span class="field-note">"conservador"|"moderado"|"impulsivo"</span></div>
+          <div class="field computed"><span class="field-name">tipo_consumidor</span><span class="field-type">string</span><span class="field-note">"oyente"|"activo"|"dominante"</span></div>
+          <div class="field important"><span class="field-name">influencia</span><span class="field-type">number</span><span class="field-note">0-100 — cuánto copian sus canciones</span></div>
+          <div class="field"><span class="field-name">nivel_lealtad</span><span class="field-type">string</span><span class="field-note">"nuevo"|"bronce"|"plata"|"oro"|"platino"</span></div>
+          <div class="field computed"><span class="field-name">dias_desde_ultimo_uso</span><span class="field-type">number</span><span class="field-note">Para detección churn</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card crm">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Segmentos/{nombre}</div>
+          <div class="db-card-subtitle">Calculados cada noche — base para campañas</div>
+        </div>
+        <span class="badge crm">CRM</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">descripcion</span><span class="field-type">string</span></div>
+          <div class="field computed"><span class="field-name">total_usuarios</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">criterios</span><span class="field-type">map</span><span class="field-note">Para auditoría</span></div>
+          <div class="field"><span class="field-name">ultima_actualizacion</span><span class="field-type">timestamp</span></div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:var(--muted); line-height:1.8; font-family:'JetBrains Mono',monospace;">
+          reggaetoneros · noctambulos · vip<br>
+          en_riesgo · jovenes_urbanos · dominantes<br>
+          influencers_musicales · fin_de_semana<br>
+          salseros_cali · nuevos_este_mes
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card crm">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Eventos/{uid}/stream/{id}</div>
+          <div class="db-card-subtitle">Log de comportamiento — últimos 90 días</div>
+        </div>
+        <span class="badge crm">CRM</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">tipo</span><span class="field-type">string</span><span class="field-note">"conexion"|"puja"|"publicidad_click"...</span></div>
+          <div class="field"><span class="field-name">timestamp</span><span class="field-type">timestamp</span></div>
+          <div class="field"><span class="field-name">establecimiento_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">metadata</span><span class="field-type">map</span><span class="field-note">video_id, monto, duracion_vista_seg...</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card crm">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Encuestas/{id}</div>
+          <div class="db-card-subtitle">Encuestas con recompensa opcional</div>
+        </div>
+        <span class="badge crm">CRM</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">titulo / descripcion</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">preguntas</span><span class="field-type">array</span><span class="field-note">opcion_multiple|escala|texto_libre</span></div>
+          <div class="field"><span class="field-name">segmento_objetivo</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">recompensa</span><span class="field-type">map</span><span class="field-note">"cancion_gratis"|"saldo"|"ninguna"</span></div>
+          <div class="field"><span class="field-name">activa</span><span class="field-type">bool</span></div>
+          <div class="field"><span class="field-name">fecha_inicio / fin</span><span class="field-type">timestamp</span></div>
+          <div class="field computed"><span class="field-name">total_respuestas</span><span class="field-type">number</span></div>
+        </div>
+        <div class="subcollection">
+          <div class="subcollection-title">Respuestas/{uid}</div>
+          <div class="field-list">
+            <div class="field"><span class="field-name">respuestas</span><span class="field-type">map</span><span class="field-note">{ pregunta_id: respuesta }</span></div>
+            <div class="field"><span class="field-name">establecimiento_id</span><span class="field-type">string</span><span class="field-note">Dónde estaba cuando respondió</span></div>
+            <div class="field"><span class="field-name">tiempo_respuesta_seg</span><span class="field-type">number</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="db-card crm">
+      <div class="db-card-header">
+        <div>
+          <div class="db-card-title">Campanas/{id}</div>
+          <div class="db-card-subtitle">Campañas publicitarias de Empresarios</div>
+        </div>
+        <span class="badge crm">CRM</span>
+      </div>
+      <div class="db-card-body">
+        <div class="field-list">
+          <div class="field"><span class="field-name">empresario_id</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">tipo</span><span class="field-type">string</span><span class="field-note">"banner"|"video_corto"|"cancion_patrocinada"</span></div>
+          <div class="field"><span class="field-name">contenido_url</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">segmento_objetivo</span><span class="field-type">string</span></div>
+          <div class="field"><span class="field-name">ciudades / establecimientos</span><span class="field-type">array</span></div>
+          <div class="field"><span class="field-name">presupuesto / gasto_actual</span><span class="field-type">number</span></div>
+          <div class="field"><span class="field-name">costo_por_impresion / click</span><span class="field-type">number</span></div>
+          <div class="field computed"><span class="field-name">impresiones / clicks / ctr</span><span class="field-type">number</span></div>
+          <div class="field important"><span class="field-name">aprobada_por</span><span class="field-type">string</span><span class="field-note">uid del superadmin que aprobó</span></div>
+          <div class="field"><span class="field-name">activa</span><span class="field-type">bool</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ FUNCTIONS ══════════ -->
+<div id="tab-functions" class="section">
+  <div class="section-head">
+    <h2>Firebase Functions</h2>
+    <span class="count">15 funciones</span>
+  </div>
+  <p class="section-desc">Triggers de Firestore, jobs programados y webhook de Wompi. Toda la escritura de estadísticas pasa por funciones para garantizar consistencia.</p>
+
+  <div class="fn-list">
+    <div class="fn-card">
+      <div class="fn-name">generateExtensionToken</div>
+      <div class="fn-trigger">onCall — anfitrión desde app</div>
+      <div class="fn-desc">Genera customToken para autenticar la extensión Chrome. Escribe en RTDB sesiones_qr/{token} con expiración 2 min.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">detectarSesionesInactivas</div>
+      <div class="fn-trigger">onSchedule — 0 * * * * (cada hora)</div>
+      <div class="fn-desc">Si una sesión lleva 3h sin cambiar canción (ultima_actividad), toma los stats acumulados en RTDB y los escribe a Firestore con cierre_tipo="inactividad". Resguarda el historial analítico si el anfitrión apagó el PC sin cerrar. Costo: 24 invocaciones/día — $0.00 en todos los escenarios.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">cerrarSesion</div>
+      <div class="fn-trigger">onCall — extensión Chrome</div>
+      <div class="fn-desc">Escribe todos los agregados de estadísticas en un batch atómico. Actualiza Stats_Establecimientos, Stats_Plataforma, Stats_Horarios, Stats_Canciones, y crea Sesiones/{id}.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">wompiWebhook</div>
+      <div class="fn-trigger">onRequest — POST de Wompi</div>
+      <div class="fn-desc">Valida firma HMAC del webhook. Si estado == APPROVED acredita saldo + bono si aplica. Escribe Transacciones/{id} y actualiza saldo del usuario.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">resetBeneficiosMensuales</div>
+      <div class="fn-trigger">onSchedule — 0 0 1 * * (día 1)</div>
+      <div class="fn-desc">Resetea conexiones_gratis_restantes = 2 y canciones_gratis_restantes = 3 para todos los Clientes. Crea snapshot Stats_Plataforma/Por_Mes.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">actualizarPerfil</div>
+      <div class="fn-trigger">onDocumentCreated — Eventos/{uid}/stream/{id}</div>
+      <div class="fn-desc">Recalcula el perfil CRM del usuario al crear un nuevo evento de comportamiento. Actualiza géneros, artistas, métricas de consumo.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">recalcularSegmentos</div>
+      <div class="fn-trigger">onSchedule — 0 3 * * * (3am diario)</div>
+      <div class="fn-desc">Recalcula todos los segmentos de CRM (reggaetoneros, vip, en_riesgo, etc.) actualizando Segmentos/{nombre} con total_usuarios.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">deteccionChurn</div>
+      <div class="fn-trigger">onSchedule — 0 10 * * * (10am diario)</div>
+      <div class="fn-desc">Detecta usuarios con dias_desde_ultimo_uso == 14 o 30. Envía notificación push: "¡Te extrañamos! Tienes 3 canciones gratis esperándote".</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">procesarEncuestas</div>
+      <div class="fn-trigger">onSchedule — 0 0 * * * (medianoche)</div>
+      <div class="fn-desc">Cierra encuestas con fecha_fin vencida. Calcula resultados agregados por pregunta. Otorga recompensas pendientes.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">facturarCampanas</div>
+      <div class="fn-trigger">onSchedule — 0 1 * * * (1am diario)</div>
+      <div class="fn-desc">Descuenta del saldo del Empresario el gasto de impresiones/clicks del día anterior. Desactiva campañas sin presupuesto.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">verificarDocumentosVencimiento</div>
+      <div class="fn-trigger">onSchedule — 0 9 * * * (9am diario)</div>
+      <div class="fn-desc">Revisa doc_*_vence de todos los establecimientos activos. Si doc_sayco_acinpro vence hoy o ya venció → bloquea sesión y envía push. Genera alertas a 30, 15 y 5 días para los demás. Recalcula docs_estado_general.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">procesarRetiro</div>
+      <div class="fn-trigger">onCall — superadmin</div>
+      <div class="fn-desc">Al aprobar un retiro: zeroa generado_pendiente de todos los establecimientos del anfitrión, actualiza saldo_disponible=0, escribe Movimiento "retiro" y entrada en AuditLog. Garantía atómica con batch.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">resetRetiroMes</div>
+      <div class="fn-trigger">onSchedule — 0 6 11 * * (día 11 a las 6am)</div>
+      <div class="fn-desc">Pone retiro_este_mes=false en todos los anfitriones activos. Abre el nuevo ciclo de retiros del mes. También actualiza saldo_disponible recalculando la suma de generado_pendiente de cada establecimiento.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">registrarAuditLog</div>
+      <div class="fn-trigger">onCall — interno (llamada desde otras Functions)</div>
+      <div class="fn-desc">Helper centralizado que escribe en Anfitriones/{uid}/AuditLog/{id} con serverTimestamp e IP. Solo Functions pueden llamarlo — los clientes no tienen acceso de escritura directo al AuditLog.</div>
+    </div>
+    <div class="fn-card">
+      <div class="fn-name">limpiarEventosAntiguos</div>
+      <div class="fn-trigger">onSchedule — 0 4 1 * * (día 1)</div>
+      <div class="fn-desc">Elimina eventos de Eventos/{uid}/stream con más de 90 días. Los agregados ya fueron actualizados en Perfiles/{uid}.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ RULES ══════════ -->
+<div id="tab-rules" class="section">
+  <div class="section-head">
+    <h2>Reglas de negocio en la DB</h2>
+  </div>
+
+  <table class="rules-table">
+    <thead>
+      <tr>
+        <th>Regla</th>
+        <th>Implementación</th>
+        <th>Dónde</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Anfitrión sin RUT no puede retirar</td>
+        <td>App verifica <code>rut != null</code> antes de mostrar botón de retiro</td>
+        <td>Anfitriones/{uid}</td>
+      </tr>
+      <tr>
+        <td>Retiro: solo días 1-10 del mes, 1 por mes</td>
+        <td>App verifica fecha y <code>ultimo_retiro</code>. Botón deshabilitado con countdown.</td>
+        <td>Establecimientos/{id}</td>
+      </tr>
+      <tr>
+        <td>Puja atómica — no se puede robar la posición</td>
+        <td><code>runTransaction()</code> en RTDB cola/{itemId}</td>
+        <td>Realtime DB / cola</td>
+      </tr>
+      <tr>
+        <td>Veto: si total_vetos > puja_mayor → canción eliminada</td>
+        <td>Cloud Function verifica en cada escritura a <code>vetos/total</code></td>
+        <td>Realtime DB / cola/{id}/vetos</td>
+      </tr>
+      <tr>
+        <td>Bono de bienvenida anfitrión = no reclamable</td>
+        <td><code>tipo: "bienvenida_anfitrion"</code> excluido de lógica de retiro</td>
+        <td>Bonos/{id}</td>
+      </tr>
+      <tr>
+        <td>Extensión QR expira en 2 minutos</td>
+        <td>RTDB sesiones_qr/{token}.expira verificado antes de usar el custom_token</td>
+        <td>Realtime DB / sesiones_qr</td>
+      </tr>
+      <tr>
+        <td>Progreso de canción = nunca toca Firebase</td>
+        <td><code>(now - inicio_timestamp) / duracion_ms</code> local cada 500ms</td>
+        <td>Cliente local</td>
+      </tr>
+      <tr>
+        <td>VIBRRA retiene 30% — bonos excluidos</td>
+        <td>Function <code>cerrarSesion()</code> aplica distribución solo sobre transacciones con <code>tipo != "bono"</code></td>
+        <td>Firebase Function</td>
+      </tr>
+      <tr>
+        <td>IVA 19% sobre comisión 30% de VIBRRA</td>
+        <td>Calculado en Function, registrado en Movimientos/{id} como deducción informativa</td>
+        <td>Anfitriones/Movimientos</td>
+      </tr>
+      <tr>
+        <td>Retención en fuente al pagar al anfitrión</td>
+        <td>Wompi webhook → Function lee <code>tarifa_retencion</code> del anfitrión y aplica</td>
+        <td>Firebase Function / Wompi</td>
+      </tr>
+      <tr>
+        <td>Colección RTDB limpiada al cerrar sesión</td>
+        <td><code>remove(ref(db, 'sesiones/{estId}'))</code> — atómico</td>
+        <td>Extensión Chrome</td>
+      </tr>
+      <tr>
+        <td>Eventos de CRM: máximo 90 días</td>
+        <td>Function <code>limpiarEventosAntiguos</code> elimina el 1ro de cada mes</td>
+        <td>Eventos/{uid}/stream</td>
+      </tr>
+      <tr>
+        <td>Dinero = escritura inmediata en Firestore</td>
+        <td>Cada puja ganada escribe en batch: Pujas/{id} + Movimientos/{id} + <code>increment retiro_pendiente</code>. Independiente del cierre de sesión. El dinero nunca vive solo en RTDB.</td>
+        <td>App / Firestore</td>
+      </tr>
+      <tr>
+        <td>Stats inactivas → Firestore tras 3h sin canción</td>
+        <td>La extensión escribe <code>ultima_actividad = serverTimestamp()</code> al cambiar canción. <code>detectarSesionesInactivas</code> corre cada hora y vuelca los stats al Firestore si no hubo actividad en 3h.</td>
+        <td>Firebase Function / RTDB</td>
+      </tr>
+      <tr>
+        <td>OSA vencida = sesión bloqueada</td>
+        <td>Si <code>doc_sayco_acinpro_vigente == false</code>, la extensión Chrome rechaza la apertura de sesión. Única excepción: período de gracia de 3 días para renovación.</td>
+        <td>Establecimientos/{id}</td>
+      </tr>
+      <tr>
+        <td>Alerta 30 días antes de vencimiento OSA</td>
+        <td>Function <code>verificarDocumentosVencimiento</code> envía push al anfitrión con link directo a osa.org.co</td>
+        <td>Firebase Function</td>
+      </tr>
+      <tr>
+        <td>docs_estado_general calculado automáticamente</td>
+        <td>"critico" si sayco vencido. "advertencia" si cualquier doc vence en &lt;30 días. "completo" si todo vigente.</td>
+        <td>Establecimientos/{id}</td>
+      </tr>
+      <tr>
+        <td>Retiro = 1 por anfitrión, no por establecimiento</td>
+        <td><code>retiro_este_mes == true</code> bloquea nuevas solicitudes. El monto consolida <code>generado_pendiente</code> de TODOS los establecimientos del anfitrión en un solo retiro. Se resetea el día 11 de cada mes.</td>
+        <td>Anfitriones/{uid}</td>
+      </tr>
+      <tr>
+        <td>AuditLog es inmutable</td>
+        <td>Las Security Rules prohíben al cliente escribir directamente en <code>Anfitriones/{uid}/AuditLog</code>. Solo Cloud Functions pueden hacerlo. Cualquier cambio en cuenta o establecimiento genera una entrada automáticamente.</td>
+        <td>Firestore Rules</td>
+      </tr>
+      <tr>
+        <td>Campaña requiere aprobación del superadmin</td>
+        <td>App verifica <code>aprobada_por != null</code> para mostrar campaña a usuarios</td>
+        <td>Campanas/{id}</td>
+      </tr>
+      <tr>
+        <td>Bono deducible requiere trazabilidad</td>
+        <td>Colección Bonos/{id} con log de consumos — soporte DIAN Art. 107 E.T.</td>
+        <td>Bonos/{id}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</main>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function filterCards(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('#firestore-grid .db-card').forEach(card => {
+    const name = card.dataset.name || '';
+    const text = card.textContent.toLowerCase();
+    card.style.display = (text.includes(q) || name.includes(q)) ? '' : 'none';
+  });
+}
+
+function filterByType(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#firestore-grid .db-card').forEach(card => {
+    if (type === 'all') { card.style.display = ''; return; }
+    card.style.display = (card.dataset.type === type) ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
