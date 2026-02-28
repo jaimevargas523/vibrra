@@ -1,0 +1,34 @@
+{
+  "title": "My Account",
+  "perfil": {
+    "title": "PROFILE",
+    "nombre": "Name",
+    "email": "Email address",
+    "tipo": "Host · {{count}} venue(s)"
+  },
+  "bancaria": {
+    "title": "WITHDRAWAL DESTINATION ACCOUNT",
+    "principal": "PRIMARY",
+    "sinCuenta": "No account registered",
+    "agregar": "+ Add bank account or Nequi",
+    "nota": "VIBRRA deposits directly to the account selected as primary. Withdrawals are processed in 1-3 business days."
+  },
+  "tributaria": {
+    "title": "TAX INFORMATION · RUT",
+    "tipoPersona": "Person type",
+    "nit": "NIT / ID Number",
+    "regimen": "Tax regime",
+    "iva": "VAT liable",
+    "retencion": "Withholding applied",
+    "retencionVal": "3.5% on each withdrawal · Art. 392 ET",
+    "ica": "Municipal ICA",
+    "icaVal": "Applied on withdrawal",
+    "noConfigurado": "Not configured"
+  },
+  "seguridad": {
+    "title": "SECURITY",
+    "cambiarPw": "Change password",
+    "cambiarPwDesc": "Update your access password",
+    "cerrarSesion": "Log out"
+  }
+}

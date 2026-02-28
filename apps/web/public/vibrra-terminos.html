@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VIBRRA — Términos y Condiciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#FFE566;--gold-mid:#D4A017;--gold-dk:#A97010;
+  --ink:#080808;--deep:#0C0C0C;--panel:#111111;--edge:#1E1E1E;
+  --txt:#F0EDE8;--soft:#9A9590;--muted:#5A5A5A;
+  --line:rgba(212,160,23,.13);
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Montserrat',sans-serif;
+  background:var(--ink);color:var(--txt);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 48px;
+  background:rgba(8,8,8,.95);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;font-size:22px;font-weight:900;
+  background:linear-gradient(135deg,#FFE566,#D4A017,#A97010);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;letter-spacing:4px;text-decoration:none;
+}
+.nav-badge{
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold-mid);border:1px solid var(--line);
+  padding:4px 12px;border-radius:20px;
+}
+
+/* ── HERO ── */
+.hero{
+  padding:72px 48px 48px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(212,160,23,.04) 0%,transparent 100%);
+}
+.hero-eyebrow{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold-mid);margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold-mid);}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,5vw,64px);font-weight:900;
+  line-height:1.05;margin-bottom:20px;
+}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-meta{
+  display:flex;gap:32px;flex-wrap:wrap;margin-top:24px;
+}
+.hero-meta-item{
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--soft);
+}
+.hero-meta-item strong{color:var(--gold-mid);display:block;font-size:12px;margin-bottom:2px;}
+
+/* ── LAYOUT ── */
+.layout{
+  display:grid;grid-template-columns:260px 1fr;
+  max-width:1100px;margin:0 auto;
+  padding:48px 48px 96px;gap:48px;
+}
+@media(max-width:800px){
+  .layout{grid-template-columns:1fr;padding:32px 24px 80px;}
+  .sidebar{display:none;}
+  .nav{padding:16px 24px;}
+  .hero{padding:48px 24px 32px;}
+}
+
+/* ── SIDEBAR ── */
+.sidebar{position:sticky;top:80px;height:fit-content;}
+.sidebar-title{
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:16px;
+}
+.sidebar-links{display:flex;flex-direction:column;gap:2px;}
+.sidebar-link{
+  display:block;padding:8px 12px;border-radius:6px;
+  font-size:11px;color:var(--soft);text-decoration:none;
+  transition:all .15s;border-left:2px solid transparent;
+}
+.sidebar-link:hover{color:var(--txt);border-left-color:var(--gold-mid);}
+.sidebar-link.active{color:var(--gold);border-left-color:var(--gold);background:rgba(212,160,23,.05);}
+
+/* ── CONTENIDO ── */
+.content section{margin-bottom:56px;scroll-margin-top:80px;}
+.section-num{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold-mid);margin-bottom:8px;
+}
+.section-title{
+  font-family:'Playfair Display',serif;
+  font-size:28px;font-weight:700;margin-bottom:20px;
+  padding-bottom:16px;border-bottom:1px solid var(--line);
+}
+.section-title em{color:var(--gold);font-style:italic;}
+
+p{font-size:13px;line-height:1.85;color:var(--soft);margin-bottom:14px;}
+p strong{color:var(--txt);font-weight:600;}
+p a{color:var(--gold-mid);text-decoration:none;}
+p a:hover{text-decoration:underline;}
+
+/* LISTA */
+.legal-list{list-style:none;margin:16px 0 20px;display:flex;flex-direction:column;gap:8px;}
+.legal-list li{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:13px;line-height:1.7;color:var(--soft);
+}
+.legal-list li::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--gold-mid);flex-shrink:0;margin-top:8px;
+}
+.legal-list li strong{color:var(--txt);}
+
+/* TABLA */
+.legal-table{
+  width:100%;border-collapse:collapse;
+  margin:20px 0;font-size:12px;
+}
+.legal-table th{
+  background:rgba(212,160,23,.07);
+  color:var(--gold-mid);font-weight:700;
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--edge);
+}
+.legal-table td{
+  padding:10px 14px;color:var(--soft);
+  border-bottom:1px solid var(--edge);
+  vertical-align:top;line-height:1.6;
+}
+.legal-table tr:last-child td{border-bottom:none;}
+
+/* CALLOUT */
+.callout{
+  border-left:3px solid var(--gold-mid);
+  background:rgba(212,160,23,.04);
+  border-radius:0 8px 8px 0;
+  padding:16px 20px;margin:20px 0;
+  font-size:12px;color:var(--soft);line-height:1.7;
+}
+.callout strong{color:var(--gold-mid);}
+.callout.warn{border-left-color:var(--gold);background:rgba(255,229,102,.04);}
+.callout.info{border-left-color:var(--soft);background:rgba(154,149,144,.04);}
+
+/* CHIP */
+.chip{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);
+  color:var(--gold-mid);margin:2px;
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--line);
+  padding:32px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;
+}
+footer p{font-size:10px;color:var(--muted);margin:0;}
+footer a{color:var(--gold-mid);text-decoration:none;font-size:10px;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">VIBRRA</a>
+  <span class="nav-badge">Documento Legal</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Documento legal</div>
+  <h1>Términos y<br/><em>Condiciones</em></h1>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><strong>Versión</strong>1.0</div>
+    <div class="hero-meta-item"><strong>Vigencia</strong>Febrero 2026</div>
+    <div class="hero-meta-item"><strong>Jurisdicción</strong>Colombia</div>
+    <div class="hero-meta-item"><strong>Aplica a</strong>Anfitriones · Clientes · Empresas</div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Contenido</div>
+    <nav class="sidebar-links">
+      <a href="#s1" class="sidebar-link active">1. Definiciones</a>
+      <a href="#s2" class="sidebar-link">2. Acceso a la plataforma</a>
+      <a href="#s3" class="sidebar-link">3. Modelo económico</a>
+      <a href="#s4" class="sidebar-link">4. Sesiones y cola</a>
+      <a href="#s5" class="sidebar-link">5. Retiros y pagos</a>
+      <a href="#s6" class="sidebar-link">6. Programa fidelización</a>
+      <a href="#s7" class="sidebar-link">7. Publicidad en plataforma</a>
+      <a href="#s8" class="sidebar-link">8. VIBRRA Match</a>
+      <a href="#s8b" class="sidebar-link">8B. VIBRRA Dueto</a>
+      <a href="#s9" class="sidebar-link">9. Obligaciones del anfitrión</a>
+      <a href="#s10" class="sidebar-link">10. Obligaciones del cliente</a>
+      <a href="#s11" class="sidebar-link">11. Propiedad intelectual</a>
+      <a href="#s12" class="sidebar-link">12. Suspensión y terminación</a>
+      <a href="#s13" class="sidebar-link">13. Limitación de responsabilidad</a>
+      <a href="#s13b" class="sidebar-link">13B. Sostenibilidad de la plataforma</a>
+      <a href="#s14" class="sidebar-link">14. Modificaciones</a>
+      <a href="#s15" class="sidebar-link">15. Ley aplicable</a>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <div class="content">
+
+    <section id="s1">
+      <div class="section-num">Artículo 01</div>
+      <h2 class="section-title">Definiciones</h2>
+      <p>Para efectos de los presentes Términos y Condiciones, los siguientes términos tienen el significado que a continuación se indica:</p>
+      <ul class="legal-list">
+        <li><strong>VIBRRA:</strong> Plataforma de jukebox digital operada por AXIOVA S.A.S., sociedad constituida bajo las leyes de la República de Colombia.</li>
+        <li><strong>Anfitrión:</strong> Persona natural o jurídica dueña o administradora de un establecimiento de entretenimiento que activa la plataforma VIBRRA para ofrecer el servicio a sus clientes.</li>
+        <li><strong>Cliente:</strong> Usuario final que escanea el QR en un establecimiento afiliado y participa en la cola musical mediante la aplicación móvil de VIBRRA.</li>
+        <li><strong>Sesión:</strong> Período activo de operación de VIBRRA en un establecimiento, durante el cual los clientes pueden nominar canciones, pujar y enviar dedicatorias.</li>
+        <li><strong>Cola:</strong> Lista ordenada de canciones pendientes de reproducción, cuyo orden está determinado por las pujas acumuladas.</li>
+        <li><strong>Puja:</strong> Monto en pesos colombianos (COP) que un cliente paga para subir una canción en la cola o mantenerla en posición prioritaria.</li>
+        <li><strong>Nominación:</strong> Acción de agregar una canción a la cola pública, sujeta al precio configurado por el anfitrión (precio_por_cancion).</li>
+        <li><strong>VETO:</strong> Funcionalidad que permite a un cliente pagar para bloquear una canción de la cola durante la sesión activa.</li>
+        <li><strong>Saldo Real:</strong> Saldo cargado con dinero real mediante pasarela de pago (Wompi). Retirable por el anfitrión.</li>
+        <li><strong>Saldo Bono:</strong> Saldo otorgado por VIBRRA como incentivo. No retirable. Consumible únicamente dentro de la plataforma.</li>
+        <li><strong>Dashboard:</strong> Panel de control web del anfitrión, accesible en vibrra.live, desde el cual gestiona establecimientos, sesiones, retiros y analytics.</li>
+        <li><strong>Extensión Chrome:</strong> Complemento del navegador Google Chrome necesario para que el anfitrión controle la reproducción de audio y video desde el Dashboard. El anfitrión es responsable de cumplir los términos de uso del servicio de streaming que utilice.</li>
+      </ul>
+    </section>
+
+    <section id="s2">
+      <div class="section-num">Artículo 02</div>
+      <h2 class="section-title">Acceso a la <em>plataforma</em></h2>
+      <p>El uso de VIBRRA está condicionado a la aceptación de los presentes Términos. Al crear una cuenta o activar una sesión, el usuario declara haber leído, comprendido y aceptado estas condiciones en su totalidad.</p>
+      <p><strong>Requisitos para el Anfitrión:</strong> Ser mayor de 18 años, titular o representante legal del establecimiento, con documento de identidad vigente, RUT activo y cuenta bancaria colombiana a su nombre.</p>
+      <p><strong>Requisitos para el Cliente:</strong> Ser mayor de 18 años o contar con autorización expresa de su representante legal. VIBRRA no es responsable por el acceso de menores de edad en establecimientos que permitan su ingreso.</p>
+      <p><strong>Verificación de identidad:</strong> VIBRRA se reserva el derecho de solicitar documentación adicional para verificar la identidad del anfitrión, en cumplimiento de las obligaciones ante la UIAF (Unidad de Información y Análisis Financiero) de Colombia.</p>
+      <div class="callout">
+        <strong>Primera sesión gratuita:</strong> Todo anfitrión que complete el proceso de registro recibe una sesión de prueba gratuita sin cobro de suscripción mensual, más un bono de bienvenida de $30.000 COP acreditado en su cuenta al verificar su documentación.
+      </div>
+    </section>
+
+    <section id="s3">
+      <div class="section-num">Artículo 03</div>
+      <h2 class="section-title">Modelo <em>económico</em></h2>
+      <p>VIBRRA opera bajo un modelo de comisión sobre transacciones generadas por los clientes dentro de la plataforma. La distribución es la siguiente:</p>
+      <table class="legal-table">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Anfitrión</th>
+            <th>VIBRRA</th>
+            <th>Pasarela (Wompi)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conexión a sesión</td>
+            <td>70%</td>
+            <td>30%</td>
+            <td>~2.68% + $900/tx</td>
+          </tr>
+          <tr>
+            <td>Nominación de canción</td>
+            <td>70%</td>
+            <td>30%</td>
+            <td>~2.68% + $900/tx</td>
+          </tr>
+          <tr>
+            <td>Puja sobre canción</td>
+            <td>70%</td>
+            <td>30%</td>
+            <td>~2.68% + $900/tx</td>
+          </tr>
+          <tr>
+            <td>Dedicatoria en pantalla</td>
+            <td>70%</td>
+            <td>30%</td>
+            <td>~2.68% + $900/tx</td>
+          </tr>
+          <tr>
+            <td>VETO de canción</td>
+            <td>70%</td>
+            <td>30%</td>
+            <td>~2.68% + $900/tx</td>
+          </tr>
+          <tr>
+            <td>Suscripción mensual (SaaS)</td>
+            <td>—</td>
+            <td>100%</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Los porcentajes indicados corresponden al monto bruto de la transacción <strong>antes</strong> de la deducción de tarifas de pasarela. El ingreso neto del anfitrión se acredita en su saldo de la plataforma y está sujeto a retención en la fuente e ICA según su régimen tributario.</p>
+      <div class="callout warn">
+        <strong>Ejemplo de distribución real:</strong> Un cliente puja $5.000 COP descontados de su saldo en la plataforma. El anfitrión recibe $3.500 (70%) acreditados en su saldo, y VIBRRA retiene $1.500 (30%).
+      </div>
+      <p><strong>Precios configurables:</strong> El anfitrión tiene control total sobre los precios de conexión, nominación, puja mínima, dedicatoria y veto de una canción, con un piso mínimo de <strong>$100 COP</strong> por operación. Los precios son independientes por establecimiento.</p>
+    </section>
+
+    <section id="s4">
+      <div class="section-num">Artículo 04</div>
+      <h2 class="section-title">Sesiones y <em>cola musical</em></h2>
+      <p>Una sesión VIBRRA es el período durante el cual el anfitrión activa la plataforma en su establecimiento. Cada sesión tiene las siguientes características:</p>
+      <ul class="legal-list">
+        <li><strong>Activación:</strong> El anfitrión inicia la sesión desde el Dashboard. La extensión Chrome sincroniza automáticamente con el reproductor activo del establecimiento.</li>
+        <li><strong>URL pública de sesión:</strong> Cada sesión genera una URL del tipo <code style="color:var(--gold-mid);background:rgba(212,160,23,.08);padding:2px 6px;border-radius:4px;">vibrra.live/s/{slug}</code> que el anfitrión puede compartir en redes sociales para atraer clientes.</li>
+        <li><strong>Cola de reproducción:</strong> Las canciones se ordenan automáticamente por puja acumulada. El anfitrión puede configurar sus playlists antes de iniciar la sesión, pero <strong>no puede reordenar la cola manualmente</strong> durante la sesión. El único mecanismo para subir una canción es la puja, y tiene costo incluso para el anfitrión. <strong>VIBRRA garantiza que el orden de reproducción está definido netamente por el valor de las pujas</strong>, sin intervención manual de ninguna parte.</li>
+        <li><strong>Orden de reproducción:</strong> VIBRRA no garantiza el orden de reproducción cuando el anfitrión interviene manualmente la cola. El orden mostrado es orientativo y puede variar.</li>
+        <li><strong>Compatibilidad de reproductores:</strong> La extensión Chrome es compatible con reproductores de audio y video en el navegador. El anfitrión es exclusivo responsable de contar con las licencias necesarias para la reproducción pública del contenido, así como de cumplir los términos de uso de los servicios de streaming que utilice. VIBRRA no tiene relación contractual con dichos servicios ni garantiza su disponibilidad.</li>
+      </ul>
+      <div class="callout info">
+        <strong>URL permanente del establecimiento:</strong> Cada negocio registrado tiene una URL permanente del tipo <code style="color:var(--soft);background:rgba(154,149,144,.08);padding:2px 6px;border-radius:4px;">vibrra.live/neg/{uid}</code> que no cambia aunque el establecimiento cambie de nombre o el anfitrión actualice su perfil.
+      </div>
+    </section>
+
+    <section id="s5">
+      <div class="section-num">Artículo 05</div>
+      <h2 class="section-title">Retiros y <em>pagos</em></h2>
+      <p>El anfitrión puede solicitar el retiro de su saldo real acumulado bajo las siguientes condiciones:</p>
+      <ul class="legal-list">
+        <li><strong>Ventana de retiro:</strong> Los retiros están disponibles únicamente durante los primeros <strong>10 días calendario</strong> de cada mes.</li>
+        <li><strong>Frecuencia:</strong> Se permite <strong>un retiro por mes</strong>. Las solicitudes adicionales en el mismo período serán rechazadas.</li>
+        <li><strong>Monto mínimo:</strong> El monto mínimo de retiro es de <strong>$20.000 COP</strong>.</li>
+        <li><strong>Tiempo de acreditación:</strong> 1 a 3 días hábiles desde la aprobación, sujeto a los tiempos de ePayco Split Payments.</li>
+        <li><strong>Cuenta bancaria:</strong> El retiro se realiza exclusivamente a la cuenta bancaria registrada y verificada en el perfil del anfitrión. No se admiten transferencias a terceros.</li>
+        <li><strong>Retenciones:</strong> VIBRRA aplicará retención en la fuente según el régimen tributario declarado por el anfitrión (persona natural declarante, no declarante, o persona jurídica).</li>
+        <li><strong>Saldo bono:</strong> El saldo bono <strong>no es retirable</strong> bajo ninguna circunstancia. Solo puede utilizarse para financiar acciones dentro de la plataforma.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Retención de pagos:</strong> VIBRRA se reserva el derecho de retener pagos temporalmente en casos de disputas, fraude detectado, incumplimiento de estos términos o requerimientos de autoridades competentes.
+      </div>
+    </section>
+
+    <section id="s6">
+      <div class="section-num">Artículo 06</div>
+      <h2 class="section-title">Programa de <em>fidelización</em></h2>
+      <p>VIBRRA opera un programa de fidelización para clientes (usuarios finales) con las siguientes características:</p>
+      <p><strong>Bono de bienvenida para nuevos clientes:</strong> Todo cliente que se registra por primera vez recibe automáticamente:</p>
+      <ul class="legal-list">
+        <li>2 conexiones gratuitas a sesiones (válidas 30 días)</li>
+        <li>3 nominaciones gratuitas de canciones (válidas 30 días)</li>
+        <li>$2.000 COP en saldo bono para pujas (válidos 30 días)</li>
+      </ul>
+      <p><strong>Naturaleza de los bonos:</strong> Los bonos de fidelización son asumidos íntegramente por VIBRRA como costo de adquisición de clientes (CAC). No representan ingreso para el anfitrión ni generan transacciones reales en el estado de cuenta del establecimiento.</p>
+      <p><strong>Transparencia con el anfitrión:</strong> El Dashboard del anfitrión distingue en todo momento entre ingresos reales (pagados con saldo real del cliente) e ingresos de fidelización (cubiertos por bonos de VIBRRA), con métricas de conversión disponibles en tiempo real.</p>
+      <div class="callout">
+        <strong>Regla inamovible:</strong> Las reglas del programa de fidelización (montos, vigencias y condiciones) no son configurables por el anfitrión. Están documentadas explícitamente en este Acuerdo de Servicio para prevenir inconformidades. El anfitrión acepta esta condición al activar su cuenta.<br/><br/>
+        <strong>Validez universal de bonos:</strong> Todos los bonos de la plataforma — sean otorgados por el anfitrión vía recarga, por VIBRRA como bienvenida, o por fidelización — son válidos en <strong>cualquier establecimiento VIBRRA</strong> sin restricción de origen ni de establecimiento.
+      </div>
+    </section>
+
+    <section id="s7">
+      <div class="section-num">Artículo 07</div>
+      <h2 class="section-title">Publicidad en <em>plataforma</em></h2>
+      <p>VIBRRA opera un sistema de publicidad integrado en la experiencia musical del cliente. Las condiciones son:</p>
+      <ul class="legal-list">
+        <li><strong>Bonos por consumo publicitario:</strong> El cliente que visualice publicidad de marcas dentro de la aplicación recibirá como recompensa <strong>nominaciones gratuitas de canciones</strong>. Estos bonos son válidos en cualquier establecimiento VIBRRA y pueden utilizarse en la sesión activa del momento.</li>
+        <li><strong>Impacto económico:</strong> Las canciones nominadas mediante canje publicitario no generan ingreso para el anfitrión ni para VIBRRA en esa transacción específica.</li>
+        <li><strong>Visibilidad:</strong> El Dashboard del anfitrión identifica claramente qué canciones en cola corresponden a canjes publicitarios.</li>
+      </ul>
+      <p>Al aceptar los presentes términos, el anfitrión reconoce y acepta el modelo de publicidad integrada como parte inherente del servicio VIBRRA.</p>
+    </section>
+
+    <section id="s8">
+      <div class="section-num">Artículo 08</div>
+      <h2 class="section-title">VIBRRA <em>Match</em></h2>
+      <p>VIBRRA Match es una funcionalidad social opcional que conecta a dos clientes registrados cuando ambos han pujado por la misma canción durante la misma sesión.</p>
+      <ul class="legal-list">
+        <li><strong>Activación:</strong> El match se activa únicamente si <strong>ambos</strong> clientes tienen activa la funcionalidad de Match en su perfil y han pujado mínimo $500 COP por la misma canción en la misma sesión.</li>
+        <li><strong>Temporalidad:</strong> El match y el chat asociado están vinculados a la sesión musical activa del establecimiento. Su vigencia finaliza cuando el anfitrión cierra la sesión explícitamente, o cuando el sistema detecta que no hay más actividad de reproducción. Una vez concluida la sesión, la conexión expira de forma irrevocable. Esta temporalidad es intencional: el contexto compartido que originó el match fue ese momento, ese lugar y esa música. VIBRRA no extiende ni restaura conexiones vencidas bajo ninguna circunstancia.</li>
+        <li><strong>Datos compartidos en el match:</strong> El match no comparte información automáticamente. Es el cliente quien decide, tanto al momento de activar la conexión como en cualquier momento posterior durante la sesión, qué desea revelar al otro usuario dentro del chat. Los datos disponibles para compartir son: nombre real o alias de pantalla, sexo, foto de perfil (si la tiene configurada), y el historial de canciones en las que ambos usuarios han coincidido en sesiones previas. El cliente puede optar por compartir todos, algunos o ninguno de estos datos, y puede modificar su selección mientras la sesión esté activa. Una vez concluida la sesión, los datos compartidos dejan de ser visibles y la conexión expira de forma irrevocable.</li>
+        <li><strong>Privacidad:</strong> Los datos de ubicación exacta, información financiera, número de teléfono o correo electrónico <strong>nunca</strong> se comparten con otros usuarios a través de VIBRRA Match.</li>
+        <li><strong>Perfil de compatibilidad:</strong> Con el tiempo, VIBRRA construye automáticamente un perfil de afinidad musical basado en el historial de pujas. El usuario puede eliminar este perfil en cualquier momento desde la configuración de su cuenta.</li>
+      </ul>
+      <div class="callout info">
+        <strong>Principio de diseño:</strong> VIBRRA Match no crea la compatibilidad entre personas — la hace visible. El match ya existía implícitamente en el comportamiento musical. VIBRRA solo convierte esa coincidencia en una conexión explícita dentro del contexto físico del bar.
+      </div>
+    </section>
+
+    <section id="s8b">
+      <div class="section-num">Artículo 08B</div>
+      <h2 class="section-title">VIBRRA <em>Dueto</em></h2>
+      <p>VIBRRA Dueto es una extensión de la funcionalidad VIBRRA Match que permite a dos usuarios con chat activo proponer y financiar conjuntamente una canción en la cola de reproducción del establecimiento. Su activación es sugerida por la plataforma, no iniciada manualmente por el usuario.</p>
+
+      <p><strong>Activación inteligente</strong></p>
+      <p>VIBRRA monitorea el comportamiento del chat de forma automatizada mediante reglas heurísticas locales — número de mensajes intercambiados, tiempo en conversación y ausencia de bloqueos mutuos. Cuando estos indicadores sugieren una conversación activa y positiva, la plataforma propone la opción <em>"¿Proponen un Dueto?"</em> directamente en el chat de ambos usuarios. El sistema no analiza ni almacena el contenido de los mensajes. Solo evalúa métricas de comportamiento.</p>
+
+      <p><strong>Canción sugerida</strong></p>
+      <p>El sistema calcula automáticamente la canción con el mayor índice de afinidad entre los historiales musicales de ambos usuarios y la propone como candidata del Dueto. La selección no es editable por ninguna de las partes.</p>
+
+      <p><strong>Flujo de confirmación</strong></p>
+      <ul class="legal-list">
+        <li>Ambos usuarios reciben en el chat la canción sugerida, el costo total y el aporte esperado de cada uno.</li>
+        <li>Cada usuario dispone de <strong>2 minutos</strong> para aceptar o rechazar. Si uno no responde en ese tiempo, la propuesta expira silenciosamente sin consecuencia alguna para ninguna de las partes.</li>
+        <li>Si ambos aceptan, cada uno aporta su parte simultáneamente desde su saldo real o bonos. La puja combinada eleva la posición de la canción en la cola.</li>
+        <li>Cada usuario debe aportar mínimo el precio base configurado por el anfitrión para operaciones de nominación.</li>
+      </ul>
+
+      <p><strong>Condición de cancelación automática</strong></p>
+      <ul class="legal-list">
+        <li>Si alguno de los dos no cuenta con saldo o bonos suficientes al momento de confirmar, la propuesta se cancela automáticamente. Ningún recurso es debitado de forma parcial.</li>
+        <li>Si uno rechaza explícitamente, la propuesta se cancela de inmediato. El otro usuario no es notificado del rechazo — solo ve que la propuesta expiró.</li>
+      </ul>
+
+      <p><strong>Experiencia en el establecimiento</strong></p>
+      <ul class="legal-list">
+        <li>La canción ingresa a la cola con un <strong>badge 💑</strong> visible para todos los presentes en el establecimiento, sin revelar la identidad de los usuarios involucrados.</li>
+        <li>Al sonar, se despliega una animación especial en la pantalla del bar — corazones, destellos y efectos visuales — que distingue el momento dentro de la sesión.</li>
+        <li>Los dos usuarios del Dueto reciben en su chat privado una animación de celebración exclusiva y una notificación cuando la canción está próxima a sonar.</li>
+      </ul>
+
+      <p><strong>Distribución económica</strong></p>
+      <p>La puja combinada sigue la regla estándar de distribución: <strong>70% para el anfitrión</strong> y <strong>30% para VIBRRA</strong>. No existen condiciones económicas especiales por tratarse de un Dueto.</p>
+
+      <p><strong>Restricciones</strong></p>
+      <ul class="legal-list">
+        <li>Funcionalidad exclusiva para clientes <strong>registrados</strong> con Match activo en la sesión. No disponible para usuarios anónimos.</li>
+        <li>Máximo <strong>un Dueto activo</strong> por pareja durante la misma sesión.</li>
+        <li>La funcionalidad expira junto con la sesión musical. No es posible proponer un Dueto fuera de una sesión activa.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Privacidad del Dueto:</strong> El badge 💑 en la cola nunca revela los nombres ni alias de los usuarios involucrados. La experiencia pública es anónima. Solo los dos participantes conocen el origen del Dueto a través de su chat privado.
+      </div>
+    </section>
+
+    <section id="s9">
+      <div class="section-num">Artículo 09</div>
+      <h2 class="section-title">Obligaciones del <em>anfitrión</em></h2>
+      <ul class="legal-list">
+        <li>Mantener actualizada su información de identidad, tributaria y bancaria en el Dashboard.</li>
+        <li>No compartir sus credenciales de acceso al Dashboard con terceros no autorizados.</li>
+        <li>Garantizar que el establecimiento cumple con los requisitos legales colombianos para ofrecer entretenimiento musical (SAYCO ACINPRO y demás obligaciones aplicables). VIBRRA no asume responsabilidad por el incumplimiento de estas obligaciones.</li>
+        <li>No manipular la plataforma para inflar artificialmente estadísticas, pujas o métricas de sesión.</li>
+        <li>Notificar a VIBRRA dentro de las 48 horas siguientes si detecta actividad sospechosa o transacciones no reconocidas.</li>
+        <li><strong>Verificación de establecimiento:</strong> Todo establecimiento registrado en la plataforma queda en estado <em>pendiente de verificación</em> hasta que un administrador VIBRRA revise la documentación asociada y confirme su conformidad legal y operativa. El establecimiento no podrá iniciar sesiones musicales ni reclamar el bono de activación hasta obtener el estado <strong>Verificado</strong>. VIBRRA se reserva el derecho de rechazar o solicitar documentación adicional si la información suministrada es incompleta, inconsistente o no cumple los requisitos legales colombianos aplicables.</li>
+        <li>Aceptar que VIBRRA puede auditar sus sesiones y transacciones para garantizar el cumplimiento de estos términos.</li>
+      </ul>
+    </section>
+
+    <section id="s10">
+      <div class="section-num">Artículo 10</div>
+      <h2 class="section-title">Obligaciones del <em>cliente</em></h2>
+      <ul class="legal-list">
+        <li>Utilizar la plataforma de buena fe y únicamente para los fines previstos en estos términos.</li>
+        <li>No realizar pujas con intención de cancelarlas o revertirlas (chargeback abusivo).</li>
+        <li>No utilizar mecanismos automatizados, bots o scripts para interactuar con la plataforma.</li>
+        <li>No enviar dedicatorias con contenido ofensivo, discriminatorio, violento o que infrinja derechos de terceros.</li>
+        <li>Respetar las decisiones de reproducción del anfitrión, quien mantiene el control editorial final sobre la música del establecimiento.</li>
+      </ul>
+    </section>
+
+    <section id="s11">
+      <div class="section-num">Artículo 11</div>
+      <h2 class="section-title">Propiedad <em>intelectual</em></h2>
+      <p>VIBRRA, su logo, nombre comercial, interfaz, código fuente, algoritmos y sistemas de datos son propiedad exclusiva de AXIOVA S.A.S. Todos los derechos reservados.</p>
+      <p><strong>Contenido musical:</strong> VIBRRA no almacena ni distribuye contenido musical. Actúa como interfaz de control sobre reproductores de audio y video en el navegador del establecimiento. La responsabilidad por los derechos de autor del contenido reproducido, así como el cumplimiento de los términos de uso de los servicios de streaming empleados, corresponde exclusivamente al anfitrión.</p>
+      <p><strong>Datos analíticos de sesión:</strong> Los eventos, métricas y resultados generados durante las sesiones son propiedad de VIBRRA y pueden ser utilizados de forma agregada y anonimizada. Ningún dato analítico permite identificar a una persona natural. Las capacidades estadísticas incluyen:</p>
+      <ul class="legal-list">
+        <li><strong>Analítica de Dueto:</strong> Tasa de propuesta/aceptación, tiempo de respuesta, canciones más seleccionadas, tasa de cancelación por tipo de causa, frecuencia por sesión e impacto en el gasto total del cliente.</li>
+        <li><strong>Analítica de Match:</strong> Tasa de conversión Match → Dueto, géneros con mayor índice de afinidad, perfiles de compatibilidad musical por ciudad, franja horaria y tipo de establecimiento.</li>
+        <li><strong>Analítica de comportamiento:</strong> Sesiones con al menos un Dueto activo, número promedio de mensajes antes de sugerencia de Dueto, géneros y artistas más pujados, horarios de mayor actividad.</li>
+        <li><strong>Analítica financiera:</strong> Ticket promedio por cliente, operaciones por tipo, ingresos por franja horaria, comparativa entre establecimientos de la misma ciudad (de forma agregada).</li>
+      </ul>
+
+      <p><strong>Módulo de Empresarios:</strong> Los datos analíticos agregados alimentan el módulo de Empresarios, que permite a marcas y anunciantes acceder a segmentación ultraprecisa basada en comportamiento musical real — sin exposición de ningún dato personal identificable. Ejemplos de insights disponibles para Empresarios: géneros dominantes por establecimiento y horario, frecuencia de Duetos por franja, perfil de gasto promedio por tipo de cliente. El anfitrión reconoce y acepta que estos datos, generados en su establecimiento, son parte del modelo de valor de la plataforma y constituyen contraprestación por el uso del servicio.</p>
+
+      <div class="callout info">
+        <strong>Sin datos personales en analítica:</strong> Toda la capa analítica de VIBRRA opera exclusivamente sobre datos agregados y anonimizados. VIBRRA no vende, cede ni comercializa datos personales identificables a Empresarios ni a ningún tercero bajo ninguna circunstancia.
+      </div>
+    </section>
+
+    <section id="s12">
+      <div class="section-num">Artículo 12</div>
+      <h2 class="section-title">Suspensión y <em>terminación</em></h2>
+      <p>VIBRRA puede suspender o cancelar una cuenta en los siguientes casos:</p>
+      <ul class="legal-list">
+        <li>Incumplimiento comprobado de estos términos y condiciones.</li>
+        <li>Fraude, manipulación de transacciones o uso malicioso de la plataforma.</li>
+        <li>Requerimiento de autoridades judiciales o administrativas competentes.</li>
+        <li>Inactividad superior a 6 meses sin sesiones registradas (previa notificación con 30 días de anticipación).</li>
+        <li>Falta de pago de la suscripción mensual por más de 30 días.</li>
+      </ul>
+      <p>Ante la cancelación de la cuenta, el saldo real pendiente de retiro será transferido a la cuenta bancaria registrada dentro de los <strong>15 días hábiles</strong> siguientes, una vez verificado el cumplimiento de todas las obligaciones. El saldo bono será anulado sin derecho a compensación.</p>
+    </section>
+
+    <section id="s13">
+      <div class="section-num">Artículo 13</div>
+      <h2 class="section-title">Limitación de <em>responsabilidad</em></h2>
+      <p>VIBRRA no será responsable por:</p>
+      <ul class="legal-list">
+        <li>Interrupciones de servicios de streaming de terceros, de la pasarela de pago o de cualquier otro proveedor externo que afecten la operación de las sesiones.</li>
+        <li>Pérdidas económicas derivadas de fallas en la conexión a internet del establecimiento.</li>
+        <li>El contenido de las canciones reproducidas, dedicatorias enviadas o interacciones entre usuarios a través de VIBRRA Match.</li>
+        <li>El incumplimiento de obligaciones tributarias por parte del anfitrión.</li>
+        <li>Daños indirectos, lucro cesante o pérdida de reputación derivados del uso de la plataforma.</li>
+      </ul>
+      <p>La responsabilidad máxima de VIBRRA ante el anfitrión, por cualquier causa, estará limitada al valor de la suscripción mensual pagada en los últimos 3 meses.</p>
+    </section>
+
+    <section id="s13b">
+      <div class="section-num">Artículo 13B</div>
+      <h2 class="section-title">Ajuste de condiciones para la <em>sostenibilidad de la plataforma</em></h2>
+      <p>VIBRRA opera en un entorno tecnológico y económico que puede evolucionar de formas no previstas al momento de la suscripción. Con el fin de garantizar la continuidad, calidad y seguridad del servicio, VIBRRA se reserva el derecho de ajustar las condiciones económicas y operativas de la plataforma cuando circunstancias objetivas así lo requieran.</p>
+      <p><strong>Causas que pueden motivar un ajuste:</strong></p>
+      <ul class="legal-list">
+        <li>Incremento en costos de infraestructura tecnológica, incluyendo servidores, bases de datos, almacenamiento en la nube o servicios de terceros.</li>
+        <li>Cambios en las tarifas de pasarelas de pago o proveedores de servicios financieros.</li>
+        <li>Nuevas obligaciones tributarias, regulatorias o legales impuestas por autoridades colombianas o internacionales.</li>
+        <li>Deterioro de la sostenibilidad financiera del modelo que ponga en riesgo la operación continua de la plataforma.</li>
+        <li>Introducción de nuevas funcionalidades que impliquen costos operativos adicionales.</li>
+        <li>Cualquier otro factor externo o interno que afecte materialmente los costos de operación de VIBRRA.</li>
+      </ul>
+      <p><strong>Condiciones del ajuste:</strong></p>
+      <ul class="legal-list">
+        <li>VIBRRA notificará cualquier ajuste con un mínimo de <strong>30 días calendario</strong> de anticipación a través del correo electrónico registrado y mediante aviso destacado en el Dashboard.</li>
+        <li>La notificación incluirá la justificación del ajuste, los parámetros modificados y la fecha de entrada en vigencia.</li>
+        <li>Los ajustes aplicarán únicamente a las operaciones realizadas <strong>después</strong> de la fecha de vigencia. Las transacciones anteriores no serán afectadas retroactivamente.</li>
+        <li>Si el anfitrión no acepta las nuevas condiciones, podrá cancelar su cuenta antes de la fecha de vigencia sin penalización y con derecho al retiro del saldo real disponible.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Principio de proporcionalidad:</strong> VIBRRA se compromete a que cualquier ajuste en porcentajes o tarifas sea proporcional al incremento real de costos que lo motiva, y no constituirá un mecanismo de enriquecimiento injustificado a expensas del anfitrión. La transparencia en la justificación de cada ajuste es un compromiso irrenunciable de la plataforma.
+      </div>
+    </section>
+
+    <section id="s14">
+      <div class="section-num">Artículo 14</div>
+      <h2 class="section-title">Modificaciones a los <em>términos</em></h2>
+      <p>VIBRRA se reserva el derecho de modificar estos Términos y Condiciones en cualquier momento. Las modificaciones serán notificadas al anfitrión con un mínimo de <strong>15 días de anticipación</strong> a través del correo electrónico registrado y mediante aviso en el Dashboard.</p>
+      <p>El uso continuado de la plataforma después del período de notificación constituye aceptación tácita de los nuevos términos. Si el anfitrión no acepta las modificaciones, puede cancelar su cuenta antes de la fecha de entrada en vigencia sin penalización.</p>
+    </section>
+
+    <section id="s15">
+      <div class="section-num">Artículo 15</div>
+      <h2 class="section-title">Ley aplicable y <em>resolución de disputas</em></h2>
+      <p>Los presentes Términos y Condiciones se rigen por las leyes de la <strong>República de Colombia</strong>. Para la resolución de controversias, las partes se someten a la jurisdicción de los jueces y tribunales competentes de la ciudad de <strong>Manizales, Caldas</strong>, con renuncia expresa a cualquier otro fuero.</p>
+      <p>Antes de acudir a la vía judicial, las partes se comprometen a agotar un período de negociación directa de <strong>30 días calendario</strong> desde la notificación escrita del conflicto.</p>
+      <div class="callout">
+        <strong>Contacto legal:</strong> Para asuntos relacionados con estos Términos, escribe a <a href="/cdn-cgi/l/email-protection#0b676e6c6a674b7d626979796a2567627d6e"><span class="__cf_email__" data-cfemail="8de1e8eaece1cdfbe4efffffeca3e1e4fbe8">[email&#160;protected]</span></a>
+      </div>
+      <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:8px;">
+        <span class="chip">Ley 1480 de 2011 (Consumidor)</span>
+        <span class="chip">Ley 527 de 1999 (Comercio electrónico)</span>
+        <span class="chip">Estatuto Tributario</span>
+        <span class="chip">Ley 1581 de 2012 (Datos personales)</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 VIBRRA · AXIOVA S.A.S. · Manizales, Colombia · Todos los derechos reservados.</p>
+  <a href="vibrra-politica-datos.html">Política de Tratamiento de Datos →</a>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* Activar sidebar link según sección visible */
+const sections = document.querySelectorAll('.content section');
+const links = document.querySelectorAll('.sidebar-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      links.forEach(l => l.classList.remove('active'));
+      const link = document

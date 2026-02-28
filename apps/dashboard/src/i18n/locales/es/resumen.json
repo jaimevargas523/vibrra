@@ -1,0 +1,41 @@
+{
+  "title": "Resumen",
+  "greeting": "{{timeOfDay}}, {{name}}",
+  "sessionBanner": {
+    "active": "SESIÓN ACTIVA",
+    "inactive": "Sin sesión activa",
+    "open": "Abrir sesión",
+    "goTo": "Ir a sesión en vivo →",
+    "duration": "Duración",
+    "users": "usuarios conectados"
+  },
+  "kpi": {
+    "saldo": "Saldo Disponible",
+    "saldoSub": "Disponible para retirar",
+    "generado": "Generado este mes",
+    "sesiones": "Sesiones del mes",
+    "usuarios": "Usuarios únicos"
+  },
+  "saldo": {
+    "title": "SALDO CONSOLIDADO",
+    "disponible": "Disponible para retirar",
+    "ventanaAbierta": "Ventana de retiro abierta",
+    "ventanaCerrada": "Próxima ventana: 1 de {{month}}",
+    "solicitar": "Solicitar retiro"
+  },
+  "chart": {
+    "title": "INGRESOS ÚLTIMOS 7 DÍAS",
+    "empty": "Los datos aparecerán con sesiones activas"
+  },
+  "sesiones": {
+    "title": "SESIONES RECIENTES",
+    "verTodas": "Ver todas →",
+    "empty": "El historial de sesiones aparecerá aquí"
+  },
+  "acciones": {
+    "titulo": "Acciones rápidas",
+    "abrir": "Abrir sesión",
+    "compartir": "Compartir link",
+    "qrs": "Ver QRs"
+  }
+}

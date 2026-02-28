@@ -1,0 +1,84 @@
+{
+  "sidebar": {
+    "groups": {
+      "principal": "MAIN",
+      "operaciones": "OPERATIONS",
+      "finanzas": "FINANCES",
+      "configuracion": "SETTINGS"
+    },
+    "items": {
+      "resumen": "Overview",
+      "enVivo": "Live",
+      "sesiones": "Sessions",
+      "misQrs": "My QRs",
+      "movimientos": "Transactions",
+      "recargar": "Top Up",
+      "bonificaciones": "Bonuses",
+      "suscripcion": "Subscription",
+      "establecimientos": "Venues",
+      "analiticas": "Analytics",
+      "miCuenta": "My Account",
+      "documentos": "Documents"
+    },
+    "logout": "Log out"
+  },
+  "topbar": {
+    "live": "LIVE",
+    "noSession": "No active session",
+    "balance": "Balance"
+  },
+  "buttons": {
+    "guardar": "Save",
+    "cancelar": "Cancel",
+    "volver": "Back",
+    "continuar": "Continue",
+    "eliminar": "Delete",
+    "exportarCsv": "Export CSV",
+    "copiar": "Copy",
+    "compartir": "Share",
+    "descargar": "Download",
+    "crear": "Create",
+    "editar": "Edit",
+    "confirmar": "Confirm",
+    "reintentar": "Retry",
+    "verTodo": "View all",
+    "cargarMas": "Load more"
+  },
+  "greetings": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
+  "errors": {
+    "sinConexion": "No internet connection. Check your network and try again.",
+    "errorGenerico": "An unexpected error occurred. Please try again later.",
+    "tokenExpirado": "Your session has expired. Please log in again.",
+    "noAutorizado": "You do not have permission to access this resource."
+  },
+  "states": {
+    "cargando": "Loading...",
+    "sinDatos": "No data available",
+    "sinResultados": "No results"
+  },
+  "currency": {
+    "cop": "COP",
+    "format": "${{value}}"
+  },
+  "time": {
+    "hace": "ago",
+    "min": "min",
+    "h": "h",
+    "dias": "days",
+    "hoy": "today",
+    "ayer": "yesterday",
+    "semana": "week"
+  },
+  "login": {
+    "title": "Log in",
+    "email": "Email address",
+    "password": "Password",
+    "submit": "Enter dashboard",
+    "error": "Invalid credentials. Please check your email and password.",
+    "welcome": "Host Dashboard"
+  }
+}

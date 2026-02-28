@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VIBRRA — Política de Tratamiento de Datos Personales</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#FFE566;--gold-mid:#D4A017;--gold-dk:#A97010;
+  --ink:#080808;--deep:#0C0C0C;--panel:#111111;--edge:#1E1E1E;
+  --txt:#F0EDE8;--soft:#9A9590;--muted:#5A5A5A;
+  --line:rgba(212,160,23,.13);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--ink);color:var(--txt);-webkit-font-smoothing:antialiased;}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(8,8,8,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(12px);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,#FFE566,#D4A017,#A97010);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:4px;text-decoration:none;}
+.nav-badge{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-mid);border:1px solid var(--line);padding:4px 12px;border-radius:20px;}
+.hero{padding:72px 48px 48px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(212,160,23,.04) 0%,transparent 100%);}
+.hero-eyebrow{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-mid);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold-mid);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,4.5vw,58px);font-weight:900;line-height:1.05;margin-bottom:20px;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-meta{display:flex;gap:32px;flex-wrap:wrap;margin-top:24px;}
+.hero-meta-item{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--soft);}
+.hero-meta-item strong{color:var(--gold-mid);display:block;font-size:12px;margin-bottom:2px;}
+.layout{display:grid;grid-template-columns:260px 1fr;max-width:1100px;margin:0 auto;padding:48px 48px 96px;gap:48px;}
+@media(max-width:800px){.layout{grid-template-columns:1fr;padding:32px 24px 80px;}.sidebar{display:none;}.nav{padding:16px 24px;}.hero{padding:48px 24px 32px;}}
+.sidebar{position:sticky;top:80px;height:fit-content;}
+.sidebar-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.sidebar-links{display:flex;flex-direction:column;gap:2px;}
+.sidebar-link{display:block;padding:8px 12px;border-radius:6px;font-size:11px;color:var(--soft);text-decoration:none;transition:all .15s;border-left:2px solid transparent;}
+.sidebar-link:hover{color:var(--txt);border-left-color:var(--gold-mid);}
+.sidebar-link.active{color:var(--gold);border-left-color:var(--gold);background:rgba(212,160,23,.05);}
+.content section{margin-bottom:56px;scroll-margin-top:80px;}
+.section-num{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-mid);margin-bottom:8px;}
+.section-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line);}
+.section-title em{color:var(--gold);font-style:italic;}
+p{font-size:13px;line-height:1.85;color:var(--soft);margin-bottom:14px;}
+p strong{color:var(--txt);font-weight:600;}
+p a{color:var(--gold-mid);text-decoration:none;}
+p a:hover{text-decoration:underline;}
+.legal-list{list-style:none;margin:16px 0 20px;display:flex;flex-direction:column;gap:8px;}
+.legal-list li{display:flex;align-items:flex-start;gap:12px;font-size:13px;line-height:1.7;color:var(--soft);}
+.legal-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold-mid);flex-shrink:0;margin-top:8px;}
+.legal-list li strong{color:var(--txt);}
+.legal-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:12px;}
+.legal-table th{background:rgba(212,160,23,.07);color:var(--gold-mid);font-weight:700;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--edge);}
+.legal-table td{padding:10px 14px;color:var(--soft);border-bottom:1px solid var(--edge);vertical-align:top;line-height:1.6;}
+.legal-table tr:last-child td{border-bottom:none;}
+.callout{border-left:3px solid var(--gold-mid);background:rgba(212,160,23,.04);border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0;font-size:12px;color:var(--soft);line-height:1.7;}
+.callout strong{color:var(--gold-mid);}
+.callout.warn{border-left-color:var(--gold);background:rgba(255,229,102,.04);}
+.callout.info{border-left-color:var(--soft);background:rgba(154,149,144,.04);}
+.callout.right{border-left-color:#2ECC71;background:rgba(46,204,113,.04);}
+.chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);color:var(--gold-mid);margin:2px;}
+footer{border-top:1px solid var(--line);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+footer p{font-size:10px;color:var(--muted);margin:0;}
+footer a{color:var(--gold-mid);text-decoration:none;font-size:10px;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">VIBRRA</a>
+  <span class="nav-badge">Documento Legal</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Documento legal</div>
+  <h1>Política de Tratamiento<br/>de <em>Datos Personales</em></h1>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><strong>Versión</strong>1.0</div>
+    <div class="hero-meta-item"><strong>Vigencia</strong>Febrero 2026</div>
+    <div class="hero-meta-item"><strong>Marco legal</strong>Ley 1581 de 2012 · Decreto 1377 de 2013</div>
+    <div class="hero-meta-item"><strong>Responsable</strong>AXIOVA S.A.S.</div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">Contenido</div>
+    <nav class="sidebar-links">
+      <a href="#s1" class="sidebar-link active">1. Responsable del tratamiento</a>
+      <a href="#s2" class="sidebar-link">2. Marco normativo</a>
+      <a href="#s3" class="sidebar-link">3. Datos que recopilamos</a>
+      <a href="#s4" class="sidebar-link">4. Finalidades del tratamiento</a>
+      <a href="#s5" class="sidebar-link">5. Datos sensibles</a>
+      <a href="#s6" class="sidebar-link">6. VIBRRA Match, Dueto y afinidad</a>
+      <a href="#s6b" class="sidebar-link">6B. Analítica y Empresarios</a>
+      <a href="#s7" class="sidebar-link">7. Transferencia de datos</a>
+      <a href="#s8" class="sidebar-link">8. Conservación de datos</a>
+      <a href="#s9" class="sidebar-link">9. Derechos del titular</a>
+      <a href="#s10" class="sidebar-link">10. Seguridad</a>
+      <a href="#s11" class="sidebar-link">11. Cookies y tecnologías</a>
+      <a href="#s12" class="sidebar-link">12. Menores de edad</a>
+      <a href="#s13" class="sidebar-link">13. Modificaciones</a>
+      <a href="#s14" class="sidebar-link">14. Contacto</a>
+    </nav>
+  </aside>
+
+  <div class="content">
+
+    <section id="s1">
+      <div class="section-num">Artículo 01</div>
+      <h2 class="section-title">Responsable del <em>tratamiento</em></h2>
+      <p>El responsable del tratamiento de los datos personales recopilados a través de la plataforma VIBRRA es:</p>
+      <table class="legal-table">
+        <tbody>
+          <tr><td style="color:var(--txt);font-weight:600;width:180px;">Razón social</td><td>AXIOVA S.A.S.</td></tr>
+          <tr><td style="color:var(--txt);font-weight:600;">Domicilio</td><td>Manizales, Caldas, Colombia</td></tr>
+          <tr><td style="color:var(--txt);font-weight:600;">Plataforma</td><td>vibrra.live</td></tr>
+          <tr><td style="color:var(--txt);font-weight:600;">Correo de datos</td><td><a href="/cdn-cgi/l/email-protection#2a4e4b5e45596a5c434858584b0446435c4f"><span class="__cf_email__" data-cfemail="ea8e8b9e8599aa9c838898988bc486839c8f">[email&#160;protected]</span></a></td></tr>
+          <tr><td style="color:var(--txt);font-weight:600;">Correo legal</td><td><a href="/cdn-cgi/l/email-protection#82eee7e5e3eec2f4ebe0f0f0e3aceeebf4e7"><span class="__cf_email__" data-cfemail="523e3735333e12243b302020337c3e3b2437">[email&#160;protected]</span></a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="s2">
+      <div class="section-num">Artículo 02</div>
+      <h2 class="section-title">Marco <em>normativo</em></h2>
+      <p>La presente política se elabora en cumplimiento de la normativa colombiana de protección de datos personales:</p>
+      <ul class="legal-list">
+        <li><strong>Ley 1581 de 2012:</strong> Ley Estatutaria de Protección de Datos Personales en Colombia.</li>
+        <li><strong>Decreto 1377 de 2013:</strong> Reglamentación parcial de la Ley 1581 de 2012 sobre recolección, almacenamiento y uso de datos.</li>
+        <li><strong>Decreto 1074 de 2015:</strong> Decreto Único Reglamentario del Sector Comercio, Industria y Turismo.</li>
+        <li><strong>Ley 527 de 1999:</strong> Marco legal del comercio electrónico en Colombia.</li>
+        <li><strong>Circular Externa 002 de 2015 de la SIC:</strong> Instrucciones sobre seguridad de la información.</li>
+      </ul>
+      <div class="callout">
+        <strong>Autoridad de control:</strong> La Superintendencia de Industria y Comercio (SIC) de Colombia es la autoridad de protección de datos competente. El titular puede presentar quejas en <a href="https://www.sic.gov.co" target="_blank">www.sic.gov.co</a>
+      </div>
+    </section>
+
+    <section id="s3">
+      <div class="section-num">Artículo 03</div>
+      <h2 class="section-title">Datos que <em>recopilamos</em></h2>
+      <p>VIBRRA recopila diferentes categorías de datos según el rol del usuario en la plataforma:</p>
+
+      <p><strong>Del Anfitrión:</strong></p>
+      <table class="legal-table">
+        <thead><tr><th>Categoría</th><th>Datos específicos</th><th>Fuente</th></tr></thead>
+        <tbody>
+          <tr><td>Identidad</td><td>Nombres, apellidos, tipo y número de documento, fecha de nacimiento, fotografía del documento (frontal, posterior, selfie)</td><td>Registro directo</td></tr>
+          <tr><td>Contacto</td><td>Correo electrónico, número de celular</td><td>Registro directo</td></tr>
+          <tr><td>Tributaria</td><td>NIT o cédula para fines tributarios, RUT, régimen de IVA</td><td>Registro directo</td></tr>
+          <tr><td>Bancaria</td><td>Banco, tipo de cuenta, número de cuenta, titular</td><td>Registro directo</td></tr>
+          <tr><td>Establecimiento</td><td>Nombre, tipo, dirección, ciudad, barrio, teléfono, Instagram, foto del lugar, géneros musicales</td><td>Registro directo</td></tr>
+          <tr><td>Operativa</td><td>Historial de sesiones, estadísticas de ingresos, configuraciones de precios, auditoría de acciones (AuditLog)</td><td>Generada por uso</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Del Cliente (usuario final):</strong></p>
+      <table class="legal-table">
+        <thead><tr><th>Categoría</th><th>Datos específicos</th><th>Fuente</th></tr></thead>
+        <tbody>
+          <tr><td>Identidad</td><td>Nombre de pantalla, foto de perfil (opcional), correo electrónico o número de teléfono</td><td>Registro directo</td></tr>
+          <tr><td>Comportamiento musical</td><td>Canciones nominadas, pujas realizadas, artistas preferidos, géneros frecuentes, historial de sesiones, dedicatorias enviadas, VETOs aplicados</td><td>Generada por uso</td></tr>
+          <tr><td>Transaccional</td><td>Montos recargados, saldo consumido, método de pago (tokenizado por Wompi), historial de transacciones</td><td>Generada por uso</td></tr>
+          <tr><td>Social (VIBRRA Match)</td><td>Sexo (dato sensible, opt-in), coincidencias musicales, perfil de compatibilidad, historial de matches (solo si activa la funcionalidad)</td><td>Registro directo / Generada por uso</td></tr>
+          <tr><td>VIBRRA Dueto</td><td>Métricas de comportamiento del chat (conteo de mensajes, tiempo en sesión). El contenido del chat NO se almacena ni transmite.</td><td>Generada en tiempo real · No persistida</td></tr>
+          <tr><td>Técnica</td><td>Dirección IP, tipo de dispositivo, versión de app, identificador de sesión</td><td>Automática</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="s4">
+      <div class="section-num">Artículo 04</div>
+      <h2 class="section-title">Finalidades del <em>tratamiento</em></h2>
+      <p>Los datos personales recopilados serán utilizados para las siguientes finalidades:</p>
+
+      <p><strong>Finalidades principales (necesarias para el servicio):</strong></p>
+      <ul class="legal-list">
+        <li>Crear y gestionar cuentas de anfitrión y cliente en la plataforma.</li>
+        <li>Verificar la identidad del anfitrión en cumplimiento de obligaciones ante la UIAF.</li>
+        <li>Procesar transacciones económicas (pujas, nominaciones, recargas, retiros) a través de Wompi/ePayco.</li>
+        <li>Operar la cola musical en tiempo real durante las sesiones activas.</li>
+        <li>Cumplir obligaciones tributarias (retención en la fuente, ICA, declaraciones ante la DIAN).</li>
+        <li>Atender peticiones, quejas y reclamos (PQR) relacionados con el servicio.</li>
+      </ul>
+
+      <p><strong>Finalidades secundarias (mejora del servicio y CRM):</strong></p>
+      <ul class="legal-list">
+        <li>Construir perfiles de comportamiento musical para personalizar la experiencia y mejorar algoritmos de la plataforma.</li>
+        <li>Generar estadísticas agregadas y anonimizadas sobre tendencias musicales por ciudad, horario y género.</li>
+        <li>Alimentar el módulo de Empresarios con datos de segmentación ultraprecisa basada en comportamiento real (de forma agregada, nunca con datos personales identificables).</li>
+        <li>Enviar reportes de sesiones, resúmenes financieros y comunicaciones de la plataforma al anfitrión (si acepta la comunicación opcional).</li>
+        <li>Desarrollar y optimizar VIBRRA Match y VIBRRA Dueto mediante el análisis de afinidades musicales y patrones de interacción.</li>
+      </ul>
+
+      <p><strong>Finalidades analíticas — Datos agregados y anonimizados:</strong></p>
+      <p>Los siguientes análisis se realizan exclusivamente sobre datos agregados. Ninguno permite identificar a una persona natural:</p>
+      <ul class="legal-list">
+        <li><strong>Analítica de Dueto:</strong> Tasa de propuesta/aceptación, tiempo de respuesta promedio, canciones más seleccionadas como Dueto, tasa de cancelación por tipo de causa, frecuencia por sesión e impacto en el gasto total del cliente.</li>
+        <li><strong>Analítica de Match:</strong> Tasa de conversión Match → Dueto, géneros musicales con mayor índice de afinidad, perfiles de compatibilidad por ciudad, franja horaria y tipo de establecimiento.</li>
+        <li><strong>Analítica de sesión:</strong> Géneros y artistas más pujados, horarios de mayor actividad, ticket promedio por tipo de cliente, operaciones por categoría, comparativas entre establecimientos de la misma ciudad.</li>
+        <li><strong>Analítica para Empresarios:</strong> Géneros dominantes por establecimiento y horario, frecuencia de Duetos activos, perfil de gasto promedio por franja, tendencias musicales por ciudad. Estos insights son el activo central del módulo de publicidad inteligente de VIBRRA.</li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>Compromiso irrenunciable:</strong> Los datos de comportamiento musical de clientes individuales <strong>nunca</strong> serán vendidos ni compartidos con anunciantes de forma identificable. El módulo de Empresarios opera exclusivamente sobre segmentos estadísticos agregados. VIBRRA no es un intermediario de datos personales.
+      </div>
+    </section>
+
+    <section id="s5">
+      <div class="section-num">Artículo 05</div>
+      <h2 class="section-title">Datos <em>sensibles</em></h2>
+      <p>De acuerdo con el artículo 5 de la Ley 1581 de 2012, VIBRRA recopila los siguientes datos sensibles para el caso del anfitrión:</p>
+      <ul class="legal-list">
+        <li><strong>Imágenes del documento de identidad y selfie:</strong> Recopiladas exclusivamente para verificación KYC (Know Your Customer) en cumplimiento de las directrices de la UIAF. Se almacenan de forma cifrada y no se comparten con terceros salvo requerimiento de autoridad competente.</li>
+      </ul>
+      <p>El titular reconoce que la recopilación de estos datos es <strong>indispensable</strong> para operar una plataforma que procesa pagos en Colombia y no puede ser omitida. Sin la verificación de identidad, no es posible activar la cuenta de anfitrión.</p>
+      <p>Para los clientes registrados que activen la funcionalidad <strong>VIBRRA Match</strong>, se recopila adicionalmente el siguiente dato sensible:</p>
+      <ul class="legal-list">
+        <li><strong>Sexo:</strong> Recopilado de forma voluntaria durante el registro del cliente. Su uso es exclusivo para la funcionalidad de VIBRRA Match y no se utiliza con ninguna otra finalidad. El cliente puede omitir este campo o modificarlo en cualquier momento desde su perfil. El suministro de este dato es condición para participar en VIBRRA Match, pero no para usar la plataforma en general.</li>
+      </ul>
+      <div class="callout info">
+        A excepción del dato de sexo para VIBRRA Match descrito anteriormente, VIBRRA no recopila de los clientes datos sensibles tales como origen racial, orientación sexual, afiliación política, creencias religiosas o datos de salud. El consentimiento para el tratamiento del dato de sexo es <strong>libre, previo, expreso e informado</strong>, conforme al artículo 9 de la Ley 1581 de 2012.
+      </div>
+    </section>
+
+    <section id="s6">
+      <div class="section-num">Artículo 06</div>
+      <h2 class="section-title">VIBRRA Match y perfil de <em>afinidad musical</em></h2>
+      <p>VIBRRA Match es una funcionalidad opt-in que genera un perfil de afinidad musical para cada cliente participante. El tratamiento de estos datos tiene las siguientes características:</p>
+      <ul class="legal-list">
+        <li><strong>Base del perfil:</strong> Historial de canciones pujadas, nominadas y marcadas como favoritas en sesiones pasadas.</li>
+        <li><strong>Construcción progresiva:</strong> El perfil se construye automáticamente con el tiempo. A mayor número de sesiones, mayor precisión del perfil de compatibilidad.</li>
+        <li><strong>Datos compartidos en un match:</strong> El match no comparte información automáticamente. Es el cliente quien decide, tanto al momento de activar la conexión como en cualquier momento posterior durante la sesión, qué desea revelar al otro usuario dentro del chat. Los datos disponibles para compartir son: nombre real o alias de pantalla, sexo, foto de perfil (si la tiene configurada), y el historial de canciones en las que ambos usuarios han coincidido en sesiones previas. El cliente puede optar por compartir todos, algunos o ninguno de estos datos, y puede modificar su selección mientras la sesión esté activa. Una vez concluida la sesión, los datos compartidos dejan de ser visibles y la conexión expira de forma irrevocable. Nunca se comparten datos financieros, de contacto o de ubicación exacta.</li>
+        <li><strong>Vigencia del match:</strong> El match y el chat asociado están vinculados a la sesión musical activa. Expiran de forma irrevocable cuando el anfitrión cierra la sesión o el sistema detecta inactividad de reproducción.</li>
+        <li><strong>Eliminación:</strong> El usuario puede eliminar su perfil de afinidad musical en cualquier momento desde <em>Configuración → Privacidad → Eliminar perfil de compatibilidad</em>. La eliminación es permanente e irreversible.</li>
+        <li><strong>Retención:</strong> Los datos de PerfilesCompatibilidad se conservan mientras la cuenta esté activa o hasta que el usuario solicite su eliminación.</li>
+      </ul>
+      <div class="callout right">
+        <strong>Principio de minimización:</strong> VIBRRA Match fue diseñado con el principio de privacidad por defecto. El sistema comparte únicamente la información mínima necesaria para establecer la conexión entre dos personas con afinidad musical demostrada.
+      </div>
+
+      <p style="margin-top:20px;"><strong>VIBRRA Dueto — tratamiento de datos</strong></p>
+      <p>VIBRRA Dueto es una funcionalidad de VIBRRA Match que sugiere automáticamente una canción conjunta a dos usuarios con chat activo. Su tratamiento de datos opera bajo los siguientes principios:</p>
+      <ul class="legal-list">
+        <li><strong>Análisis heurístico local:</strong> El sistema evalúa exclusivamente métricas de comportamiento del chat — número de mensajes intercambiados, tiempo en conversación y ausencia de bloqueos mutuos — mediante reglas lógicas procesadas localmente. No se analiza, interpreta ni transmite el contenido de los mensajes a ningún servidor externo ni a VIBRRA.</li>
+        <li><strong>Sin almacenamiento de conversaciones:</strong> El contenido del chat privado no se almacena en ningún sistema de VIBRRA. Los mensajes existen únicamente en los dispositivos de los participantes durante la sesión activa y se descartan al finalizar esta.</li>
+        <li><strong>Datos utilizados para la sugerencia musical:</strong> El cálculo de la canción con mayor afinidad se realiza sobre el historial musical previamente almacenado de cada usuario (canciones nominadas, pujadas y marcadas como favoritas). No se procesan datos personales adicionales para esta función.</li>
+        <li><strong>Anonimato público:</strong> El badge 💑 visible en la cola del establecimiento no contiene datos identificables de los participantes. La identidad de los usuarios del Dueto nunca es expuesta públicamente.</li>
+        <li><strong>Consentimiento:</strong> Al activar VIBRRA Match, el usuario autoriza expresamente que la plataforma evalúe el comportamiento de su chat con fines de sugerencia de Dueto. Esta autorización puede revocarse desactivando VIBRRA Match desde <em>Configuración → Privacidad</em>.</li>
+      </ul>
+    </section>
+
+    <section id="s6b">
+      <div class="section-num">Artículo 06B</div>
+      <h2 class="section-title">Analítica de negocio y módulo de <em>Empresarios</em></h2>
+      <p>VIBRRA genera valor comercial a partir de los patrones de comportamiento colectivo de sus usuarios. Este artículo describe cómo opera esa capa analítica y cuáles son sus límites.</p>
+
+      <p><strong>Principio fundamental:</strong> La analítica de VIBRRA no procesa datos personales identificables. Opera sobre eventos, conteos y agregaciones que describen comportamientos de grupo, nunca de individuos.</p>
+
+      <p><strong>Datos que alimentan la analítica:</strong></p>
+      <ul class="legal-list">
+        <li>Eventos de sesión: canciones nominadas, pujadas, vetadas y dedicadas — sin asociación a identidades individuales en la capa analítica.</li>
+        <li>Métricas de Dueto: propuestas generadas, aceptaciones, cancelaciones, canciones seleccionadas — procesadas como contadores agregados por establecimiento y franja horaria.</li>
+        <li>Métricas de Match: conexiones generadas, Duetos derivados, géneros con mayor afinidad — sin revelar qué usuarios específicos se conectaron.</li>
+        <li>Métricas financieras: rangos de gasto por sesión, distribución de operaciones por tipo — sin exponer montos individuales.</li>
+      </ul>
+
+      <p><strong>Módulo de Empresarios — propuesta de valor:</strong></p>
+      <p>Las marcas y anunciantes que accedan al módulo de Empresarios pueden segmentar sus campañas usando los siguientes criterios, todos derivados de comportamiento real y anonimizado:</p>
+      <ul class="legal-list">
+        <li>Establecimiento, ciudad y zona geográfica.</li>
+        <li>Franja horaria y día de la semana.</li>
+        <li>Género musical dominante en la sesión.</li>
+        <li>Nivel de actividad social (sesiones con alta frecuencia de Duetos y Matches).</li>
+        <li>Perfil de gasto promedio del establecimiento.</li>
+      </ul>
+
+      <div class="callout info">
+        <strong>Lo que el Empresario NUNCA recibe:</strong> nombres, alias, fotos, contactos, ubicación exacta, historial individual de canciones ni ningún dato que permita identificar a un usuario específico. La segmentación es contextual y estadística, no individual.
+      </div>
+
+      <p><strong>Retención de datos analíticos:</strong> Los datos agregados utilizados para analítica no tienen fecha de expiración definida, dado que no contienen información personal. Los datos personales que originaron los agregados siguen los períodos de retención definidos en el Artículo 08 de esta política.</p>
+    </section>
+
+    <section id="s7">
+      <div class="section-num">Artículo 07</div>
+      <h2 class="section-title">Transferencia de <em>datos</em></h2>
+      <p>VIBRRA puede compartir datos personales con los siguientes terceros, bajo acuerdos de confidencialidad y únicamente para las finalidades descritas:</p>
+      <table class="legal-table">
+        <thead><tr><th>Tercero</th><th>Datos compartidos</th><th>Finalidad</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Wompi / ePayco</strong></td><td>Nombre, datos de pago (tokenizados)</td><td>Procesamiento de transacciones y retiros</td></tr>
+          <tr><td><strong>Google Firebase</strong></td><td>Todos los datos de la plataforma (almacenamiento en la nube)</td><td>Infraestructura tecnológica (servidores en EE.UU. y/o UE)</td></tr>
+          <tr><td><strong>DIAN</strong></td><td>Datos tributarios del anfitrión</td><td>Cumplimiento de obligaciones fiscales colombianas</td></tr>
+          <tr><td><strong>UIAF</strong></td><td>Información de identidad y transacciones sospechosas</td><td>Cumplimiento de normativa antilavado de activos</td></tr>
+          <tr><td><strong>Autoridades judiciales</strong></td><td>Según requerimiento judicial</td><td>Cumplimiento de órdenes judiciales o administrativas</td></tr>
+        </tbody>
+      </table>
+      <p>VIBRRA <strong>no vende, arrienda ni transfiere</strong> datos personales a terceros con fines comerciales distintos a los descritos en esta política.</p>
+      <div class="callout warn">
+        <strong>Transferencia internacional:</strong> Google Firebase almacena datos en servidores ubicados fuera de Colombia (principalmente EE.UU.). Esta transferencia se realiza bajo las garantías del Privacy Shield y/o cláusulas contractuales estándar reconocidas internacionalmente.
+      </div>
+    </section>
+
+    <section id="s8">
+      <div class="section-num">Artículo 08</div>
+      <h2 class="section-title">Conservación de <em>datos</em></h2>
+
+      <p>VIBRRA aplica una política de <strong>retención selectiva</strong>: no todos los eventos generados durante una sesión se almacenan de forma individual. El sistema distingue entre datos que deben persistir por obligación legal o funcional, y eventos que se agregan en tiempo real y se descartan una vez consolidados en el resumen de sesión.</p>
+
+      <p><strong>Principio de retención selectiva:</strong></p>
+      <ul class="legal-list">
+        <li><strong>Eventos con valor económico</strong> (recargas, retiros, distribución 70/30) → se almacenan como transacciones completas en Firestore. Obligación legal DIAN/UIAF.</li>
+        <li><strong>Eventos operativos de sesión</strong> (pujas individuales, nominaciones, conexiones, VETOs) → se acumulan en contadores en tiempo real durante la sesión. Al cierre, se consolidan en un <strong>ResumenSesion</strong> y los eventos individuales se descartan.</li>
+        <li><strong>Contenido del chat</strong> → no se almacena. Existe únicamente en los dispositivos de los participantes durante la sesión activa.</li>
+        <li><strong>Métricas heurísticas del Dueto</strong> → procesadas en tiempo real, no persistidas.</li>
+      </ul>
+
+      <p><strong>Períodos de conservación por categoría:</strong></p>
+      <table class="legal-table">
+        <thead>
+          <tr>
+            <th>Categoría de datos</th>
+            <th>Se almacena como</th>
+            <th>Período de conservación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Documentos de identidad (KYC)</td><td>Registro completo</td><td>5 años desde el cierre de cuenta (UIAF)</td></tr>
+          <tr><td>Transacciones económicas (recargas, retiros, distribución)</td><td>Registro completo</td><td>10 años (obligación tributaria)</td></tr>
+          <tr><td>ResumenSesion (totales, conteos, promedios por sesión)</td><td>Agregado consolidado</td><td>3 años desde la sesión</td></tr>
+          <tr><td>Eventos individuales de sesión (pujas, nominaciones)</td><td>No se almacenan</td><td>Descartados al cerrar sesión</td></tr>
+          <tr><td>Historial musical del cliente (canciones, géneros)</td><td>Lista de referencias</td><td>Mientras la cuenta esté activa + 1 año</td></tr>
+          <tr><td>Perfil de compatibilidad (VIBRRA Match)</td><td>Perfil calculado</td><td>Hasta eliminación por el usuario o cierre de cuenta</td></tr>
+          <tr><td>AuditLog (acciones críticas en plataforma)</td><td>Log inmutable</td><td>2 años (solo lectura)</td></tr>
+          <tr><td>Datos técnicos (logs, IPs, identificadores de sesión)</td><td>Log técnico</td><td>90 días</td></tr>
+          <tr><td>Datos analíticos agregados (sin datos personales)</td><td>Estadísticas consolidadas</td><td>Sin límite definido — no contienen datos personales</td></tr>
+          <tr><td>Contenido del chat (VIBRRA Match y Dueto)</td><td>No se almacena</td><td>No aplica</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout info">
+        <strong>ResumenSesion:</strong> Al cierre de cada sesión musical, VIBRRA consolida automáticamente los eventos operativos en un documento ResumenSesion que incluye: ingresos totales, conteo de operaciones por tipo, canciones reproducidas (sin datos del cliente que las nominó), duración de la sesión, número de clientes activos, Duetos generados y métricas de Match. Este documento es la unidad mínima de analítica de VIBRRA y reemplaza el almacenamiento de eventos individuales.
+      </div>
+    </section>
+
+    <section id="s9">
+      <div class="section-num">Artículo 09</div>
+      <h2 class="section-title">Derechos del <em>titular</em></h2>
+      <p>De conformidad con la Ley 1581 de 2012, el titular de los datos personales tiene los siguientes derechos:</p>
+      <ul class="legal-list">
+        <li><strong>Conocer (Acceso):</strong> Solicitar información sobre los datos personales que VIBRRA tiene registrados sobre usted.</li>
+        <li><strong>Actualizar (Rectificación):</strong> Solicitar la corrección de datos inexactos, incompletos u desactualizados.</li>
+        <li><strong>Suprimir (Eliminación):</strong> Solicitar la eliminación de sus datos cuando no sean necesarios para las finalidades del tratamiento, salvo obligación legal de conservación.</li>
+        <li><strong>Revocar la autorización:</strong> Revocar el consentimiento otorgado para el tratamiento de sus datos en cualquier momento, con las limitaciones derivadas de obligaciones legales vigentes.</li>
+        <li><strong>Oponerse:</strong> Oponerse al tratamiento de sus datos para finalidades secundarias (marketing, perfiles de compatibilidad, etc.).</li>
+        <li><strong>Reclamar:</strong> Presentar quejas ante la Superintendencia de Industria y Comercio (SIC) si considera que sus derechos han sido vulnerados.</li>
+      </ul>
+      <div class="callout">
+        <strong>¿Cómo ejercer sus derechos?</strong> Envíe su solicitud a <a href="/cdn-cgi/l/email-protection#d1b5b0a5bea291a7b8b3a3a3b0ffbdb8a7b4"><span class="__cf_email__" data-cfemail="8febeefbe0fccff9e6edfdfdeea1e3e6f9ea">[email&#160;protected]</span></a> con asunto "Derechos ARCO", indicando su nombre completo, número de documento y descripción de la solicitud. VIBRRA dará respuesta dentro de los <strong>15 días hábiles</strong> siguientes a la recepción (prorrogables 8 días hábiles adicionales con notificación previa).
+      </div>
+    </section>
+
+    <section id="s10">
+      <div class="section-num">Artículo 10</div>
+      <h2 class="section-title">Seguridad de la <em>información</em></h2>
+      <p>VIBRRA implementa medidas técnicas, administrativas y físicas para proteger los datos personales:</p>
+      <ul class="legal-list">
+        <li><strong>Cifrado en tránsito:</strong> Todas las comunicaciones entre el cliente/anfitrión y los servidores de VIBRRA se realizan mediante HTTPS/TLS 1.3.</li>
+        <li><strong>Cifrado en reposo:</strong> Los datos almacenados en Firebase están cifrados por defecto con AES-256.</li>
+        <li><strong>Contraseñas:</strong> Las contraseñas nunca se almacenan en texto plano. Se utiliza cifrado bcrypt con salt individual.</li>
+        <li><strong>Autenticación:</strong> Firebase Authentication gestiona el ciclo de vida de sesiones con tokens JWT de corta duración.</li>
+        <li><strong>AuditLog inmutable:</strong> Todas las acciones críticas (retiros, cambios de cuenta bancaria, modificaciones de precios) quedan registradas en un log de solo lectura.</li>
+        <li><strong>Acceso mínimo:</strong> Solo el personal de VIBRRA con necesidad operativa tiene acceso a datos personales, bajo acuerdos de confidencialidad.</li>
+        <li><strong>Tokens de pago:</strong> Los datos de tarjetas bancarias nunca se almacenan en los servidores de VIBRRA. Son tokenizados directamente por Wompi.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Notificación de brechas:</strong> En caso de una brecha de seguridad que pueda afectar los derechos de los titulares, VIBRRA notificará a los usuarios afectados dentro de las <strong>72 horas</strong> siguientes a tener conocimiento del incidente, conforme a las directrices de la SIC.
+      </div>
+    </section>
+
+    <section id="s11">
+      <div class="section-num">Artículo 11</div>
+      <h2 class="section-title">Cookies y tecnologías de <em>seguimiento</em></h2>
+      <p>La plataforma web de VIBRRA (vibrra.live) utiliza las siguientes tecnologías:</p>
+      <table class="legal-table">
+        <thead><tr><th>Tipo</th><th>Propósito</th><th>¿Requerida?</th></tr></thead>
+        <tbody>
+          <tr><td>Cookies de sesión</td><td>Mantener la autenticación activa durante la navegación</td><td>Sí — esencial</td></tr>
+          <tr><td>LocalStorage</td><td>Preferencias de idioma y configuración de interfaz</td><td>Sí — funcional</td></tr>
+          <tr><td>Firebase Analytics</td><td>Estadísticas de uso anónimas para mejorar la plataforma</td><td>No — opcional</td></tr>
+          <tr><td>Firebase Performance</td><td>Monitoreo de rendimiento técnico de la aplicación</td><td>No — técnica</td></tr>
+        </tbody>
+      </table>
+      <p>VIBRRA no utiliza cookies de terceros con fines publicitarios ni comparte datos de navegación con redes de anunciantes externos.</p>
+    </section>
+
+    <section id="s12">
+      <div class="section-num">Artículo 12</div>
+      <h2 class="section-title">Menores de <em>edad</em></h2>
+      <p>La plataforma VIBRRA está dirigida exclusivamente a personas mayores de 18 años. VIBRRA no recopila intencionalmente datos personales de menores de edad.</p>
+      <p>Si un representante legal tiene conocimiento de que un menor ha proporcionado datos personales a través de VIBRRA sin su consentimiento, debe contactar a <a href="/cdn-cgi/l/email-protection#234742574c5063554a415151420d4f4a5546"><span class="__cf_email__" data-cfemail="abcfcadfc4d8ebddc2c9d9d9ca85c7c2ddce">[email&#160;protected]</span></a> para proceder con la eliminación inmediata de dichos datos.</p>
+      <p>VIBRRA no es responsable del acceso de menores de edad a su plataforma cuando dicho acceso se produzca en establecimientos que permitan su ingreso, siendo responsabilidad exclusiva del anfitrión el cumplimiento de la normativa sobre acceso de menores.</p>
+    </section>
+
+    <section id="s13">
+      <div class="section-num">Artículo 13</div>
+      <h2 class="section-title">Modificaciones a la <em>política</em></h2>
+      <p>VIBRRA podrá modificar la presente política en cualquier momento. Las modificaciones serán notificadas a los titulares con <strong>15 días de anticipación</strong> a través del correo electrónico registrado y mediante aviso visible en la plataforma.</p>
+      <p>Si las modificaciones implican un cambio en las finalidades del tratamiento o en los datos recopilados, VIBRRA solicitará una nueva autorización expresa al titular. El uso continuado de la plataforma después del período de notificación constituye aceptación de la política actualizada.</p>
+    </section>
+
+    <section id="s14">
+      <div class="section-num">Artículo 14</div>
+      <h2 class="section-title"><em>Contacto</em></h2>
+      <p>Para cualquier consulta, solicitud o reclamación relacionada con el tratamiento de sus datos personales, puede contactar a VIBRRA a través de los siguientes canales:</p>
+      <table class="legal-table">
+        <tbody>
+          <tr><td style="color:var(--txt);font-weight:600;width:180px;">Correo datos</td><td><a href="/cdn-cgi/l/email-protection#d3b7b2a7bca093a5bab1a1a1b2fdbfbaa5b6"><span class="__cf_email__" data-cfemail="99fdf8edf6ead9eff0fbebebf8b7f5f0effc">[email&#160;protected]</span></a></td></tr>
+          <tr><td style="color:var(--txt);font-weight:600;">Correo legal</td><td><a href="/cdn-cgi/l/email-protection#4c20292b2d200c3a252e3e3e2d6220253a29"><span class="__cf_email__" data-cfemail="f49891939598b4829d96868695da989d8291">[email&#160;protected]</span></a></td></tr>
+          <tr><td style="color:var(--txt);font-weight:600;">Autoridad de control</td><td>Superintendencia de Industria y Comercio · <a href="https://www.sic.gov.co" target="_blank">www.sic.gov.co</a></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:8px;">
+        <span class="chip">Ley 1581 de 2012</span>
+        <span class="chip">Decreto 1377 de 2013</span>
+        <span class="chip">Decreto 1074 de 2015</span>
+        <span class="chip">Ley 527 de 1999</span>
+        <span class="chip">Circular SIC 002/2015</span>
+  

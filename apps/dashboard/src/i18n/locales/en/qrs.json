@@ -1,0 +1,16 @@
+{
+  "title": "My QRs",
+  "qrLabel": "ENTRY QR",
+  "stats": {
+    "escaneos": "Scans",
+    "enVivo": "Live",
+    "registro": "Sign-ups"
+  },
+  "shortlink": {
+    "activo": "SHORTLINK · LIVE SESSION",
+    "inactivo": "SHORTLINK · NO SESSION"
+  },
+  "copiarLink": "Copy link",
+  "descargarPng": "Download PNG",
+  "empty": "Create your first venue to see its QR"
+}

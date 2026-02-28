@@ -1,0 +1,84 @@
+{
+  "sidebar": {
+    "groups": {
+      "principal": "PRINCIPAL",
+      "operaciones": "OPERACIONES",
+      "finanzas": "FINANZAS",
+      "configuracion": "CONFIGURACIÓN"
+    },
+    "items": {
+      "resumen": "Resumen",
+      "enVivo": "En Vivo",
+      "sesiones": "Sesiones",
+      "misQrs": "Mis QRs",
+      "movimientos": "Movimientos",
+      "recargar": "Recargar",
+      "bonificaciones": "Bonificaciones",
+      "suscripcion": "Suscripción",
+      "establecimientos": "Establecimientos",
+      "analiticas": "Analíticas",
+      "miCuenta": "Mi Cuenta",
+      "documentos": "Documentos"
+    },
+    "logout": "Cerrar sesión"
+  },
+  "topbar": {
+    "live": "EN VIVO",
+    "noSession": "Sin sesión activa",
+    "balance": "Saldo"
+  },
+  "buttons": {
+    "guardar": "Guardar",
+    "cancelar": "Cancelar",
+    "volver": "Volver",
+    "continuar": "Continuar",
+    "eliminar": "Eliminar",
+    "exportarCsv": "Exportar CSV",
+    "copiar": "Copiar",
+    "compartir": "Compartir",
+    "descargar": "Descargar",
+    "crear": "Crear",
+    "editar": "Editar",
+    "confirmar": "Confirmar",
+    "reintentar": "Reintentar",
+    "verTodo": "Ver todo",
+    "cargarMas": "Cargar más"
+  },
+  "greetings": {
+    "morning": "Buenos días",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas noches"
+  },
+  "errors": {
+    "sinConexion": "Sin conexión a internet. Revisa tu red e intenta de nuevo.",
+    "errorGenerico": "Ocurrió un error inesperado. Intenta de nuevo más tarde.",
+    "tokenExpirado": "Tu sesión ha expirado. Inicia sesión nuevamente.",
+    "noAutorizado": "No tienes permiso para acceder a este recurso."
+  },
+  "states": {
+    "cargando": "Cargando...",
+    "sinDatos": "Sin datos disponibles",
+    "sinResultados": "Sin resultados"
+  },
+  "currency": {
+    "cop": "COP",
+    "format": "${{value}}"
+  },
+  "time": {
+    "hace": "hace",
+    "min": "min",
+    "h": "h",
+    "dias": "días",
+    "hoy": "hoy",
+    "ayer": "ayer",
+    "semana": "semana"
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Entrar al panel",
+    "error": "Credenciales inválidas. Verifica tu correo y contraseña.",
+    "welcome": "Panel de Anfitrión"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Assinatura",
+  "global": {
+    "label": "TOTAL DE ASSINATURAS ATIVAS",
+    "porMes": "/ mês",
+    "establecimientos": "{{count}} estabelecimento(s)",
+    "iva": "IVA não se aplica (SaaS)",
+    "cobro": "Cobrança automática no dia 1 de cada mês"
+  },
+  "card": {
+    "valor": "Valor mensal",
+    "iva": "IVA",
+    "proximoCobro": "Próxima cobrança",
+    "mesesPagados": "Meses pagos",
+    "activa": "Ativa",
+    "suspendida": "Suspensa",
+    "historial": "HISTÓRICO DE COBRANÇAS",
+    "historialEmpty": "O histórico aparecerá aqui"
+  },
+  "empty": "Crie seu primeiro estabelecimento para ativar uma assinatura"
+}

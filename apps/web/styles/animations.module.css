@@ -1,0 +1,68 @@
+/* ══════════════════════════════════════════════════
+   Keyframe Animations — VIBRRA
+══════════════════════════════════════════════════ */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .4; transform: scale(.7); }
+}
+
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+@keyframes wave {
+  from { height: 4px; }
+  to   { height: var(--h); }
+}
+
+@keyframes ripple {
+  0%   { transform: translate(-50%, -50%) scale(.5); opacity: .8; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes particleFloat {
+  0%   { transform: translateY(0) translateX(0); opacity: .6; }
+  100% { transform: translateY(-6px) translateX(4px); opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(255,229,102,.3); }
+  50%      { text-shadow: 0 0 48px rgba(255,229,102,.7), 0 0 80px rgba(255,229,102,.2); }
+}
+
+@keyframes bounceY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+/* ── Utility classes ── */
+.pulse        { animation: pulse 2s ease infinite; }
+.spin         { animation: spin 18s linear infinite; }
+.ripple       { animation: ripple 2s ease infinite; }
+.fadeUp       { animation: fadeUp .5s ease both; }
+.glowPulse   { animation: glowPulse 2.5s ease infinite; }
+.bounceY     { animation: bounceY 1.6s ease infinite; }
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.revealDelay1 { transition-delay: .1s; }
+.revealDelay2 { transition-delay: .2s; }
+.revealDelay3 { transition-delay: .3s; }
+.revealDelay4 { transition-delay: .4s; }
+.revealDelay5 { transition-delay: .5s; }

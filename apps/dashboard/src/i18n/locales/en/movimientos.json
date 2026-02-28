@@ -1,0 +1,31 @@
+{
+  "title": "Transactions",
+  "filters": {
+    "establecimiento": "All venues",
+    "periodo": "Month / Year",
+    "tipo": "All types",
+    "exportar": "Export CSV"
+  },
+  "tipos": {
+    "puja": "Bid",
+    "conexion": "Connection",
+    "retiro": "Withdrawal",
+    "suscripcion": "Subscription",
+    "recarga": "Top-up",
+    "dedicatoria": "Dedication",
+    "veto": "Veto",
+    "batalla": "Battle",
+    "bono": "Bonus"
+  },
+  "resumen": {
+    "ingresos": "Gross Revenue",
+    "deducciones": "Deductions",
+    "retirado": "Withdrawn",
+    "saldo": "Available Balance"
+  },
+  "table": {
+    "titulo": "TRANSACTIONS"
+  },
+  "desglose": "Gross {{bruto}} · VIBRRA {{vibrra}} · Wompi {{wompi}}",
+  "empty": "Transactions will appear here when you have activity"
+}

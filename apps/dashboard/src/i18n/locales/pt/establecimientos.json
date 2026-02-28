@@ -1,0 +1,59 @@
+{
+  "title": "Estabelecimentos",
+  "contador": "{{count}} estabelecimentos",
+  "agregar": "+ Adicionar estabelecimento",
+  "card": {
+    "enSesion": "EM SESSÃO",
+    "activo": "ATIVO",
+    "inactivo": "INATIVO",
+    "configurar": "Configurar",
+    "musica": "Música",
+    "qr": "QR",
+    "sincronizar": "Sincronizar"
+  },
+  "modal": {
+    "title": "Adicionar estabelecimento",
+    "foto": "Toque para enviar foto",
+    "icono": "Selecione um ícone",
+    "nombre": "Nome *",
+    "nombrePh": "Nome do estabelecimento",
+    "descripcion": "Descrição",
+    "descripcionPh": "Breve descrição do seu negócio",
+    "direccion": "Endereço",
+    "direccionPh": "Endereço completo",
+    "ciudad": "Cidade",
+    "ciudadPh": "Cidade",
+    "zona": "Zona",
+    "zonaPh": "Bairro ou zona",
+    "cancelar": "Cancelar",
+    "crear": "Criar estabelecimento"
+  },
+  "empty": {
+    "title": "Você ainda não tem estabelecimentos",
+    "desc": "Cadastre seu primeiro local para começar a usar o VIBRRA"
+  },
+  "detalle": {
+    "title": "Configurações",
+    "info": "INFORMAÇÕES BÁSICAS",
+    "nombre": "Nome",
+    "descripcion": "Descrição",
+    "direccion": "Endereço",
+    "ciudad": "Cidade",
+    "zona": "Zona",
+    "slug": "Slug personalizado",
+    "slugPrefix": "vibrra.live/s/",
+    "precios": "PREÇOS",
+    "precioConexion": "Preço de conexão (escaneamento QR)",
+    "precioNominacion": "Preço de indicação (pedido de música)",
+    "pujaMinima": "Lance mínimo",
+    "precioDedicatoria": "Preço de dedicatória (mensagem)",
+    "config": "CONFIGURAÇÃO",
+    "modoMusica": "Modo música",
+    "visibleMapa": "Visível no mapa",
+    "activo": "Ativo",
+    "peligro": "ZONA DE PERIGO",
+    "desactivar": "Desativar estabelecimento",
+    "desactivarConfirm": "Desativar {{name}}? Você não receberá mais lances nem conexões",
+    "guardar": "Salvar alterações"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Meus QRs",
+  "qrLabel": "QR DE ENTRADA",
+  "stats": {
+    "escaneos": "Escaneamentos",
+    "enVivo": "Ao vivo",
+    "registro": "Cadastros"
+  },
+  "shortlink": {
+    "activo": "SHORTLINK · SESSÃO AO VIVO",
+    "inactivo": "SHORTLINK · SEM SESSÃO"
+  },
+  "copiarLink": "Copiar link",
+  "descargarPng": "Baixar PNG",
+  "empty": "Crie seu primeiro estabelecimento para ver o QR"
+}

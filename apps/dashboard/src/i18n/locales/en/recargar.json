@@ -1,0 +1,27 @@
+{
+  "title": "Top Up",
+  "saldo": {
+    "label": "CURRENT BALANCE",
+    "sub": "Top up to start operating"
+  },
+  "montos": {
+    "title": "SELECT AN AMOUNT",
+    "bono": "Bonus +{{percent}}%",
+    "recibes": "You receive {{amount}}",
+    "recomendado": "RECOMMENDED"
+  },
+  "resumen": {
+    "pagas": "You pay",
+    "bono": "Bonus credited",
+    "total": "Total in balance"
+  },
+  "metodo": {
+    "title": "PAYMENT METHOD",
+    "wompiTitle": "Wompi · Bancolombia",
+    "wompiDesc": "Nequi · PSE · Bancolombia Button · Debit/credit card · 2.49% + $900",
+    "badge": "ONLY METHOD"
+  },
+  "disclaimer": "Top-up bonuses are non-withdrawable. Wompi fees (~2.49% + $900/tx) apply to the amount paid. The bonus is credited to your balance immediately.",
+  "btnPagar": "Pay with Wompi",
+  "btnDisabled": "Select a plan to continue"
+}

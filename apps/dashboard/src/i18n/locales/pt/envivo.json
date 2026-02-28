@@ -1,0 +1,46 @@
+{
+  "title": "Ao Vivo",
+  "noSession": {
+    "title": "Nenhuma sessão ativa",
+    "desc": "Inicie uma sessão para que seus clientes possam pedir músicas e fazer lances",
+    "start": "Iniciar sessão",
+    "selectEst": "Selecione um estabelecimento"
+  },
+  "header": {
+    "live": "EM SESSÃO",
+    "duration": "Duração",
+    "users": "usuários"
+  },
+  "cola": {
+    "title": "FILA DE MÚSICAS",
+    "count": "{{count}} músicas",
+    "empty": "Aguardando músicas... Compartilhe o link para que seus clientes comecem a pedir",
+    "sonando": "TOCANDO AGORA",
+    "hace": "há {{time}}",
+    "acciones": {
+      "play": "Reproduzir",
+      "skip": "Pular",
+      "delete": "Remover"
+    }
+  },
+  "stats": {
+    "usuarios": "Usuários ao vivo",
+    "recaudado": "Arrecadado",
+    "pujas": "Total de lances",
+    "pujaMax": "Lance máximo",
+    "actividad": "Atividade de lances (30 min)"
+  },
+  "share": {
+    "copiar": "Copiar",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "tiktok": "TikTok"
+  },
+  "close": {
+    "btn": "Encerrar sessão",
+    "title": "Encerrar a sessão?",
+    "desc": "{{count}} usuários serão desconectados e a fila será encerrada",
+    "cancel": "Cancelar",
+    "confirm": "Sim, encerrar"
+  }
+}

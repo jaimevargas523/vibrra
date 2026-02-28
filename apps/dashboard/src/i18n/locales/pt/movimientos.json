@@ -1,0 +1,31 @@
+{
+  "title": "Movimentações",
+  "filters": {
+    "establecimiento": "Todos os estabelecimentos",
+    "periodo": "Mês / Ano",
+    "tipo": "Todos os tipos",
+    "exportar": "Exportar CSV"
+  },
+  "tipos": {
+    "puja": "Lance",
+    "conexion": "Conexão",
+    "retiro": "Saque",
+    "suscripcion": "Assinatura",
+    "recarga": "Recarga",
+    "dedicatoria": "Dedicatória",
+    "veto": "Veto",
+    "batalla": "Batalha",
+    "bono": "Bônus"
+  },
+  "resumen": {
+    "ingresos": "Receita Bruta",
+    "deducciones": "Deduções",
+    "retirado": "Sacado",
+    "saldo": "Saldo Disponível"
+  },
+  "table": {
+    "titulo": "TRANSAÇÕES"
+  },
+  "desglose": "Bruto {{bruto}} · VIBRRA {{vibrra}} · Wompi {{wompi}}",
+  "empty": "As movimentações aparecerão aqui quando você tiver atividade"
+}

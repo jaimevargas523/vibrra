@@ -1,0 +1,19 @@
+{
+  "title": "Documents",
+  "banner": "VIBRRA requires each venue to have up-to-date documents to operate legally.",
+  "docs": {
+    "sayco": "SAYCO / ACINPRO",
+    "licencia": "Operating license",
+    "matricula": "Business registration",
+    "bomberos": "Fire department certificate"
+  },
+  "estados": {
+    "obligatorio": "Required",
+    "sinSubir": "Not uploaded",
+    "pendiente": "Pending review",
+    "aprobado": "Approved",
+    "rechazado": "Rejected"
+  },
+  "subirArchivo": "Upload file",
+  "empty": "Create your first venue to manage documents"
+}

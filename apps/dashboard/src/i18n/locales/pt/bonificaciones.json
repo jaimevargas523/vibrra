@@ -1,0 +1,35 @@
+{
+  "title": "Bonificações",
+  "banner": {
+    "titulo": "Os bônus não são dinheiro real",
+    "desc": "Quando um cliente usa um bônus, o anfitrião recebe 70% do valor em saldo real. Os bônus incentivam o uso da plataforma."
+  },
+  "bienvenida": {
+    "label": "BÔNUS DE BOAS-VINDAS",
+    "monto": "$30.000",
+    "activo": "ATIVO",
+    "agotado": "ESGOTADO",
+    "vencido": "VENCIDO",
+    "disponible": "Disponível",
+    "usado": "Usado",
+    "nota": "Não sacável · apenas consumível",
+    "vence": "Vence: 30 dias após o cadastro",
+    "consejo": "Use para cobrir seus próprios lances e testar a plataforma sem custo"
+  },
+  "tabla": {
+    "title": "BÔNUS POR RECARGA · MODELO A",
+    "recargar": "Recarregar →",
+    "cabecera": {
+      "recarga": "RECARGA",
+      "bono": "BÔNUS",
+      "recibes": "VOCÊ RECEBE"
+    },
+    "popular": "Mais popular",
+    "nota": "Os bônus não são sacáveis."
+  },
+  "historial": {
+    "title": "HISTÓRICO DE BÔNUS",
+    "empty": "Os bônus de recarga aparecerão aqui após sua primeira recarga"
+  },
+  "cta": "Recarregar e ganhar bônus"
+}

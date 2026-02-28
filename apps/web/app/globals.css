@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════
+   VIBRRA Design System Tokens
+══════════════════════════════════════════════════ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Dorados — jerarquía completa */
+  --gold-shine: #FFF3A3;
+  --gold:       #FFE566;
+  --gold-mid:   #D4A017;
+  --gold-dk:    #A97010;
+  --gold-deep:  #8A6000;
+
+  /* Negros — capas de profundidad */
+  --ink:   #080808;
+  --deep:  #0C0C0C;
+  --panel: #111111;
+  --edge:  #1E1E1E;
+
+  /* Línea dorada translúcida */
+  --line: rgba(212,160,23,.13);
+
+  /* Textos */
+  --txt:   #F0EDE8;
+  --soft:  #9A9590;
+  --muted: #5A5A5A;
+
+  /* Funcional */
+  --live: #2ECC71;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-gold-shine: #FFF3A3;
+  --color-gold:       #FFE566;
+  --color-gold-mid:   #D4A017;
+  --color-gold-dk:    #A97010;
+  --color-gold-deep:  #8A6000;
+  --color-ink:        #080808;
+  --color-deep:       #0C0C0C;
+  --color-panel:      #111111;
+  --color-edge:       #1E1E1E;
+  --color-line:       rgba(212,160,23,.13);
+  --color-txt:        #F0EDE8;
+  --color-soft:       #9A9590;
+  --color-muted:      #5A5A5A;
+  --color-live:       #2ECC71;
+
+  --font-display: var(--font-playfair);
+  --font-body:    var(--font-montserrat);
+  --font-mono:    var(--font-jetbrains);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ══════════════════════════════════════════════════
+   Base Styles
+══════════════════════════════════════════════════ */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--txt);
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.028'/%3E%3C/svg%3E");
+  opacity: .6;
+}
+
+/* ══════════════════════════════════════════════════
+   Typography
+══════════════════════════════════════════════════ */
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold-mid);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: clamp(36px, 5vw, 54px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--txt);
+  margin-bottom: 16px;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--gold);
+  position: relative;
+}
+
+.section-title em::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  border-radius: 2px;
+}
+
+.section-sub {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--soft);
+  max-width: 600px;
+}
+
+/* ══════════════════════════════════════════════════
+   Buttons
+══════════════════════════════════════════════════ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255, 229, 102, .3);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--soft);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 14px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid var(--edge);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  color: var(--gold);
+  border-color: var(--gold-mid);
 }

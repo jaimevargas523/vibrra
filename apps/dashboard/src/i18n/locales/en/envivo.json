@@ -1,0 +1,46 @@
+{
+  "title": "Live",
+  "noSession": {
+    "title": "No active session",
+    "desc": "Start a session so your customers can request songs and place bids",
+    "start": "Start session",
+    "selectEst": "Select a venue"
+  },
+  "header": {
+    "live": "IN SESSION",
+    "duration": "Duration",
+    "users": "users"
+  },
+  "cola": {
+    "title": "SONG QUEUE",
+    "count": "{{count}} songs",
+    "empty": "Waiting for songs... Share the link so your customers can start requesting",
+    "sonando": "NOW PLAYING",
+    "hace": "{{time}} ago",
+    "acciones": {
+      "play": "Play",
+      "skip": "Skip",
+      "delete": "Remove"
+    }
+  },
+  "stats": {
+    "usuarios": "Live users",
+    "recaudado": "Collected",
+    "pujas": "Total bids",
+    "pujaMax": "Highest bid",
+    "actividad": "Bid activity (30 min)"
+  },
+  "share": {
+    "copiar": "Copy",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "tiktok": "TikTok"
+  },
+  "close": {
+    "btn": "End session",
+    "title": "End this session?",
+    "desc": "{{count}} users will be disconnected and the queue will be closed",
+    "cancel": "Cancel",
+    "confirm": "Yes, end it"
+  }
+}

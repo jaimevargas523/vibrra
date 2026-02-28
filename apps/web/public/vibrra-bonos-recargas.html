@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VIBRRA — Bonos por Recarga</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#FFE566;--gm:#D4A017;--gd:#A97010;
+  --ink:#080808;--panel:#0F0F0F;--card:#141414;--edge:#1E1E1E;--rim:#2A2A2A;
+  --txt:#F0EDE8;--soft:#9A9590;--dim:#5A5A5A;
+  --green:#2ECC71;--red:#E53935;--blue:#4A9EFF;--orange:#FF8F00;
+  --line:rgba(212,160,23,.12);
+}
+body{font-family:'Montserrat',sans-serif;background:var(--ink);color:var(--txt);-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:rgba(8,8,8,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(16px);}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,#FFE566,#D4A017,#A97010);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-right{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+
+/* HERO */
+.hero{padding:56px 40px 40px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(212,160,23,.05),transparent 60%);}
+.hero-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gm);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.hero-label::before{content:'';width:20px;height:1px;background:var(--gm);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1.05;margin-bottom:10px;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero p{font-size:11px;color:var(--soft);max-width:600px;line-height:1.7;margin-bottom:20px;}
+
+/* PARAMS */
+.params{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:0;}
+.param{background:var(--panel);border:1px solid var(--edge);border-radius:8px;padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.param-label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}
+.param-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--gm);}
+
+/* MAIN */
+.main{max-width:1160px;margin:0 auto;padding:40px 40px 80px;}
+
+/* TABS de recarga */
+.tabs-row{display:flex;gap:6px;margin-bottom:32px;flex-wrap:wrap;}
+.tab{padding:8px 18px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:1px solid var(--edge);color:var(--dim);background:var(--panel);transition:all .15s;}
+.tab:hover{color:var(--soft);border-color:var(--rim);}
+.tab.on{color:var(--gold);background:rgba(212,160,23,.08);border-color:rgba(212,160,23,.3);}
+
+/* FEE BANNER */
+.fee-banner{display:flex;align-items:stretch;gap:0;background:var(--panel);border:1px solid var(--edge);border-radius:12px;overflow:hidden;margin-bottom:28px;}
+.fee-cell{flex:1;padding:18px 22px;text-align:center;border-right:1px solid var(--edge);}
+.fee-cell:last-child{border-right:none;}
+.fee-cell-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+.fee-cell-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;}
+.fee-cell-val.white{color:var(--txt);}
+.fee-cell-val.red{color:var(--red);}
+.fee-cell-val.gold{background:linear-gradient(135deg,#FFE566,#D4A017);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.fee-cell-sub{font-size:9px;color:var(--dim);margin-top:3px;}
+.fee-arrow{display:flex;align-items:center;padding:0 4px;color:var(--rim);font-size:16px;}
+
+/* SECCIONES de cliente */
+.client-section{margin-bottom:28px;}
+.client-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.client-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.client-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.client-sub{font-size:10px;color:var(--dim);margin-left:20px;}
+
+/* CARDS de opciones */
+.opciones-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+.opcion-card{border-radius:10px;padding:18px;background:var(--card);border:1px solid var(--edge);position:relative;transition:border-color .2s;}
+.opcion-card.sugerida{border-color:rgba(212,160,23,.35);}
+
+.mood-badge{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
+.mood-emoji{font-size:18px;line-height:1;}
+.mood-info{}
+.mood-name{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--soft);}
+.mood-name.gold{color:var(--gm);}
+.mood-desc{font-size:8px;color:var(--dim);margin-top:1px;}
+.sug-tag{position:absolute;top:12px;right:12px;font-size:7px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);color:var(--gm);padding:2px 7px;border-radius:3px;}
+
+/* Items del bono */
+.bono-items{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.bono-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:6px;}
+.bono-item.cancion{background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.14);}
+.bono-item.conexion{background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.14);}
+.bono-item.vacio{background:rgba(90,90,90,.06);border:1px solid var(--edge);}
+.bono-item-label{font-size:10px;color:var(--soft);}
+.bono-item-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;}
+.bono-item-val.blue{color:var(--blue);}
+.bono-item-val.green{color:var(--green);}
+.bono-item-val.dim{color:var(--dim);}
+
+/* Footer cálculo */
+.calc-footer{border-top:1px solid var(--edge);padding-top:12px;}
+.calc-row{display:flex;justify-content:space-between;font-size:9px;margin-bottom:3px;}
+.calc-row span:first-child{color:var(--dim);}
+.calc-row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:600;}
+.calc-row .ok{color:var(--green);}
+.calc-row .warn{color:var(--orange);}
+.calc-row .val{color:var(--soft);}
+
+/* Segunda noche */
+.segunda-banner{background:rgba(255,143,0,.04);border:1px solid rgba(255,143,0,.2);border-radius:10px;padding:16px 20px;margin-top:4px;}
+.segunda-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.segunda-title{font-size:10px;font-weight:700;color:var(--orange);}
+.segunda-sub{font-size:9px;color:var(--dim);}
+.segunda-opciones{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.segunda-item{text-align:center;padding:10px;background:var(--card);border:1px solid var(--edge);border-radius:8px;}
+.segunda-mood{font-size:8px;color:var(--dim);margin-bottom:4px;}
+.segunda-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--blue);}
+.segunda-label{font-size:9px;color:var(--dim);margin-top:3px;}
+.segunda-diff{font-size:8px;font-family:'JetBrains Mono',monospace;margin-top:4px;}
+
+/* Nota $2000 */
+.nota-micro{background:rgba(255,143,0,.05);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 14px;font-size:10px;color:var(--soft);margin-bottom:14px;line-height:1.6;}
+.nota-micro strong{color:var(--orange);}
+
+/* Separador cliente */
+.client-divider{height:1px;background:var(--edge);margin:24px 0;}
+
+/* Resumen de reglas */
+.reglas{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:20px;margin-top:32px;}
+.reglas-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gm);margin-bottom:14px;}
+.regla{display:flex;gap:10px;font-size:11px;color:var(--soft);line-height:1.6;margin-bottom:8px;}
+.regla::before{content:'›';color:var(--rim);font-size:14px;flex-shrink:0;}
+.regla strong{color:var(--txt);}
+
+@media(max-width:800px){
+  .nav,.hero,.main{padding-left:20px;padding-right:20px;}
+  .opciones-row,.segunda-opciones{grid-template-columns:1fr;}
+  .fee-banner{flex-direction:column;}
+  .fee-cell{border-right:none;border-bottom:1px solid var(--edge);}
+  .fee-cell:last-child{border-bottom:none;}
+  .fee-arrow{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="logo">VIBRRA</span>
+  <span class="nav-right">Bonos por Recarga · Referencia v1.0</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Modelo económico</div>
+  <h1>Bonos por <em>Recarga</em></h1>
+  <p>El fee que cobraría la pasarela se convierte en bonos de acción para el cliente. El anfitrión elige la generosidad. Registrado siempre gana más que anónimo.</p>
+  <div class="params">
+    <div class="param"><span class="param-label">Precio canción</span><span class="param-val">$500</span></div>
+    <div class="param"><span class="param-label">Precio conexión</span><span class="param-val">$500</span></div>
+    <div class="param"><span class="param-label">Wompi fee</span><span class="param-val">2.68% + $900 fijo</span></div>
+    <div class="param"><span class="param-label">Bonos</span><span class="param-val">Solo acciones, sin saldo COP</span></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TABS -->
+  <div class="tabs-row" id="tabs">
+    <button class="tab on" onclick="show(2000,this)">$2.000</button>
+    <button class="tab" onclick="show(5000,this)">$5.000</button>
+    <button class="tab" onclick="show(10000,this)">$10.000</button>
+    <button class="tab" onclick="show(20000,this)">$20.000</button>
+    <button class="tab" onclick="show(50000,this)">$50.000</button>
+  </div>
+
+  <!-- PANELES -->
+  <div id="panel-2000"><!-- generado por JS --></div>
+  <div id="panel-5000" style="display:none;"></div>
+  <div id="panel-10000" style="display:none;"></div>
+  <div id="panel-20000" style="display:none;"></div>
+  <div id="panel-50000" style="display:none;"></div>
+
+</div>
+
+<script>
+// ── Parámetros ──────────────────────────────────────────────
+const CANCION  = 500;
+let   CONEXION = 500; // mutable: puede ser 0 si el anfitrión la configura gratis
+
+function fee(monto) {
+  return Math.round(monto * 0.0268 + 900);
+}
+
+/**
+ * Calcula el valor y diferencia de una opción de bono.
+ * Si CONEXION = 0, las conexiones no tienen valor económico
+ * y no deben incluirse como bonos (ya son gratis de por sí).
+ */
+function calc(conex, canci, budget) {
+  // Si la conexión es gratis, forzar 0 conexiones en el bono
+  const conexEfectivas = CONEXION === 0 ? 0 : conex;
+  const val  = conexEfectivas * CONEXION + canci * CANCION;
+  const diff = budget - val;
+  return { conex: conexEfectivas, canci, val, diff };
+}
+
+/**
+ * Opciones para cliente Anónimo.
+ * - Conexión gratis (CONEXION=0): 3 niveles solo de canciones (1, 2, 3)
+ * - Conexión paga: P=0C+1🎵, M=1C+0🎵, G=1C+1🎵
+ */
+function opcionesAnonimo(budget) {
+  if (CONEXION === 0) {
+    // Solo canciones, 3 niveles distintos — la conexión ya es gratis
+    return {
+      pesimista: calc(0, 1, budget),
+      moderada:  calc(0, 2, budget),
+      generosa:  calc(0, 3, budget),
+    };
+  }
+  return {
+    pesimista: calc(0, 1, budget), // 1 canción, sin conexión
+    moderada:  calc(1, 0, budget), // 1 conexión, sin canción (tipo diferente)
+    generosa:  calc(1, 1, budget), // 1 conexión + 1 canción
+  };
+}
+
+/**
+ * Opciones para cliente Registrado.
+ * - Conexión gratis (CONEXION=0): más canciones que anónimo (empieza en 2)
+ * - Conexión paga: siempre incluye 1 conexión + canciones escalonadas
+ */
+function opcionesRegistrado(budget) {
+  const u = Math.floor(budget / CANCION);
+  if (CONEXION === 0) {
+    // Sin conexión en bonos — más canciones que anónimo (ventaja del registrado)
+    const pC = Math.max(2, u);
+    const mC = pC + 1;
+    const gC = mC + 1;
+    return {
+      pesimista: calc(0, pC, budget),
+      moderada:  calc(0, mC, budget),
+      generosa:  calc(0, gC, budget),
+    };
+  }
+  // Con conexión — siempre 1 conexión garantizada + canciones escaladas
+  const pC = Math.max(1, u - 1);
+  const mC = pC + 1;
+  const gC = mC + 1;
+  return {
+    pesimista: calc(1, pC, budget),
+    moderada:  calc(1, mC, budget),
+    generosa:  calc(1, gC, budget),
+  };
+}
+
+/**
+ * Opciones para segunda recarga misma noche (registrado).
+ * Siempre solo canciones (ya tiene conexión activa), sin importar precio.
+ */
+function opcionesSegunda(budget) {
+  const u  = Math.floor(budget / CANCION);
+  const pC = Math.max(1, u - 1);
+  const mC = Math.max(pC + 1, u);
+  const gC = mC + 1;
+  return {
+    pesimista: calc(0, pC, budget),
+    moderada:  calc(0, mC, budget),
+    generosa:  calc(0, gC, budget),
+  };
+}
+
+/**
+ * Cambia el precio de conexión y re-renderiza el panel activo.
+ * Si precio = 0: oculta la fila de conexión en el param header
+ * y ajusta todas las opciones a solo canciones.
+ */
+function setConexion(precio, btn) {
+  CONEXION = precio;
+
+  // Actualizar badge del param
+  const badge = document.getElementById('param-conexion');
+  if (precio === 0) {
+    badge.style.borderColor = 'rgba(255,143,0,.4)';
+    badge.querySelector('.param-val').textContent = '$0 — Conexión gratis';
+    badge.querySelector('.param-val').style.color = 'var(--orange)';
+  } else {
+    badge.style.borderColor = '';
+    badge.querySelector('.param-val').textContent = '$' + precio.toLocaleString('es-CO');
+    badge.querySelector('.param-val').style.color = '';
+  }
+
+  // Actualizar tabs del simulador
+  document.querySelectorAll('.tab[onclick^="setConexion"]').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+
+  // Re-renderizar panel activo
+  const montoActivo = montos.find(m =>
+    document.getElementById('panel-' + m).style.display !== 'none'
+  );
+  montos.forEach(m => {
+    document.getElementById('panel-' + m).innerHTML = buildPanel(m);
+  });
+  show(montoActivo, document.querySelector('.tab.on[onclick^="show"]'));
+}
+
+// ── Configuración de moods ───────────────────────────────────
+const MOODS = {
+  pesimista: { emoji: '😐', label: 'Pesimista', desc: 'Lo mínimo que quiero dar', gold: false },
+  moderada:  { emoji: '😊', label: 'Moderada',  desc: 'Balance fidelización / costo', gold: true, sugerida: true },
+  generosa:  { emoji: '🤩', label: 'Generosa',  desc: 'Maximizo fidelización',  gold: false },
+};
+
+// ── Formatear número COP ─────────────────────────────────────
+function cop(n) {
+  return '$' + Math.abs(n).toLocaleString('es-CO');
+}
+
+// ── Renderizar una opción ────────────────────────────────────
+function renderOpcion(mood, opt, budget, sugerida) {
+  const m = MOODS[mood];
+  const diffStr = opt.diff >= 0
+    ? `<span class="ok">✓ ${cop(opt.diff)} sobrante al anfitrión</span>`
+    : `<span class="warn">⚠ ${cop(opt.diff)} asume el anfitrión</span>`;
+
+  const cancItem = opt.canci > 0
+    ? `<div class="bono-item cancion">
+        <span class="bono-item-label">🎵 Canciones</span>
+        <span class="bono-item-val blue">×${opt.canci}</span>
+       </div>`
+    : `<div class="bono-item vacio">
+        <span class="bono-item-label">🎵 Canciones</span>
+        <span class="bono-item-val dim">×0</span>
+       </div>`;
+
+  const conItem = opt.conex > 0
+    ? `<div class="bono-item conexion">
+        <span class="bono-item-label">🔌 Conexión</span>
+        <span class="bono-item-val green">×${opt.conex}</span>
+       </div>`
+    : `<div class="bono-item vacio">
+        <span class="bono-item-label">🔌 Conexión</span>
+        <span class="bono-item-val dim">×0</span>
+       </div>`;
+
+  return `
+    <div class="opcion-card ${sugerida ? 'sugerida' : ''}">
+      ${sugerida ? '<span class="sug-tag">SUGERIDA</span>' : ''}
+      <div class="mood-badge">
+        <span class="mood-emoji">${m.emoji}</span>
+        <div class="mood-info">
+          <div class="mood-name ${m.gold ? 'gold' : ''}">${m.label}</div>
+          <div class="mood-desc">${m.desc}</div>
+        </div>
+      </div>
+      <div class="bono-items">
+        ${conItem}
+        ${cancItem}
+      </div>
+      <div class="calc-footer">
+        <div class="calc-row"><span>Valor bonos</span><span class="val">${cop(opt.val)}</span></div>
+        <div class="calc-row"><span>Presupuesto (fee)</span><span class="val">${cop(budget)}</span></div>
+        <div class="calc-row"><span>Resultado</span>${diffStr}</div>
+      </div>
+    </div>`;
+}
+
+// ── Renderizar una sección de tipo de cliente ────────────────
+function renderCliente(titulo, sub, dotColor, titleColor, opts, budget, micro) {
+  const moods = ['pesimista', 'moderada', 'generosa'];
+  const cards = moods.map((m, i) => renderOpcion(m, opts[m], budget, i === 1)).join('');
+
+  const micronota = micro
+    ? `<div class="nota-micro"><strong>Recarga mínima:</strong> Con $2.000 el fee ($954) apenas cubre 1 ítem a $500. Las opciones del cliente registrado exceden el presupuesto — el anfitrión absorbe la diferencia. Recargas de $5.000+ ofrecen más margen.</div>`
+    : '';
+
+  return `
+    <div class="client-section">
+      <div class="client-header">
+        <div class="client-dot" style="background:${dotColor};"></div>
+        <div>
+          <span class="client-title" style="color:${titleColor};">${titulo}</span>
+          <span class="client-sub">${sub}</span>
+        </div>
+      </div>
+      ${micronota}
+      <div class="opciones-row">${cards}</div>
+    </div>`;
+}
+
+// ── Renderizar segunda noche ─────────────────────────────────
+function renderSegunda(opts, budget) {
+  const moods = ['pesimista', 'moderada', 'generosa'];
+  const items = moods.map(m => {
+    const o   = opts[m];
+    const mm  = MOODS[m];
+    const dif = o.diff >= 0
+      ? `<span style="color:var(--green)">${cop(o.diff)} sobrante</span>`
+      : `<span style="color:var(--orange)">⚠ ${cop(o.diff)}</span>`;
+    return `
+      <div class="segunda-item">
+        <div class="segunda-mood">${mm.emoji} ${mm.label}</div>
+        <div class="segunda-val">×${o.canci}</div>
+        <div class="segunda-label">🎵 canciones</div>
+        <div class="segunda-diff">${dif}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="segunda-banner">
+      <div class="segunda-header">
+        <span style="font-size:18px;">🔁</span>
+        <div>
+          <div class="segunda-title">Segunda recarga (misma noche) — Solo cliente Registrado</div>
+          <div class="segunda-sub">Ya tiene conexión activa → únicamente canciones. La generosidad aplica igual.</div>
+        </div>
+      </div>
+      <div class="segunda-opciones">${items}</div>
+    </div>`;
+}
+
+// ── Construir panel completo ─────────────────────────────────
+function buildPanel(monto) {
+  const b   = fee(monto);
+  const wf  = (monto * 0.0268).toFixed(0);
+  const isMicro = monto === 2000;
+
+  const anon = opcionesAnonimo(b);
+  const reg  = opcionesRegistrado(b);
+  const seg  = opcionesSegunda(b);
+
+  const feeBanner = `
+    <div class="fee-banner">
+      <div class="fee-cell">
+        <div class="fee-cell-label">Recarga cliente</div>
+        <div class="fee-cell-val white">$${monto.toLocaleString('es-CO')}</div>
+        <div class="fee-cell-sub">Procesado por Wompi</div>
+      </div>
+      <div class="fee-arrow">→</div>
+      <div class="fee-cell">
+        <div class="fee-cell-label">Fee Wompi</div>
+        <div class="fee-cell-val red">$${b.toLocaleString('es-CO')}</div>
+        <div class="fee-cell-sub">2.68% × $${monto.toLocaleString('es-CO')} + $900 fijo</div>
+      </div>
+      <div class="fee-arrow">→</div>
+      <div class="fee-cell">
+        <div class="fee-cell-label">Presupuesto bonos</div>
+        <div class="fee-cell-val gold">$${b.toLocaleString('es-CO')}</div>
+        <div class="fee-cell-sub">Ese fee se convierte en acciones gratis</div>
+      </div>
+      <div class="fee-arrow">→</div>
+      <div class="fee-cell">
+        <div class="fee-cell-label">Unidades a $500</div>
+        <div class="fee-cell-val white">${Math.floor(b/500)}</div>
+        <div class="fee-cell-sub">Canciones o conexiones dentro del budget</div>
+      </div>
+    </div>`;
+
+  const anonSection = renderCliente(
+    'Cliente Anónimo', '— Sin cuenta registrada. Menos beneficios.',
+    'var(--dim)', 'var(--soft)', anon, b, false
+  );
+
+  const regSection = renderCliente(
+    'Cliente Registrado', '— Con cuenta VIBRRA. Siempre mejores bonos.',
+    'var(--gold)', 'var(--gold)', reg, b, isMicro
+  );
+
+  const reglas = `
+    <div class="reglas">
+      <div class="reglas-title">Reglas del sistema</div>
+      <div class="regla"><strong>Anónimo siempre recibe menos</strong> que registrado en cualquier opción y cualquier monto de recarga.</div>
+      <div class="regla"><strong>Registrado siempre incluye 1 conexión</strong> (primera recarga de la noche). El anónimo nunca recibe conexión en opción pesimista ni moderada.</div>
+      <div class="regla"><strong>El anfitrión elige su nivel</strong> de generosidad desde el dashboard. La opción sugerida es la Moderada.</div>
+      <div class="regla"><strong>Segunda recarga misma noche:</strong> el cliente ya tiene conexión activa → solo canciones en los 3 niveles.</div>
+      <div class="regla"><strong>Sin saldo COP</strong> en ninguna opción — únicamente acciones (canciones y conexiones). El cliente no acumula saldo retirable.</div>
+      <div class="regla"><strong>El sobrante</strong> (diferencia positiva) no se entrega al anfitrión ni al cliente. Es el margen de ahorro del sistema.</div>
+      <div class="regla"><strong>El déficit</strong> (diferencia negativa) lo asume el anfitrión como inversión en fidelización de sus clientes.</div>
+    </div>`;
+
+  return feeBanner + anonSection + '<div class="client-divider"></div>' + regSection + '<div style="margin-top:20px;"></div>' + renderSegunda(seg, b) + reglas;
+}
+
+// ── Mostrar panel ────────────────────────────────────────────
+const montos = [2000, 5000, 10000, 20000, 50000];
+
+// Pre-renderizar todos
+montos.forEach(m => {
+  document.getElementById('panel-' + m).innerHTML = buildPanel(m);
+});
+
+function show(monto, btn) {
+  montos.forEach(m => {
+    document.getElementById('panel-' + m).style.display = m === monto ? '' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>

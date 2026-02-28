@@ -1,0 +1,21 @@
+{
+  "title": "Suscripción",
+  "global": {
+    "label": "TOTAL SUSCRIPCIONES ACTIVAS",
+    "porMes": "/ mes",
+    "establecimientos": "{{count}} establecimiento(s)",
+    "iva": "IVA no aplica (SaaS)",
+    "cobro": "Cobro automático el día 1 de cada mes"
+  },
+  "card": {
+    "valor": "Valor mensual",
+    "iva": "IVA",
+    "proximoCobro": "Próximo cobro",
+    "mesesPagados": "Meses pagados",
+    "activa": "Activa",
+    "suspendida": "Suspendida",
+    "historial": "HISTORIAL DE COBROS",
+    "historialEmpty": "El historial aparecerá aquí"
+  },
+  "empty": "Crea tu primer establecimiento para activar una suscripción"
+}

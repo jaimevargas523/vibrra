@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VIBRRA — Modelo Económico</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#FFE566;--gm:#D4A017;--gd:#A97010;
+  --ink:#080808;--panel:#0F0F0F;--card:#141414;--edge:#1E1E1E;--rim:#2A2A2A;
+  --txt:#F0EDE8;--soft:#9A9590;--dim:#5A5A5A;
+  --green:#2ECC71;--red:#E53935;--blue:#4A9EFF;--orange:#FF8F00;
+  --line:rgba(212,160,23,.12);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--ink);color:var(--txt);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:var(--gm);text-decoration:none;}
+
+/* ── GRAIN ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.5;
+}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 48px;
+  background:rgba(8,8,8,.92);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(16px);
+}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,#FFE566,#D4A017,#A97010);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{padding:6px 14px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);cursor:pointer;transition:all .2s;border:none;background:none;}
+.nav-tab:hover{color:var(--soft);}
+.nav-tab.on{color:var(--gold);background:rgba(212,160,23,.08);}
+
+/* ── HERO ── */
+.hero{
+  position:relative;padding:64px 48px 48px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(212,160,23,.06) 0%,transparent 60%);
+  overflow:hidden;
+}
+.hero::after{
+  content:'VIBRRA';
+  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+  font-family:'Playfair Display',serif;font-size:200px;font-weight:900;
+  color:rgba(212,160,23,.03);line-height:1;pointer-events:none;
+  white-space:nowrap;
+}
+.hero-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gm);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.hero-label::before{content:'';width:20px;height:1px;background:var(--gm);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-weight:900;line-height:1.05;margin-bottom:12px;}
+.hero h1 span{color:var(--gold);}
+.hero p{font-size:12px;color:var(--soft);max-width:540px;line-height:1.7;}
+
+/* ── MAIN GRID ── */
+.main{max-width:1200px;margin:0 auto;padding:48px 48px 96px;display:flex;flex-direction:column;gap:48px;position:relative;z-index:1;}
+
+/* ── SECCIÓN ── */
+.section-head{margin-bottom:24px;}
+.section-tag{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gm);margin-bottom:6px;}
+.section-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;}
+.section-title em{color:var(--gold);font-style:italic;}
+.section-sub{font-size:11px;color:var(--soft);margin-top:6px;line-height:1.6;}
+
+/* ── TARJETA BASE ── */
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:24px;}
+.card.gold-border{border-color:rgba(212,160,23,.3);}
+
+/* ── FLUJO DE DINERO ── */
+.flow-grid{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:center;}
+.flow-box{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:20px;text-align:center;}
+.flow-box.highlight{border-color:rgba(212,160,23,.4);background:linear-gradient(135deg,rgba(212,160,23,.07),rgba(212,160,23,.02));}
+.flow-box.green-h{border-color:rgba(46,204,113,.3);background:rgba(46,204,113,.04);}
+.flow-icon{font-size:28px;margin-bottom:10px;}
+.flow-name{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:4px;}
+.flow-pct{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;line-height:1;}
+.flow-pct.gold{background:linear-gradient(135deg,#FFE566,#D4A017);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.flow-pct.green{color:var(--green);}
+.flow-detail{font-size:9px;color:var(--dim);margin-top:6px;line-height:1.5;}
+.flow-arrow{text-align:center;padding:0 8px;}
+.flow-arrow-line{width:40px;height:2px;background:linear-gradient(90deg,var(--edge),var(--rim));position:relative;margin:0 auto;}
+.flow-arrow-line::after{content:'▶';position:absolute;right:-8px;top:-7px;font-size:10px;color:var(--rim);}
+
+/* ── TABLA DE OPERACIONES ── */
+.ops-table{width:100%;border-collapse:separate;border-spacing:0;}
+.ops-table th{background:rgba(212,160,23,.06);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gm);padding:10px 14px;text-align:left;border-bottom:1px solid var(--edge);}
+.ops-table th:first-child{border-radius:10px 0 0 0;}
+.ops-table th:last-child{border-radius:0 10px 0 0;}
+.ops-table td{padding:12px 14px;font-size:12px;color:var(--soft);border-bottom:1px solid var(--edge);vertical-align:middle;}
+.ops-table tr:last-child td{border-bottom:none;}
+.ops-table tr:hover td{background:rgba(255,255,255,.015);}
+.op-name{font-weight:600;color:var(--txt);}
+.op-name small{display:block;font-size:10px;font-weight:400;color:var(--dim);margin-top:2px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.tag.gratis{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:var(--green);}
+.tag.paga{background:rgba(255,229,102,.08);border:1px solid rgba(212,160,23,.2);color:var(--gm);}
+.tag.bono{background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);color:var(--blue);}
+.tag.na{background:rgba(90,90,90,.1);border:1px solid var(--edge);color:var(--dim);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;}
+.pct-vibrra{color:var(--gm);font-weight:700;font-family:'JetBrains Mono',monospace;}
+.pct-anf{color:var(--green);font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+/* ── SALDO MODEL ── */
+.saldo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.saldo-card{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:20px;}
+.saldo-card.real{border-color:rgba(46,204,113,.25);}
+.saldo-card.bono{border-color:rgba(74,158,255,.25);}
+.saldo-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.saldo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.saldo-dot.real{background:var(--green);}
+.saldo-dot.bono{background:var(--blue);}
+.saldo-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.saldo-label.real{color:var(--green);}
+.saldo-label.bono{color:var(--blue);}
+.saldo-list{display:flex;flex-direction:column;gap:7px;}
+.saldo-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--soft);line-height:1.5;}
+.saldo-item::before{content:'›';color:var(--rim);flex-shrink:0;font-size:14px;line-height:1.2;}
+.saldo-item strong{color:var(--txt);}
+
+/* ── SUSCRIPCIÓN ── */
+.sus-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.sus-card{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:20px;position:relative;overflow:hidden;}
+.sus-card.active{border-color:rgba(212,160,23,.4);}
+.sus-month{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.sus-price{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;line-height:1;margin-bottom:4px;}
+.sus-price.free{color:var(--green);}
+.sus-price.paid{background:linear-gradient(135deg,#FFE566,#D4A017);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sus-desc{font-size:10px;color:var(--soft);line-height:1.6;margin-top:10px;}
+.sus-bonus{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:6px;padding:6px 10px;font-size:10px;color:var(--gm);font-weight:600;}
+.sus-badge{position:absolute;top:14px;right:14px;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:var(--green);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+
+/* ── RETIRO ── */
+.retiro-flow{display:flex;gap:0;align-items:stretch;}
+.retiro-step{flex:1;background:var(--card);border:1px solid var(--edge);padding:18px;position:relative;}
+.retiro-step:first-child{border-radius:10px 0 0 10px;}
+.retiro-step:last-child{border-radius:0 10px 10px 0;}
+.retiro-step:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--rim);font-size:14px;z-index:2;background:var(--ink);padding:2px 0;}
+.retiro-step:not(:first-child){border-left:none;}
+.retiro-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:6px;}
+.retiro-title{font-size:11px;font-weight:700;color:var(--txt);margin-bottom:4px;}
+.retiro-desc{font-size:10px;color:var(--soft);line-height:1.5;}
+.retiro-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--gm);margin-top:6px;}
+
+/* ── BONOS ESCALONADOS ── */
+.bonos-wrap{display:flex;flex-direction:column;gap:12px;}
+.bono-section-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--edge);}
+.bono-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.bono-tier{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:16px;text-align:center;position:relative;transition:border-color .2s;}
+.bono-tier:hover{border-color:rgba(212,160,23,.3);}
+.bono-tier.star{border-color:rgba(212,160,23,.4);background:linear-gradient(135deg,rgba(212,160,23,.07),transparent);}
+.bono-star{position:absolute;top:8px;right:10px;font-size:10px;color:var(--gm);}
+.bono-level{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;}
+.bono-recarga{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--txt);margin-bottom:6px;}
+.bono-obtiene-label{font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:4px;}
+.bono-obtiene-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;}
+.bono-obtiene-val.gold{background:linear-gradient(135deg,#FFE566,#D4A017);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.bono-obtiene-val.blue{color:var(--blue);}
+.bono-detail{font-size:9px;color:var(--dim);margin-top:8px;line-height:1.5;}
+.bono-chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:8px;}
+.bono-chip{font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.15);color:var(--blue);}
+.bono-note{font-size:9px;color:var(--dim);font-style:italic;margin-top:4px;}
+
+/* ── BLOQUEO SALDO ── */
+.bloqueo-card{display:flex;gap:24px;align-items:flex-start;}
+.bloqueo-amount{flex-shrink:0;background:linear-gradient(135deg,rgba(229,57,53,.1),rgba(229,57,53,.04));border:1px solid rgba(229,57,53,.2);border-radius:12px;padding:20px 28px;text-align:center;}
+.bloqueo-amt-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--red);opacity:.7;margin-bottom:4px;}
+.bloqueo-amt-val{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:var(--red);}
+.bloqueo-amt-unit{font-size:9px;color:var(--red);opacity:.7;}
+.bloqueo-rules{flex:1;display:flex;flex-direction:column;gap:8px;}
+.bloqueo-rule{display:flex;gap:10px;font-size:11px;color:var(--soft);align-items:flex-start;line-height:1.5;}
+.bloqueo-rule-icon{font-size:14px;flex-shrink:0;margin-top:-1px;}
+.bloqueo-rule strong{color:var(--txt);}
+
+/* ── CALLOUT ── */
+.callout{border-left:3px solid var(--gm);background:rgba(212,160,23,.04);border-radius:0 8px 8px 0;padding:14px 18px;font-size:11px;color:var(--soft);line-height:1.7;margin-top:16px;}
+.callout strong{color:var(--gm);}
+.callout.info{border-left-color:var(--blue);background:rgba(74,158,255,.04);}
+.callout.info strong{color:var(--blue);}
+.callout.warn{border-left-color:var(--orange);background:rgba(255,143,0,.04);}
+.callout.warn strong{color:var(--orange);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .nav{padding:14px 20px;}
+  .hero{padding:40px 20px 32px;}
+  .main{padding:32px 20px 80px;}
+  .flow-grid{grid-template-columns:1fr;gap:8px;}
+  .flow-arrow{transform:rotate(90deg);padding:4px 0;}
+  .saldo-grid,.sus-row{grid-template-columns:1fr;}
+  .bono-tiers{grid-template-columns:1fr 1fr;}
+  .retiro-flow{flex-direction:column;}
+  .retiro-step{border-radius:0!important;border-left:1px solid var(--edge)!important;}
+  .retiro-step:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-14px;transform:translateX(50%);}
+  .retiro-step:first-child{border-radius:10px 10px 0 0!important;}
+  .retiro-step:last-child{border-radius:0 0 10px 10px!important;}
+  .bloqueo-card{flex-direction:column;}
+  .nav-tabs{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="logo">VIBRRA</span>
+  <div class="nav-tabs">
+    <button class="nav-tab on" onclick="scrollTo('#flujo')">Flujo</button>
+    <button class="nav-tab" onclick="scrollTo('#operaciones')">Operaciones</button>
+    <button class="nav-tab" onclick="scrollTo('#saldos')">Saldos</button>
+    <button class="nav-tab" onclick="scrollTo('#suscripcion')">Suscripción</button>
+    <button class="nav-tab" onclick="scrollTo('#bonos')">Bonos</button>
+    <button class="nav-tab" onclick="scrollTo('#retiros')">Retiros</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero" style="position:relative;z-index:1;">
+  <div class="hero-label">Documento interno · Referencia v1.0</div>
+  <h1>Modelo <span>Económico</span><br/>VIBRRA</h1>
+  <p>Distribución de ingresos, estructura de saldos, bonificaciones escalonadas y reglas de retiro. Febrero 2026.</p>
+</div>
+
+<div class="main">
+
+  <!-- 1. FLUJO DE DINERO -->
+  <div id="flujo">
+    <div class="section-head">
+      <div class="section-tag">Sección 01</div>
+      <div class="section-title">Flujo de <em>dinero</em></div>
+      <div class="section-sub">Las operaciones se descuentan del saldo del cliente. No interviene pasarela en la operación. La pasarela solo aplica en las recargas del anfitrión.</div>
+    </div>
+
+    <div class="card">
+      <div class="flow-grid">
+        <div class="flow-box">
+          <div class="flow-icon">👤</div>
+          <div class="flow-name">Cliente</div>
+          <div class="flow-pct" style="color:var(--txt);font-size:18px;margin-top:4px;">Saldo</div>
+          <div class="flow-detail">Se descuenta del saldo registrado en la plataforma. Sin pasarela en la operación.</div>
+        </div>
+        <div class="flow-arrow"><div class="flow-arrow-line"></div></div>
+        <div class="flow-box highlight">
+          <div class="flow-icon">🎵</div>
+          <div class="flow-name">Operación</div>
+          <div class="flow-pct" style="font-size:14px;color:var(--gm);">Conexión · Nominación<br/>Puja · VETO · Dedicatoria</div>
+          <div class="flow-detail">El valor se divide automáticamente al procesar la operación.</div>
+        </div>
+        <div class="flow-arrow"><div class="flow-arrow-line"></div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="flow-box green-h">
+            <div class="flow-name">Anfitrión</div>
+            <div class="flow-pct green">70%</div>
+            <div class="flow-detail">Menos impuestos y descuentos aplicables al momento del retiro.</div>
+          </div>
+          <div class="flow-box highlight">
+            <div class="flow-name">VIBRRA</div>
+            <div class="flow-pct gold">30%</div>
+            <div class="flow-detail">Ingreso operativo de la plataforma por cada transacción.</div>
+          </div>
+        </div>
+      </div>
+      <div class="callout info" style="margin-top:20px;">
+        <strong>Sin pasarela en operaciones:</strong> A diferencia de plataformas tradicionales, VIBRRA no cobra tarifa de pasarela en cada operación musical. El dinero fluye directamente entre saldos internos. Esto maximiza el ingreso neto del anfitrión y simplifica la experiencia del cliente.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. TABLA DE OPERACIONES -->
+  <div id="operaciones">
+    <div class="section-head">
+      <div class="section-tag">Sección 02</div>
+      <div class="section-title">Tabla de <em>operaciones</em></div>
+      <div class="section-sub">Quién paga, cuánto, y cómo se distribuye por cada acción en la plataforma.</div>
+    </div>
+
+    <div class="card">
+      <table class="ops-table">
+        <thead>
+          <tr>
+            <th>Operación</th>
+            <th>Cliente paga</th>
+            <th>Anfitrión paga</th>
+            <th>VIBRRA recibe</th>
+            <th>Anfitrión recibe</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="op-name">Conexión a sesión<small>Ingresar al bar virtual</small></div></td>
+            <td><span class="tag paga">Precio config.</span></td>
+            <td><span class="tag gratis">Gratis</span></td>
+            <td class="pct-vibrra">30%</td>
+            <td class="pct-anf">70%</td>
+            <td style="font-size:10px;color:var(--dim);">Precio fijado por anfitrión. Piso $100.</td>
+          </tr>
+          <tr>
+            <td><div class="op-name">Nominación de canción<small>Agregar canción a la cola</small></div></td>
+            <td><span class="tag paga">Precio config.</span><br/><span style="font-size:9px;color:var(--dim);">Puja inicial = precio nominación</span></td>
+            <td><span class="tag gratis">Gratis</span></td>
+            <td class="pct-vibrra">30%</td>
+            <td class="pct-anf">70%</td>
+            <td style="font-size:10px;color:var(--dim);">La puja inicial = precio nominación. La canción sube automáticamente en cola al nominar.</td>
+          </tr>
+          <tr>
+            <td><div class="op-name">Puja sobre canción<small>Subir posición en cola</small></div></td>
+            <td><span class="tag paga">Monto libre</span><br/><span style="font-size:9px;color:var(--dim);">VIBRRA 30% · Anfitrión 70%</span></td>
+            <td><span class="mono" style="color:var(--green);">$0</span> <span style="font-size:9px;color:var(--dim);">al nominar</span><br/><span class="tag paga" style="margin-top:4px;display:inline-block;">Paga si quiere subir</span><br/><span style="font-size:9px;color:var(--dim);">VIBRRA 30% · Anfitrión $0</span></td>
+            <td class="pct-vibrra">30%</td>
+            <td><span style="font-size:11px;"><span class="pct-anf">70%</span> <span style="color:var(--dim);font-size:9px;">(cliente)</span><br/><span style="color:var(--dim);">$0</span> <span style="color:var(--dim);font-size:9px;">(anfitrión puja)</span></span></td>
+            <td style="font-size:10px;color:var(--dim);">Cuando el <strong style="color:var(--txt);">cliente</strong> puja: 70% anfitrión · 30% VIBRRA. Cuando el <strong style="color:var(--txt);">anfitrión</strong> puja: 30% VIBRRA · anfitrión recibe $0 (es su propio saldo).</td>
+          </tr>
+          <tr>
+            <td><div class="op-name">Dedicatoria<small>Mensaje en pantalla del bar</small></div></td>
+            <td><span class="tag paga">Precio config.</span><br/><span style="font-size:9px;color:var(--dim);">VIBRRA 30% · Anfitrión 70%</span></td>
+            <td><span class="tag paga">Precio config.</span><br/><span style="font-size:9px;color:var(--dim);">VIBRRA 30% · Anfitrión $0</span></td>
+            <td class="pct-vibrra">30%</td>
+            <td><span class="pct-anf">70%</span> <span style="color:var(--dim);font-size:9px;">(cliente)</span><br/><span style="color:var(--dim);">$0</span> <span style="color:var(--dim);font-size:9px;">(anfitrión paga)</span></td>
+            <td style="font-size:10px;color:var(--dim);">Cuando el <strong style="color:var(--txt);">cliente</strong> paga: 70% anfitrión. Cuando el <strong style="color:var(--txt);">anfitrión</strong> paga: 30% VIBRRA · $0 para el anfitrión (es su propio saldo).</td>
+          </tr>
+          <tr>
+            <td><div class="op-name">VETO<small>Bloquear canción de la cola</small></div></td>
+            <td><span class="tag paga">Precio config.</span><br/><span style="font-size:9px;color:var(--dim);">VIBRRA 30% · Anfitrión 70%</span></td>
+            <td><span class="tag paga">Precio config.</span><br/><span style="font-size:9px;color:var(--dim);">VIBRRA 30% · Anfitrión $0</span></td>
+            <td class="pct-vibrra">30%</td>
+            <td><span class="pct-anf">70%</span> <span style="color:var(--dim);font-size:9px;">(cliente)</span><br/><span style="color:var(--dim);">$0</span> <span style="color:var(--dim);font-size:9px;">(anfitrión paga)</span></td>
+            <td style="font-size:10px;color:var(--dim);">Cuando el <strong style="color:var(--txt);">cliente</strong> veta: 70% anfitrión. Cuando el <strong style="color:var(--txt);">anfitrión</strong> veta: 30% VIBRRA · $0 para el anfitrión (es su propio saldo).</td>
+          </tr>
+          <tr>
+            <td><div class="op-name">Canje publicitario<small>10% máx. de la cola por sesión</small></div></td>
+            <td><span class="tag bono">Bono VIBRRA</span></td>
+            <td><span class="tag na">N/A</span></td>
+            <td style="color:var(--dim);font-size:11px;">$0</td>
+            <td style="color:var(--dim);font-size:11px;">$0</td>
+            <td style="font-size:10px;color:var(--dim);">Financiado por el Empresario anunciante. Max 10% de la cola.</td>
+          </tr>
+          <tr>
+            <td><div class="op-name">Suscripción mensual<small>Acceso a la plataforma</small></div></td>
+            <td><span class="tag na">N/A</span></td>
+            <td><span class="mono" style="color:var(--gm);">$15.000</span></td>
+            <td style="color:var(--gm);font-weight:700;font-family:'JetBrains Mono',monospace;">100%</td>
+            <td style="color:var(--dim);font-size:11px;">$0</td>
+            <td style="font-size:10px;color:var(--dim);">Mes 1 gratis. Desde mes 2: $15.000/mes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. SALDOS -->
+  <div id="saldos">
+    <div class="section-head">
+      <div class="section-tag">Sección 03</div>
+      <div class="section-title">Tipos de <em>saldo</em></div>
+      <div class="section-sub">Cada usuario maneja dos bolsillos: saldo real (dinero) y saldo bono (incentivo). Sus reglas son diferentes.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+
+      <!-- Saldo real anfitrión -->
+      <div class="saldo-card real">
+        <div class="saldo-header">
+          <div class="saldo-dot real"></div>
+          <div class="saldo-label real">Saldo Real · Anfitrión</div>
+        </div>
+        <div class="saldo-list">
+          <div class="saldo-item">Se acumula con el <strong>70%</strong> de cada operación del cliente.</div>
+          <div class="saldo-item"><strong>Retirable</strong> una vez al mes, primeros 10 días calendario.</div>
+          <div class="saldo-item">Mínimo bloqueado: <strong>$20.000</strong> — este monto <strong>nunca</strong> puede retirarse ni operarse.</div>
+          <div class="saldo-item">Mínimo a retirar: <strong>$20.000</strong> — calculado <strong>después</strong> de aplicar retención en la fuente e ICA.</div>
+          <div class="saldo-item">Sujeto a retención en la fuente e ICA según régimen tributario del anfitrión.</div>
+        </div>
+      </div>
+
+      <!-- Saldo bono anfitrión -->
+      <div class="saldo-card bono">
+        <div class="saldo-header">
+          <div class="saldo-dot bono"></div>
+          <div class="saldo-label bono">Saldo Bono · Anfitrión</div>
+        </div>
+        <div class="saldo-list">
+          <div class="saldo-item">Se recibe al activar suscripción paga: <strong>$30.000</strong>.</div>
+          <div class="saldo-item">Se obtiene también con bonos de recarga escalonados.</div>
+          <div class="saldo-item"><strong>No retirable</strong> en ninguna circunstancia.</div>
+          <div class="saldo-item">Uso: recargar clientes, pujas, conexión, VETO, dedicatoria.</div>
+          <div class="saldo-item">Cuando regala bono a cliente, <strong>ni anfitrión ni VIBRRA</strong> reciben ganancia.</div>
+        </div>
+      </div>
+
+      <!-- Saldo cliente -->
+      <div class="saldo-card" style="border-color:rgba(255,229,102,.2);">
+        <div class="saldo-header">
+          <div class="saldo-dot" style="background:var(--gold);"></div>
+          <div class="saldo-label" style="color:var(--gold);">Saldo · Cliente</div>
+        </div>
+        <div class="saldo-list">
+          <div class="saldo-item"><strong>No recarga</strong> directamente por pasarela — recarga únicamente <strong>a través del anfitrión</strong>.</div>
+          <div class="saldo-item">Recibe saldo mediante: bonos del anfitrión y bono de bienvenida de VIBRRA.</div>
+          <div class="saldo-item">Al recibir bono del anfitrión: <strong>1 conexión + 2 nominaciones</strong> gratis.</div>
+          <div class="saldo-item">Los bonos del cliente los asume el anfitrión como parte del <strong>programa de fidelización</strong> para su establecimiento.</div>
+          <div class="saldo-item"><strong>No hay retiro</strong> en efectivo para el cliente bajo ninguna circunstancia.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn" style="margin-top:0;">
+      <strong>¿Por qué el cliente no recarga por pasarela?</strong> La tarifa que cobraría la pasarela (~2.68% + $900/tx) se redistribuye: la mitad va al anfitrión como bonificación en su recarga, y una parte se convierte en bonos para el cliente (1 conexión + 2 nominaciones). El anfitrión asume estos bonos desde su establecimiento. Ni el anfitrión ni VIBRRA ganan en esa operación de bono.
+    </div>
+  </div>
+
+  <!-- 4. SUSCRIPCIÓN -->
+  <div id="suscripcion">
+    <div class="section-head">
+      <div class="section-tag">Sección 04</div>
+      <div class="section-title"><em>Suscripción</em> del anfitrión</div>
+      <div class="section-sub">Acceso mensual a la plataforma con beneficio de bienvenida al activar el plan pago.</div>
+    </div>
+
+    <div class="sus-row">
+      <div class="sus-card">
+        <div class="sus-badge">Primer mes</div>
+        <div class="sus-month">Mes 1</div>
+        <div class="sus-price free">$0</div>
+        <div style="font-size:10px;color:var(--green);font-weight:600;letter-spacing:1px;">GRATIS</div>
+        <div class="sus-desc">Acceso completo a la plataforma sin costo. El anfitrión puede probar todas las funcionalidades durante el primer mes.</div>
+      </div>
+      <div class="sus-card active">
+        <div class="sus-month">Mes 2 en adelante</div>
+        <div class="sus-price paid">$15.000</div>
+        <div style="font-size:10px;color:var(--gm);font-weight:600;letter-spacing:1px;">COP / MES</div>
+        <div class="sus-desc">Suscripción mensual activa. Cobro automático al inicio de cada ciclo. 100% ingreso de VIBRRA.</div>
+        <div class="sus-bonus">🎁 Bono de activación $30.000</div>
+      </div>
+      <div class="sus-card">
+        <div class="sus-month">Bono de activación</div>
+        <div class="sus-price" style="color:var(--blue);font-size:28px;">$30.000</div>
+        <div style="font-size:10px;color:var(--blue);font-weight:600;letter-spacing:1px;">SALDO BONO</div>
+        <div class="sus-desc">Se acredita una sola vez al activar el plan pago. No retirable. Usable en cualquier operación de la plataforma: pujas, bonos a clientes, VETO, dedicatoria, conexión.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. BONOS ESCALONADOS -->
+  <div id="bonos">
+    <div class="section-head">
+      <div class="section-tag">Sección 05</div>
+      <div class="section-title">Bonificaciones por <em>recarga</em></div>
+      <div class="section-sub">Propuesta de niveles escalonados. El anfitrión gana más saldo real. El cliente gana bonos de acción. Pendiente de aprobación.</div>
+    </div>
+
+    <div class="bonos-wrap">
+
+      <!-- ANFITRIÓN -->
+      <div class="card">
+        <div class="bono-section-title">🏠 Recargas del Anfitrión — Bono en saldo adicional</div>
+        <div class="bono-tiers">
+          <div class="bono-tier">
+            <div class="bono-level">Nivel 1</div>
+            <div class="bono-recarga">$30.000</div>
+            <div class="bono-obtiene-label">Bono extra</div>
+            <div class="bono-obtiene-val gold">+5%</div>
+            <div class="bono-detail">Recibe $1.500 extra en saldo bono</div>
+            <div class="bono-note">Total útil: $31.500</div>
+          </div>
+          <div class="bono-tier star">
+            <div class="bono-star">★ Popular</div>
+            <div class="bono-level">Nivel 2</div>
+            <div class="bono-recarga">$60.000</div>
+            <div class="bono-obtiene-label">Bono extra</div>
+            <div class="bono-obtiene-val gold">+10%</div>
+            <div class="bono-detail">Recibe $6.000 extra en saldo bono</div>
+            <div class="bono-note">Total útil: $66.000</div>
+          </div>
+          <div class="bono-tier">
+            <div class="bono-level">Nivel 3</div>
+            <div class="bono-recarga">$100.000</div>
+            <div class="bono-obtiene-label">Bono extra</div>
+            <div class="bono-obtiene-val gold">+15%</div>
+            <div class="bono-detail">Recibe $15.000 extra en saldo bono</div>
+            <div class="bono-note">Total útil: $115.000</div>
+          </div>
+          <div class="bono-tier">
+            <div class="bono-level">Nivel 4</div>
+            <div class="bono-recarga">$200.000</div>
+            <div class="bono-obtiene-label">Bono extra</div>
+            <div class="bono-obtiene-val gold">+20%</div>
+            <div class="bono-detail">Recibe $40.000 extra en saldo bono</div>
+            <div class="bono-note">Total útil: $240.000</div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:16px;">
+          <strong>Naturaleza del bono:</strong> El bono de recarga del anfitrión se acredita como <strong>saldo bono</strong> (no retirable). Se usa para activar clientes, pujas propias y acciones dentro de la sesión. El saldo recargado con dinero real sí es retirable.
+        </div>
+      </div>
+
+      <!-- CLIENTE TIPOS Y BONOS -->
+      <div class="card">
+        <div class="bono-section-title">👤 Tipos de Cliente — Bono de primer acceso</div>
+
+        <!-- Comparativa anónimo vs registrado -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+
+          <div class="bono-tier" style="text-align:left;padding:20px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--dim);flex-shrink:0;"></div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--soft);">Cliente Anónimo</div>
+            </div>
+            <div style="font-size:10px;color:var(--dim);margin-bottom:12px;">No se registra. Acceso directo escaneando el QR del establecimiento.</div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:6px;">Bono primer acceso</div>
+            <div class="bono-chips" style="justify-content:flex-start;">
+              <span class="bono-chip">1 conexión</span>
+              <span class="bono-chip">1 nominación</span>
+              <span class="bono-chip">$500 saldo</span>
+            </div>
+            <div style="font-size:10px;color:var(--dim);margin-top:10px;line-height:1.5;">Solo en el primer acceso en cualquier establecimiento. Asumido por VIBRRA.</div>
+          </div>
+
+          <div class="bono-tier star" style="text-align:left;padding:20px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;"></div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);">Cliente Registrado</div>
+              <span style="font-size:8px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);color:var(--gm);padding:2px 6px;border-radius:4px;font-weight:700;">Mejores beneficios</span>
+            </div>
+            <div style="font-size:10px;color:var(--dim);margin-bottom:12px;">Crea cuenta en VIBRRA. Sus bonos son válidos en cualquier bar afiliado.</div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:6px;">Bono de bienvenida</div>
+            <div class="bono-chips" style="justify-content:flex-start;">
+              <span class="bono-chip">2 conexiones</span>
+              <span class="bono-chip">2 nominaciones</span>
+              <span class="bono-chip">$2.000 saldo</span>
+            </div>
+            <div style="font-size:10px;color:var(--dim);margin-top:10px;line-height:1.5;">Válido en cualquier establecimiento VIBRRA. Asumido por VIBRRA.</div>
+          </div>
+        </div>
+
+        <!-- Comparativa rápida -->
+        <table class="ops-table" style="margin-bottom:24px;">
+          <thead>
+            <tr>
+              <th>Beneficio</th>
+              <th>Anónimo</th>
+              <th>Registrado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="op-name">Conexiones gratis<small>Al primer acceso</small></td>
+              <td><span class="mono">1</span></td>
+              <td><span class="mono" style="color:var(--green);">2</span> <span style="font-size:9px;color:var(--dim);">en cualquier bar</span></td>
+            </tr>
+            <tr>
+              <td class="op-name">Nominaciones gratis<small>Al primer acceso</small></td>
+              <td><span class="mono">1</span></td>
+              <td><span class="mono" style="color:var(--green);">2</span></td>
+            </tr>
+            <tr>
+              <td class="op-name">Saldo inicial</td>
+              <td><span class="mono">$500</span></td>
+              <td><span class="mono" style="color:var(--green);">$2.000</span></td>
+            </tr>
+            <tr>
+              <td class="op-name">Historial de sesiones</td>
+              <td style="color:var(--dim);">✗ No</td>
+              <td style="color:var(--green);">✓ Sí</td>
+            </tr>
+            <tr>
+              <td class="op-name">VIBRRA Match</td>
+              <td style="color:var(--dim);">✗ No</td>
+              <td style="color:var(--green);">✓ Sí</td>
+            </tr>
+            <tr>
+              <td class="op-name">Programa de fidelización</td>
+              <td style="color:var(--dim);">✗ No</td>
+              <td style="color:var(--green);">✓ Sí</td>
+            </tr>
+            <tr>
+              <td class="op-name">Bonos de recarga del anfitrión</td>
+              <td style="color:var(--dim);">✗ No</td>
+              <td style="color:var(--green);">✓ Sí</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Bonos por recarga en el establecimiento -->
+        <div class="bono-section-title" style="margin-top:8px;">🏠 Bonos por recarga en el establecimiento — El anfitrión decide</div>
+        <div style="font-size:11px;color:var(--soft);margin-bottom:16px;line-height:1.6;">
+          El anfitrión configura cuántos bonos dar a sus clientes registrados según el monto de recarga. El sistema sugiere paquetes proporcionales al costo de cada operación en ese establecimiento.
+        </div>
+
+        <!-- Cálculo de la pasarela -->
+        <div style="background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:20px;margin-bottom:16px;">
+          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:16px;">Cálculo base — Recarga $10.000 · Canción $500 · Conexión $500</div>
+
+          <!-- Flujo de la plata -->
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+            <div style="background:var(--ink);border:1px solid var(--edge);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:8px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Recarga cliente</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--txt);">$10.000</div>
+            </div>
+            <div style="color:var(--rim);font-size:18px;">→</div>
+            <div style="background:rgba(229,57,53,.06);border:1px solid rgba(229,57,53,.2);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:8px;color:var(--red);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Fee Wompi</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--red);">$1.168</div>
+              <div style="font-size:8px;color:var(--dim);margin-top:2px;">2.68% + $900 fijo</div>
+            </div>
+            <div style="color:var(--rim);font-size:18px;">→</div>
+            <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.25);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:8px;color:var(--gm);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Presupuesto bonos</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--gold);">$1.168</div>
+              <div style="font-size:8px;color:var(--dim);margin-top:2px;">Ese fee se redistribuye aquí</div>
+            </div>
+            <div style="color:var(--rim);font-size:18px;">→</div>
+            <div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.2);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:8px;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Se convierte en</div>
+              <div style="font-size:13px;font-weight:700;color:var(--txt);">Acciones gratis</div>
+              <div style="font-size:8px;color:var(--dim);margin-top:2px;">Sin saldo COP</div>
+            </div>
+          </div>
+
+          <!-- 3 opciones primera recarga -->
+          <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;">Primera recarga de la noche — 3 opciones para el anfitrión</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;">
+
+            <!-- Pesimista -->
+            <div style="background:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:16px;position:relative;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                <span style="font-size:14px;">😐</span>
+                <div>
+                  <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--soft);">Pesimista</div>
+                  <div style="font-size:8px;color:var(--dim);">Lo mínimo que quiero dar</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:6px;padding:6px 10px;">
+                  <span style="font-size:10px;color:var(--soft);">🎵 Canciones</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--blue);">×2</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(90,90,90,.08);border:1px solid var(--edge);border-radius:6px;padding:6px 10px;">
+                  <span style="font-size:10px;color:var(--dim);">🔌 Conexiones</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--dim);">×0</span>
+                </div>
+              </div>
+              <div style="height:1px;background:var(--edge);margin-bottom:10px;"></div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;">
+                <span style="color:var(--dim);">Valor bonos</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--soft);">$1.000</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px;">
+                <span style="color:var(--dim);">Presupuesto</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--gm);">$1.168</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px;">
+                <span style="color:var(--dim);">Diferencia</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--green);">+$168 ✓</span>
+              </div>
+            </div>
+
+            <!-- Moderada -->
+            <div style="background:var(--ink);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:16px;position:relative;">
+              <div style="position:absolute;top:10px;right:10px;font-size:8px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);color:var(--gm);padding:2px 7px;border-radius:4px;font-weight:700;">SUGERIDA</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                <span style="font-size:14px;">😊</span>
+                <div>
+                  <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gm);">Moderada</div>
+                  <div style="font-size:8px;color:var(--dim);">Balance fidelización / costo</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:6px;padding:6px 10px;">
+                  <span style="font-size:10px;color:var(--soft);">🎵 Canciones</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--blue);">×1</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.15);border-radius:6px;padding:6px 10px;">
+                  <span style="font-size:10px;color:var(--soft);">🔌 Conexiones</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green);">×1</span>
+                </div>
+              </div>
+              <div style="height:1px;background:var(--edge);margin-bottom:10px;"></div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;">
+                <span style="color:var(--dim);">Valor bonos</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--soft);">$1.000</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px;">
+                <span style="color:var(--dim);">Presupuesto</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--gm);">$1.168</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px;">
+                <span style="color:var(--dim);">Diferencia</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--green);">+$168 ✓</span>
+              </div>
+            </div>
+
+            <!-- Generosa -->
+            <div style="background:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:16px;position:relative;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                <span style="font-size:14px;">🤩</span>
+                <div>
+                  <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--soft);">Generosa</div>
+                  <div style="font-size:8px;color:var(--dim);">Maximizo fidelización</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.12);border-radius:6px;padding:6px 10px;">
+                  <span style="font-size:10px;color:var(--soft);">🎵 Canciones</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--blue);">×2</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.15);border-radius:6px;padding:6px 10px;">
+                  <span style="font-size:10px;color:var(--soft);">🔌 Conexiones</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--green);">×1</span>
+                </div>
+              </div>
+              <div style="height:1px;background:var(--edge);margin-bottom:10px;"></div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;">
+                <span style="color:var(--dim);">Valor bonos</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--soft);">$1.500</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px;">
+                <span style="color:var(--dim);">Presupuesto</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--gm);">$1.168</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:9px;margin-top:3px;">
+                <span style="color:var(--dim);">Diferencia</span>
+                <span style="font-family:'JetBrains Mono',monospace;color:var(--orange);">−$332 (anfitrión asume)</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Segunda recarga misma noche -->
+          <div style="border:1px solid var(--edge);border-radius:10px;padding:16px;background:rgba(255,143,0,.03);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+              <span style="font-size:16px;">🔁</span>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:var(--orange);">Segunda recarga (misma noche)</div>
+                <div style="font-size:9px;color:var(--dim);">El cliente ya tiene conexión activa — solo recibe canciones</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+              <div style="text-align:center;padding:10px;background:var(--ink);border:1px solid var(--edge);border-radius:8px;">
+                <div style="font-size:8px;color:var(--dim);margin-bottom:6px;">😐 Pesimista</div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--blue);">×2</span>
+                <div style="font-size:9px;color:var(--dim);margin-top:4px;">🎵 canciones</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--ink);border:1px solid rgba(212,160,23,.2);border-radius:8px;">
+                <div style="font-size:8px;color:var(--gm);margin-bottom:6px;">😊 Moderada</div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--blue);">×2</span>
+                <div style="font-size:9px;color:var(--dim);margin-top:4px;">🎵 canciones</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--ink);border:1px solid var(--edge);border-radius:8px;">
+                <div style="font-size:8px;color:var(--dim);margin-bottom:6px;">🤩 Generosa</div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--blue);">×3</span>
+                <div style="font-size:9px;color:var(--dim);margin-top:4px;">🎵 canciones</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="callout info">
+          <strong>El anfitrión elige su modo:</strong> Al configurar los paquetes de recarga desde el dashboard, selecciona cuál de las 3 opciones aplica por defecto en su establecimiento. Puede cambiarla en cualquier momento. La opción Generosa es la única que supera el presupuesto del fee de pasarela — el exceso ($332) lo asume el anfitrión como inversión en fidelización.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 6. RETIROS -->
+  <div id="retiros">
+    <div class="section-head">
+      <div class="section-tag">Sección 06</div>
+      <div class="section-title">Reglas de <em>retiro</em></div>
+      <div class="section-sub">Solo el anfitrión puede retirar. El cliente no tiene retiro en efectivo.</div>
+    </div>
+
+    <!-- SALDO MÍNIMO BLOQUEADO -->
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:16px;">Saldo mínimo bloqueado en cuenta del anfitrión</div>
+      <div class="bloqueo-card">
+        <div class="bloqueo-amount">
+          <div class="bloqueo-amt-label">Bloqueado</div>
+          <div class="bloqueo-amt-val">$20K</div>
+          <div class="bloqueo-amt-unit">COP · configurable</div>
+        </div>
+        <div class="bloqueo-rules">
+          <div class="bloqueo-rule"><span class="bloqueo-rule-icon">🔒</span><div>El anfitrión <strong>no puede operar ni retirar</strong> el monto mínimo bloqueado. Si su saldo cae por debajo, debe recargar.</div></div>
+          <div class="bloqueo-rule"><span class="bloqueo-rule-icon">📋</span><div>Este monto garantiza que siempre hay fondos disponibles para cubrir el período de procesamiento del retiro (1–5 días hábiles).</div></div>
+          <div class="bloqueo-rule"><span class="bloqueo-rule-icon">⚙️</span><div>El valor de <strong>$20.000</strong> es configurable por VIBRRA y puede cambiar según políticas de la plataforma.</div></div>
+          <div class="bloqueo-rule"><span class="bloqueo-rule-icon">❌</span><div>El <strong>saldo bono nunca es retirable</strong>, independientemente de cualquier política.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLUJO DEL RETIRO -->
+    <div class="card">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:16px;">Proceso de retiro mensual</div>
+      <div class="retiro-flow">
+        <div class="retiro-step">
+          <div class="retiro-num">01</div>
+          <div class="retiro-title">Ventana de retiro</div>
+          <div class="retiro-desc">Disponible únicamente en los primeros 10 días de cada mes.</div>
+          <div class="retiro-val">1–10 del mes</div>
+        </div>
+        <div class="retiro-step">
+          <div class="retiro-num">02</div>
+          <div class="retiro-title">Solicitud</div>
+          <div class="retiro-desc">El anfitrión solicita el retiro desde el Dashboard. Solo 1 retiro por mes permitido.</div>
+          <div class="retiro-val">1 retiro / mes</div>
+        </div>
+        <div class="retiro-step">
+          <div class="retiro-num">03</div>
+          <div class="retiro-title">Monto mínimo</div>
+          <div class="retiro-desc">El retiro mínimo es $20.000. El saldo bloqueado no puede retirarse.</div>
+          <div class="retiro-val">Mín. $20.000</div>
+        </div>
+        <div class="retiro-step">
+          <div class="retiro-num">04</div>
+          <div class="retiro-title">Descuentos</div>
+          <div class="retiro-desc">Se aplica retención en la fuente e ICA según régimen tributario del anfitrión.</div>
+          <div class="retiro-val">RteFte + ICA</div>
+        </div>
+        <div class="retiro-step">
+          <div class="retiro-num">05</div>
+          <div class="retiro-title">Acreditación</div>
+          <div class="retiro-desc">Transferencia a cuenta bancaria registrada. Tiempo de procesamiento.</div>
+          <div class="retiro-val">1–5 días hábiles</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* Navegación suave por sección */
+function scrollTo(id){
+  document.querySelector(id).scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('on'));
+  event.target.classList.add('on');
+}
+
+/* Activar tab según scroll */
+const sections = ['#flujo','#operaciones','#saldos','#suscripcion','#bonos','#retiros'];
+const tabs = document.querySelectorAll('.nav-tab');
+window.addEventListener('scroll', () => {
+  let current = 0;
+  sections.forEach((id, i) => {
+    const el = document.querySelector(id);
+    if(el && window.scrollY >= el.offsetTop - 120) current = i;
+  });
+  tabs.forEach((t, i) => t.classList.toggle('on', i === current));
+});
+</script>
+</body>
+</html>

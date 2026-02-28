@@ -1,0 +1,19 @@
+{
+  "title": "Documentos",
+  "banner": "O VIBRRA exige que cada estabelecimento tenha seus documentos em dia para operar legalmente.",
+  "docs": {
+    "sayco": "SAYCO / ACINPRO",
+    "licencia": "Licença de funcionamento",
+    "matricula": "Registro comercial",
+    "bomberos": "Certificado dos Bombeiros"
+  },
+  "estados": {
+    "obligatorio": "Obrigatório",
+    "sinSubir": "Não enviado",
+    "pendiente": "Pendente de revisão",
+    "aprobado": "Aprovado",
+    "rechazado": "Rejeitado"
+  },
+  "subirArchivo": "Enviar arquivo",
+  "empty": "Crie seu primeiro estabelecimento para gerenciar documentos"
+}

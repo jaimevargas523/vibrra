@@ -1,0 +1,659 @@
+/* ══════ Dashboard Mock (Host section) ══════ */
+.dashboardMock {
+  background: var(--deep);
+  border: 1px solid var(--edge);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 460px;
+}
+
+.dashBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.dashDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dashBody {
+  padding: 20px;
+}
+
+.dashKpiRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.dashKpi {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.dashKpiVal {
+  display: block;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.dashKpiLabel {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.dashChart {
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.dashChartTitle {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.dashBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 60px;
+}
+
+.dashBarItem {
+  flex: 1;
+  background: var(--edge);
+  border-radius: 2px 2px 0 0;
+  transition: background .2s;
+}
+
+.dashBarItemActive {
+  background: var(--gold);
+}
+
+.dashSongRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  font-size: 12px;
+}
+
+.dashSongTitle {
+  color: var(--txt);
+}
+
+.dashSongPuja {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ══════ Anfitrion Section ══════ */
+.anfitrion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  padding: 100px 60px;
+  border-top: 1px solid var(--line);
+  align-items: center;
+}
+
+.anfitrionVisual {
+  position: relative;
+}
+
+.anfitrionVisual::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse at center, rgba(212,160,23,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.anfitrionTag {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: rgba(212,160,23,.1);
+  border: 1px solid rgba(212,160,23,.3);
+  color: var(--gold-mid);
+  margin-bottom: 20px;
+}
+
+.incomeList {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.incomeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(255,255,255,.02);
+  border-radius: 10px;
+  border: 1px solid var(--edge);
+}
+
+.incomeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.incomeName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 2px;
+}
+
+.incomeDesc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.incomePct {
+  margin-left: auto;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.sectionDisclaimer {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--edge);
+}
+
+/* ══════ Client Section ══════ */
+.cliente {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  padding: 100px 60px;
+  border-top: 1px solid var(--line);
+  align-items: center;
+}
+
+.clienteBenefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.benefitChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: border-color .2s;
+}
+
+.benefitChip:hover {
+  border-color: var(--gold-mid);
+}
+
+.benefitChipIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.benefitChipTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+}
+
+.benefitChipSub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ══════ Phone Mockups ══════ */
+.phoneWrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-height: 480px;
+}
+
+.phone {
+  width: 240px;
+  background: var(--deep);
+  border: 2px solid var(--edge);
+  border-radius: 32px;
+  padding: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.phoneNotch {
+  width: 80px;
+  height: 20px;
+  background: var(--ink);
+  border-radius: 0 0 12px 12px;
+  margin: 0 auto 8px;
+}
+
+.phoneScreen {
+  background: var(--panel);
+  border-radius: 20px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.phoneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.phoneBarName {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt);
+}
+
+.phoneLive {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--live);
+  letter-spacing: 1px;
+}
+
+.phoneLiveDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--live);
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.7); }
+}
+
+.phoneNowPlaying {
+  background: rgba(255,229,102,.04);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.phoneNpLabel {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.phoneNpTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.phoneNpProgress {
+  height: 3px;
+  background: var(--edge);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.phoneNpFill {
+  width: 38%;
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.phoneQueueTitle {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.phoneSong {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.phoneSongTop {
+  background: rgba(255,229,102,.06);
+}
+
+.phoneSongName {
+  color: var(--txt);
+}
+
+.phoneSongPuja {
+  font-weight: 700;
+}
+
+.phoneSongTop .phoneSongPuja { color: var(--gold); }
+.phoneSongMid .phoneSongPuja { color: var(--soft); }
+.phoneSongLow .phoneSongPuja { color: var(--muted); }
+
+.phonePujaBtn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all .2s;
+}
+
+.phonePujaBtn:hover {
+  background: #fff;
+}
+
+/* Search phone */
+.phoneSearch {
+  position: absolute;
+  right: 10%;
+  top: 15%;
+  width: 160px;
+  background: var(--deep);
+  border: 2px solid var(--edge);
+  border-radius: 24px;
+  padding: 8px;
+  transform: rotate(4deg);
+  z-index: 3;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+.phoneSearchInner {
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.phoneSearchBar {
+  background: var(--deep);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.searchResult {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+
+.searchThumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.searchThumbA { background: linear-gradient(135deg, #D4A017, #FFE566); }
+.searchThumbB { background: linear-gradient(135deg, #A97010, #D4A017); }
+.searchThumbC { background: linear-gradient(135deg, #8A6000, #A97010); }
+
+.searchName {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--txt);
+}
+
+.searchArtist {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+/* ══════ CTA Section ══════ */
+.ctaAnfitrion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  padding: 100px 60px;
+  border-top: 1px solid var(--line);
+  background: linear-gradient(135deg, var(--panel), #0a0a16);
+  align-items: start;
+}
+
+.ctaSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.ctaStep {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ctaStepNum {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(212,160,23,.15);
+  border: 1px solid var(--gold-mid);
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ctaStepTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 4px;
+}
+
+.ctaStepDesc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.ctaKpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  background: var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ctaKpi {
+  background: var(--panel);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.ctaKpiVal {
+  display: block;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.ctaKpiLabel {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: .5px;
+}
+
+.ctaKpiFooter {
+  grid-column: 1 / -1;
+  background: rgba(255,229,102,.04);
+  border-top: 1px solid var(--line);
+  padding: 16px 20px;
+}
+
+.ctaKpiFooterText {
+  font-size: 12px;
+  color: var(--soft);
+  line-height: 1.5;
+}
+
+/* ══════ Footer ══════ */
+.footer {
+  padding: 80px 60px 0;
+  border-top: 1px solid var(--line);
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footerTagline {
+  font-size: 14px;
+  color: var(--soft);
+  line-height: 1.6;
+  max-width: 280px;
+  margin-top: 16px;
+}
+
+.footerSocial {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.socialBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all .2s;
+}
+
+.socialBtn:hover {
+  border-color: var(--gold-mid);
+  background: rgba(212,160,23,.1);
+}
+
+.footerColTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold-mid);
+  margin-bottom: 20px;
+}
+
+.footerLink {
+  display: block;
+  font-size: 13px;
+  color: var(--soft);
+  text-decoration: none;
+  margin-bottom: 10px;
+  transition: color .2s;
+}
+
+.footerLink:hover {
+  color: var(--gold);
+}
+
+.footerBottom {
+  border-top: 1px solid var(--edge);
+  padding: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 1100px) {
+  .anfitrion,
+  .cliente,
+  .ctaAnfitrion {
+    grid-template-columns: 1fr;
+    padding: 80px 32px;
+  }
+  .anfitrionVisual, .phoneWrap { display: none; }
+  .footerGrid { grid-template-columns: 1fr 1fr; }
+  .footer { padding: 60px 32px 0; }
+}
+
+@media (max-width: 720px) {
+  .clienteBenefits { grid-template-columns: 1fr; }
+  .ctaKpis { grid-template-columns: 1fr 1fr; }
+  .footerGrid { grid-template-columns: 1fr; }
+}

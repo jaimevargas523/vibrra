@@ -1,0 +1,34 @@
+{
+  "title": "Mi Cuenta",
+  "perfil": {
+    "title": "PERFIL",
+    "nombre": "Nombre",
+    "email": "Correo electrónico",
+    "tipo": "Anfitrión · {{count}} establecimiento(s)"
+  },
+  "bancaria": {
+    "title": "CUENTA DESTINO PARA RETIROS",
+    "principal": "PRINCIPAL",
+    "sinCuenta": "Sin cuenta registrada",
+    "agregar": "+ Agregar cuenta bancaria o Nequi",
+    "nota": "VIBRRA deposita directamente a la cuenta seleccionada como principal. Los retiros se procesan en 1-3 días hábiles."
+  },
+  "tributaria": {
+    "title": "DATOS TRIBUTARIOS · RUT",
+    "tipoPersona": "Tipo de persona",
+    "nit": "NIT / Cédula",
+    "regimen": "Régimen tributario",
+    "iva": "Responsable IVA",
+    "retencion": "Retención aplicada",
+    "retencionVal": "3.5% sobre cada retiro · Art. 392 ET",
+    "ica": "ICA municipal",
+    "icaVal": "Aplicado al retirar",
+    "noConfigurado": "No configurado"
+  },
+  "seguridad": {
+    "title": "SEGURIDAD",
+    "cambiarPw": "Cambiar contraseña",
+    "cambiarPwDesc": "Actualiza tu contraseña de acceso",
+    "cerrarSesion": "Cerrar sesión"
+  }
+}

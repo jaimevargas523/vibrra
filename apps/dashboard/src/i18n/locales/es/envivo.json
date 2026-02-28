@@ -1,0 +1,46 @@
+{
+  "title": "En Vivo",
+  "noSession": {
+    "title": "No hay sesión activa",
+    "desc": "Inicia una sesión para que tus clientes puedan pedir canciones y pujar",
+    "start": "Iniciar sesión",
+    "selectEst": "Selecciona un establecimiento"
+  },
+  "header": {
+    "live": "EN SESIÓN",
+    "duration": "Duración",
+    "users": "usuarios"
+  },
+  "cola": {
+    "title": "COLA DE CANCIONES",
+    "count": "{{count}} canciones",
+    "empty": "Esperando canciones... Comparte el link para que tus clientes empiecen a pedir",
+    "sonando": "SONANDO",
+    "hace": "hace {{time}}",
+    "acciones": {
+      "play": "Reproducir",
+      "skip": "Saltar",
+      "delete": "Eliminar"
+    }
+  },
+  "stats": {
+    "usuarios": "Usuarios en vivo",
+    "recaudado": "Recaudado",
+    "pujas": "Total pujas",
+    "pujaMax": "Puja máxima",
+    "actividad": "Actividad de pujas (30 min)"
+  },
+  "share": {
+    "copiar": "Copiar",
+    "whatsapp": "WhatsApp",
+    "instagram": "Instagram",
+    "tiktok": "TikTok"
+  },
+  "close": {
+    "btn": "Cerrar sesión",
+    "title": "¿Cerrar la sesión?",
+    "desc": "Se desconectarán {{count}} usuarios y se cerrará la cola",
+    "cancel": "Cancelar",
+    "confirm": "Sí, cerrar"
+  }
+}

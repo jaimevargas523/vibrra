@@ -1,0 +1,41 @@
+{
+  "title": "Overview",
+  "greeting": "{{timeOfDay}}, {{name}}",
+  "sessionBanner": {
+    "active": "ACTIVE SESSION",
+    "inactive": "No active session",
+    "open": "Start session",
+    "goTo": "Go to live session →",
+    "duration": "Duration",
+    "users": "connected users"
+  },
+  "kpi": {
+    "saldo": "Available Balance",
+    "saldoSub": "Available for withdrawal",
+    "generado": "Generated this month",
+    "sesiones": "Sessions this month",
+    "usuarios": "Unique users"
+  },
+  "saldo": {
+    "title": "CONSOLIDATED BALANCE",
+    "disponible": "Available for withdrawal",
+    "ventanaAbierta": "Withdrawal window open",
+    "ventanaCerrada": "Next window: {{month}} 1st",
+    "solicitar": "Request withdrawal"
+  },
+  "chart": {
+    "title": "REVENUE LAST 7 DAYS",
+    "empty": "Data will appear with active sessions"
+  },
+  "sesiones": {
+    "title": "RECENT SESSIONS",
+    "verTodas": "View all →",
+    "empty": "Session history will appear here"
+  },
+  "acciones": {
+    "titulo": "Quick actions",
+    "abrir": "Start session",
+    "compartir": "Share link",
+    "qrs": "View QRs"
+  }
+}

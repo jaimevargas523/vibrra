@@ -1,0 +1,251 @@
+.accessGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.loginCard {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.loginCardHeader {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--edge);
+}
+
+/* ── Card accent colors ── */
+.clienteCard { border-top: 3px solid var(--gold); }
+.anfitrionCard { border-top: 3px solid #2ECC71; }
+.empresaCard { border-top: 3px solid #8B5CF6; }
+
+.clienteH { background: rgba(255,229,102,.06); }
+.anfitrionH { background: rgba(46,204,113,.06); }
+.empresaH { background: rgba(139,92,246,.06); }
+
+.loginIcon {
+  font-size: 24px;
+}
+
+.loginRole {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: .5px;
+}
+
+.loginSubtitle {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.loginBody {
+  padding: 20px 24px 24px;
+}
+
+.loginTabRow {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: rgba(255,229,102,.04);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.loginTab {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all .15s;
+}
+
+.loginTabActive {
+  background: var(--gold-mid);
+  color: var(--ink);
+}
+
+.loginTab:hover:not(.loginTabActive) {
+  color: var(--gold);
+}
+
+.loginFormBlock {
+  display: none;
+}
+
+.loginFormBlockActive {
+  display: block;
+}
+
+.loginField {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: 0 14px;
+  margin-bottom: 10px;
+  transition: border-color .2s;
+}
+
+.loginField:focus-within {
+  border-color: var(--gold-mid);
+}
+
+.anfitrionCard .loginField:focus-within {
+  border-color: #2ECC71;
+}
+
+.empresaCard .loginField:focus-within {
+  border-color: #8B5CF6;
+}
+
+.loginFieldIcon {
+  font-size: 14px;
+  opacity: .5;
+}
+
+.loginInput {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--txt);
+  font-size: 13px;
+  padding: 12px 0;
+  outline: none;
+  font-family: inherit;
+}
+
+.loginInput::placeholder {
+  color: var(--muted);
+}
+
+.loginBtn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 4px;
+}
+
+.goldBtn {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.goldBtn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.greenBtn {
+  background: #2ECC71;
+  color: #0a0a0a;
+}
+
+.greenBtn:hover {
+  background: #5dde9e;
+  transform: translateY(-1px);
+}
+
+.purpleBtn {
+  background: #8B5CF6;
+  color: white;
+}
+
+.purpleBtn:hover {
+  background: #a78bfa;
+  transform: translateY(-1px);
+}
+
+.loginDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.loginDivider::before,
+.loginDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--edge);
+}
+
+.loginFooterLink {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--edge);
+}
+
+.loginFooterLink a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hintBox {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(212,160,23,.04);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.anfitrionCard .hintBox {
+  background: rgba(46,204,113,.04);
+}
+
+.empresaCard .hintBox {
+  background: rgba(139,92,246,.04);
+}
+
+.forgotLink {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.forgotLink a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.forgotLink a:hover {
+  color: var(--gold);
+}
+
+.errorMsg {
+  color: #EF4444;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 768px) {
+  .accessGrid { grid-template-columns: 1fr; }
+}

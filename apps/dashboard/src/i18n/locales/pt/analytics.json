@@ -1,0 +1,35 @@
+{
+  "title": "Análises",
+  "subtitle": "Dados de desempenho dos seus estabelecimentos",
+  "heatmap": {
+    "title": "ATIVIDADE POR DIA E HORA",
+    "empty": "Os dados do heatmap aparecerão com sessões ativas",
+    "bajo": "Baixo",
+    "alto": "Alto",
+    "dias": {
+      "lun": "Seg",
+      "mar": "Ter",
+      "mie": "Qua",
+      "jue": "Qui",
+      "vie": "Sex",
+      "sab": "Sáb",
+      "dom": "Dom"
+    }
+  },
+  "generos": {
+    "title": "GÊNEROS MAIS PEDIDOS",
+    "empty": "Os gêneros aparecerão quando houver sessões com lances"
+  },
+  "clientes": {
+    "title": "PERFIL DE CLIENTES",
+    "nuevos": "Novos",
+    "vip": "VIP",
+    "regulares": "Regulares",
+    "enRiesgo": "Em risco",
+    "avgAge": "Idade média",
+    "gender": "Gênero predominante",
+    "avgTicket": "Ticket médio",
+    "visitFreq": "Frequência de visita",
+    "empty": "O perfil de clientes aparecerá com mais dados"
+  }
+}

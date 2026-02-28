@@ -1,0 +1,27 @@
+{
+  "title": "Recargar",
+  "saldo": {
+    "label": "SALDO ACTUAL",
+    "sub": "Recarga para empezar a operar"
+  },
+  "montos": {
+    "title": "SELECCIONA UN MONTO",
+    "bono": "Bono +{{percent}}%",
+    "recibes": "Recibes {{amount}}",
+    "recomendado": "RECOMENDADO"
+  },
+  "resumen": {
+    "pagas": "Pagas",
+    "bono": "Bono acreditado",
+    "total": "Total en saldo"
+  },
+  "metodo": {
+    "title": "MÉTODO DE PAGO",
+    "wompiTitle": "Wompi · Bancolombia",
+    "wompiDesc": "Nequi · PSE · Botón Bancolombia · Tarjeta débito/crédito · 2.49% + $900",
+    "badge": "ÚNICO MÉTODO"
+  },
+  "disclaimer": "Los bonos de recarga no son retirables. Las comisiones de Wompi (~2.49% + $900/tx) se aplican sobre el monto pagado. El bono se acredita inmediatamente a tu saldo.",
+  "btnPagar": "Pagar con Wompi",
+  "btnDisabled": "Selecciona un plan para continuar"
+}

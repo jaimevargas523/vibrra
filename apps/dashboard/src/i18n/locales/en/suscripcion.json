@@ -1,0 +1,21 @@
+{
+  "title": "Subscription",
+  "global": {
+    "label": "TOTAL ACTIVE SUBSCRIPTIONS",
+    "porMes": "/ month",
+    "establecimientos": "{{count}} venue(s)",
+    "iva": "VAT does not apply (SaaS)",
+    "cobro": "Automatic billing on the 1st of each month"
+  },
+  "card": {
+    "valor": "Monthly fee",
+    "iva": "VAT",
+    "proximoCobro": "Next billing date",
+    "mesesPagados": "Months paid",
+    "activa": "Active",
+    "suspendida": "Suspended",
+    "historial": "BILLING HISTORY",
+    "historialEmpty": "Billing history will appear here"
+  },
+  "empty": "Create your first venue to activate a subscription"
+}

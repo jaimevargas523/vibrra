@@ -1,0 +1,59 @@
+{
+  "title": "Establecimientos",
+  "contador": "{{count}} establecimientos",
+  "agregar": "+ Agregar establecimiento",
+  "card": {
+    "enSesion": "EN SESIÓN",
+    "activo": "ACTIVO",
+    "inactivo": "INACTIVO",
+    "configurar": "Configurar",
+    "musica": "Música",
+    "qr": "QR",
+    "sincronizar": "Sincronizar"
+  },
+  "modal": {
+    "title": "Agregar establecimiento",
+    "foto": "Toca para subir foto",
+    "icono": "Selecciona un ícono",
+    "nombre": "Nombre *",
+    "nombrePh": "Nombre del establecimiento",
+    "descripcion": "Descripción",
+    "descripcionPh": "Breve descripción de tu negocio",
+    "direccion": "Dirección",
+    "direccionPh": "Dirección completa",
+    "ciudad": "Ciudad",
+    "ciudadPh": "Ciudad",
+    "zona": "Zona",
+    "zonaPh": "Barrio o zona",
+    "cancelar": "Cancelar",
+    "crear": "Crear establecimiento"
+  },
+  "empty": {
+    "title": "Aún no tienes establecimientos",
+    "desc": "Registra tu primer local para empezar a usar VIBRRA"
+  },
+  "detalle": {
+    "title": "Configuración",
+    "info": "INFORMACIÓN BÁSICA",
+    "nombre": "Nombre",
+    "descripcion": "Descripción",
+    "direccion": "Dirección",
+    "ciudad": "Ciudad",
+    "zona": "Zona",
+    "slug": "Slug personalizado",
+    "slugPrefix": "vibrra.live/s/",
+    "precios": "PRECIOS",
+    "precioConexion": "Precio de conexión (escaneo QR)",
+    "precioNominacion": "Precio de nominación (pedir canción)",
+    "pujaMinima": "Puja mínima",
+    "precioDedicatoria": "Precio de dedicatoria (mensaje)",
+    "config": "CONFIGURACIÓN",
+    "modoMusica": "Modo música",
+    "visibleMapa": "Visible en mapa",
+    "activo": "Activo",
+    "peligro": "ZONA DE PELIGRO",
+    "desactivar": "Desactivar establecimiento",
+    "desactivarConfirm": "¿Desactivar {{name}}? No recibirás más pujas ni conexiones",
+    "guardar": "Guardar cambios"
+  }
+}

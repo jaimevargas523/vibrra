@@ -1,0 +1,35 @@
+{
+  "title": "Bonuses",
+  "banner": {
+    "titulo": "Bonuses are not real money",
+    "desc": "When a customer uses a bonus, the host receives 70% of the value as real balance. Bonuses encourage platform usage."
+  },
+  "bienvenida": {
+    "label": "WELCOME BONUS",
+    "monto": "$30,000",
+    "activo": "ACTIVE",
+    "agotado": "DEPLETED",
+    "vencido": "EXPIRED",
+    "disponible": "Available",
+    "usado": "Used",
+    "nota": "Non-withdrawable · consumable only",
+    "vence": "Expires: 30 days after registration",
+    "consejo": "Use it to cover your own bids and try the platform at no cost"
+  },
+  "tabla": {
+    "title": "TOP-UP BONUSES · MODEL A",
+    "recargar": "Top up →",
+    "cabecera": {
+      "recarga": "TOP-UP",
+      "bono": "BONUS",
+      "recibes": "YOU RECEIVE"
+    },
+    "popular": "Most popular",
+    "nota": "Bonuses are non-withdrawable."
+  },
+  "historial": {
+    "title": "BONUS HISTORY",
+    "empty": "Top-up bonuses will appear here after your first top-up"
+  },
+  "cta": "Top up and earn bonus"
+}

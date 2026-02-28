@@ -1,0 +1,27 @@
+{
+  "title": "Recarregar",
+  "saldo": {
+    "label": "SALDO ATUAL",
+    "sub": "Recarregue para começar a operar"
+  },
+  "montos": {
+    "title": "SELECIONE UM VALOR",
+    "bono": "Bônus +{{percent}}%",
+    "recibes": "Você recebe {{amount}}",
+    "recomendado": "RECOMENDADO"
+  },
+  "resumen": {
+    "pagas": "Você paga",
+    "bono": "Bônus creditado",
+    "total": "Total no saldo"
+  },
+  "metodo": {
+    "title": "MÉTODO DE PAGAMENTO",
+    "wompiTitle": "Wompi · Bancolombia",
+    "wompiDesc": "Nequi · PSE · Botão Bancolombia · Cartão débito/crédito · 2.49% + $900",
+    "badge": "ÚNICO MÉTODO"
+  },
+  "disclaimer": "Os bônus de recarga não são sacáveis. As taxas do Wompi (~2.49% + $900/tx) se aplicam sobre o valor pago. O bônus é creditado imediatamente no seu saldo.",
+  "btnPagar": "Pagar com Wompi",
+  "btnDisabled": "Selecione um plano para continuar"
+}

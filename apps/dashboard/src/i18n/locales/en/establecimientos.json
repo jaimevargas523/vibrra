@@ -1,0 +1,59 @@
+{
+  "title": "Venues",
+  "contador": "{{count}} venues",
+  "agregar": "+ Add venue",
+  "card": {
+    "enSesion": "IN SESSION",
+    "activo": "ACTIVE",
+    "inactivo": "INACTIVE",
+    "configurar": "Configure",
+    "musica": "Music",
+    "qr": "QR",
+    "sincronizar": "Sync"
+  },
+  "modal": {
+    "title": "Add venue",
+    "foto": "Tap to upload photo",
+    "icono": "Select an icon",
+    "nombre": "Name *",
+    "nombrePh": "Venue name",
+    "descripcion": "Description",
+    "descripcionPh": "Brief description of your business",
+    "direccion": "Address",
+    "direccionPh": "Full address",
+    "ciudad": "City",
+    "ciudadPh": "City",
+    "zona": "Area",
+    "zonaPh": "Neighborhood or area",
+    "cancelar": "Cancel",
+    "crear": "Create venue"
+  },
+  "empty": {
+    "title": "You don't have any venues yet",
+    "desc": "Register your first venue to start using VIBRRA"
+  },
+  "detalle": {
+    "title": "Settings",
+    "info": "BASIC INFORMATION",
+    "nombre": "Name",
+    "descripcion": "Description",
+    "direccion": "Address",
+    "ciudad": "City",
+    "zona": "Area",
+    "slug": "Custom slug",
+    "slugPrefix": "vibrra.live/s/",
+    "precios": "PRICING",
+    "precioConexion": "Connection price (QR scan)",
+    "precioNominacion": "Nomination price (song request)",
+    "pujaMinima": "Minimum bid",
+    "precioDedicatoria": "Dedication price (message)",
+    "config": "CONFIGURATION",
+    "modoMusica": "Music mode",
+    "visibleMapa": "Visible on map",
+    "activo": "Active",
+    "peligro": "DANGER ZONE",
+    "desactivar": "Deactivate venue",
+    "desactivarConfirm": "Deactivate {{name}}? You will no longer receive bids or connections",
+    "guardar": "Save changes"
+  }
+}

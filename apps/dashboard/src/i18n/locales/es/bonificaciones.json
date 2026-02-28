@@ -1,0 +1,35 @@
+{
+  "title": "Bonificaciones",
+  "banner": {
+    "titulo": "Los bonos no son dinero real",
+    "desc": "Cuando un cliente usa un bono, el anfitrión recibe el 70% del valor en saldo real. Los bonos incentivan el uso de la plataforma."
+  },
+  "bienvenida": {
+    "label": "BONO DE BIENVENIDA",
+    "monto": "$30.000",
+    "activo": "ACTIVO",
+    "agotado": "AGOTADO",
+    "vencido": "VENCIDO",
+    "disponible": "Disponible",
+    "usado": "Usado",
+    "nota": "No retirable · solo consumible",
+    "vence": "Vence: 30 días después del registro",
+    "consejo": "Úsalo para cubrir tus propias pujas y probar la plataforma sin costo"
+  },
+  "tabla": {
+    "title": "BONOS POR RECARGA · MODELO A",
+    "recargar": "Recargar →",
+    "cabecera": {
+      "recarga": "RECARGA",
+      "bono": "BONO",
+      "recibes": "RECIBES"
+    },
+    "popular": "Más popular",
+    "nota": "Los bonos no son retirables."
+  },
+  "historial": {
+    "title": "HISTORIAL DE BONOS",
+    "empty": "Los bonos de recarga aparecerán aquí tras tu primera recarga"
+  },
+  "cta": "Recargar y ganar bono"
+}

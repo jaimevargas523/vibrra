@@ -1,0 +1,35 @@
+{
+  "title": "Analytics",
+  "subtitle": "Performance data for your establishments",
+  "heatmap": {
+    "title": "ACTIVITY BY DAY AND HOUR",
+    "empty": "Heatmap data will appear with active sessions",
+    "bajo": "Low",
+    "alto": "High",
+    "dias": {
+      "lun": "Mon",
+      "mar": "Tue",
+      "mie": "Wed",
+      "jue": "Thu",
+      "vie": "Fri",
+      "sab": "Sat",
+      "dom": "Sun"
+    }
+  },
+  "generos": {
+    "title": "MOST REQUESTED GENRES",
+    "empty": "Genres will appear when there are sessions with bids"
+  },
+  "clientes": {
+    "title": "CUSTOMER PROFILE",
+    "nuevos": "New",
+    "vip": "VIP",
+    "regulares": "Regular",
+    "enRiesgo": "At risk",
+    "avgAge": "Average age",
+    "gender": "Predominant gender",
+    "avgTicket": "Average ticket",
+    "visitFreq": "Visit frequency",
+    "empty": "Customer profile will appear with more data"
+  }
+}

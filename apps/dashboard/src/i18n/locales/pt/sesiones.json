@@ -1,0 +1,31 @@
+{
+  "title": "Sessões",
+  "banner": "Para iniciar uma sessão, abra a extensão Chrome do VIBRRA no seu computador ou use o botão em 'Ao Vivo'",
+  "active": {
+    "title": "Sessão ativa",
+    "goTo": "Ir aos controles →"
+  },
+  "filters": {
+    "establecimiento": "Todos os estabelecimentos",
+    "fechas": "Período",
+    "estado": "Status",
+    "todas": "Todas",
+    "activas": "Ativas",
+    "cerradas": "Encerradas"
+  },
+  "table": {
+    "establecimiento": "Estabelecimento",
+    "fecha": "Data",
+    "duracion": "Duração",
+    "canciones": "Músicas",
+    "ingresos": "Receita",
+    "estado": "Status",
+    "estadoActiva": "Ativa",
+    "estadoFinalizada": "Finalizada"
+  },
+  "detail": {
+    "top5": "Top 5 músicas",
+    "distribucion": "Distribuição de lances"
+  },
+  "empty": "O histórico de sessões aparecerá aqui"
+}
