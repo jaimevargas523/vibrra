@@ -224,11 +224,7 @@ nav {
 .hero-right-logo {
   width: 100%;
 }
-/* Responsive: apilar en móvil */
-@media (max-width: 768px) {
-  .hero-content { flex-direction: column; }
-  .hero-right { width: 100%; }
-}
+/* Responsive hero: handled in main responsive section below */
 
 .hero-badge {
   display:inline-flex; align-items:center; gap:8px;
@@ -911,20 +907,156 @@ h1             { animation:fadeUp .5s ease .2s both; }
 /* ══════════════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════════════ */
+
+/* ── Tablet (max-width: 1100px) ── */
 @media (max-width:1100px) {
-  nav, .hero, section, footer, .footer-bottom { padding-left:32px; padding-right:32px; }
-  .steps, .mechanics, .map-teaser, .cta-anfitrion, .anfitrion, .cliente { padding-left:32px; padding-right:32px; }
-  .anfitrion, .cliente, .cta-anfitrion { grid-template-columns:1fr; }
-  .anfitrion-visual, .phone-wrap { display:none; }
+  /* Global padding reduction */
+  nav { padding:0 32px; }
+  .hero { padding:100px 32px 60px; }
+  section, footer { padding-left:32px; padding-right:32px; }
+  .footer-bottom { padding-left:32px; padding-right:32px; }
+  .steps, .mechanics, .map-teaser, .cta-anfitrion, .anfitrion, .cliente {
+    padding-left:32px; padding-right:32px;
+  }
+  .waveform { padding:0 32px; }
+
+  /* Stack two-column grids */
+  .anfitrion, .cliente { grid-template-columns:1fr; gap:40px; }
+  .cta-anfitrion { grid-template-columns:1fr; gap:40px; }
+
+  /* Hide heavy visuals */
+  .anfitrion-visual { display:none; }
+
+  /* Footer: 2 columns */
   footer { grid-template-columns:1fr 1fr; }
+
+  /* Vinyl: shrink */
+  .vinyl { width:400px; height:400px; right:-80px; }
+
+  /* Hero right: shrink */
+  .hero-right { width:360px; }
 }
 
-@media (max-width:720px) {
-  .steps-grid, .mechanics-grid { grid-template-columns:1fr; }
+/* ── Small tablet / landscape phone (max-width: 768px) ── */
+@media (max-width:768px) {
+  /* Nav: hide links, keep logo + CTA */
+  .nav-link { display:none; }
+  .lang-switcher { display:none; }
+  .nav-links { gap:0; }
+  nav { padding:0 20px; }
+
+  /* Hero: stack columns */
+  .hero { padding:80px 20px 60px; }
+  .hero-content { flex-direction:column; }
+  .hero-right { width:100%; max-width:340px; }
+
+  /* Vinyl: hide on small screens */
+  .vinyl { display:none; }
+
+  /* Waveform */
+  .waveform { padding:0 20px; height:80px; }
+
+  /* Section padding */
+  .steps, .mechanics, .map-teaser, .cta-anfitrion, .anfitrion, .cliente {
+    padding:80px 20px;
+  }
+  section { padding-left:20px; padding-right:20px; }
+
+  /* Section typography */
+  .section-sub { font-size:15px; margin-bottom:40px; }
+
+  /* Steps grid: single column */
+  .steps-grid { grid-template-columns:1fr; }
+
+  /* Mechanics grid: single column */
+  .mechanics-grid { grid-template-columns:1fr; }
+
+  /* Anfitrion & cliente: already stacked, reduce gap */
+  .anfitrion, .cliente { gap:32px; }
+
+  /* Cliente: stack benefits + hide phone-search */
   .cliente-benefits { grid-template-columns:1fr; }
-  .hero-stats { gap:24px; flex-wrap:wrap; }
+  .phone-search { display:none; }
+  .phone-wrap { max-width:280px; margin:0 auto; }
+
+  /* CTA anfitrion */
+  .cta-anfitrion { gap:32px; }
   .cta-kpis { grid-template-columns:1fr 1fr; }
-  footer { grid-template-columns:1fr; }
+
+  /* Hero stats */
+  .hero-stats { gap:24px; flex-wrap:wrap; }
+  .hero-stat-val { font-size:28px; }
+
+  /* Dashboard mock kpi row */
+  .dash-kpi-row { grid-template-columns:repeat(3,1fr); gap:4px; }
+
+  /* Map dots: reduce height */
+  .map-dots { height:220px; }
+
+  /* Income items: allow wrapping */
+  .income-item { flex-wrap:wrap; }
+
+  /* Calculadora: stack, results on top */
+  #calculadora { padding:80px 20px !important; }
+  .calc-grid { grid-template-columns:1fr !important; }
+  .calc-results { order:-1; }
+  .calc-sliders, .calc-results { padding:28px 24px !important; }
+  #r-total { font-size:40px !important; }
+
+  /* Footer: single column */
+  footer { grid-template-columns:1fr; gap:28px; padding:40px 20px 28px; }
+  .footer-bottom { padding:20px 20px; flex-direction:column; gap:8px; text-align:center; }
+}
+
+/* ── Phone (max-width: 480px) ── */
+@media (max-width:480px) {
+  /* Nav tighter */
+  nav { padding:0 16px; }
+
+  /* Hero */
+  .hero { padding:72px 16px 40px; min-height:auto; }
+  .hero-right { max-width:100%; }
+
+  /* Section padding */
+  .steps, .mechanics, .map-teaser, .cta-anfitrion, .anfitrion, .cliente {
+    padding:60px 16px;
+  }
+  section { padding-left:16px; padding-right:16px; }
+
+  /* Section typography */
+  .section-sub { font-size:14px; margin-bottom:32px; }
+
+  /* Calculadora: tighter on phone */
+  #calculadora { padding:60px 16px !important; }
+  .calc-sliders, .calc-results { padding:24px 16px !important; }
+  #r-total { font-size:32px !important; }
+  .calc-metrics { grid-template-columns:1fr !important; }
+
+  /* Hero stats: stack fully */
+  .hero-stats { flex-direction:column; gap:16px; }
+  .hero-stat-val { font-size:24px; }
+
+  /* CTA kpis: single column */
+  .cta-kpis { grid-template-columns:1fr; }
+
+  /* Dashboard kpi row: 2 cols on very small screens */
+  .dash-kpi-row { grid-template-columns:1fr 1fr; }
+
+  /* Map dots: further reduce */
+  .map-dots { height:180px; }
+
+  /* Buttons: full width */
+  .hero-btns { flex-direction:column; }
+  .hero-btns .btn-primary,
+  .hero-btns .btn-secondary { width:100%; text-align:center; justify-content:center; }
+
+  /* Footer */
+  footer { padding:32px 16px 20px; gap:24px; }
+  .footer-bottom { padding:16px; }
+  .footer-tagline { max-width:100%; }
+
+  /* Waveform */
+  .waveform { padding:0 16px; height:60px; }
 }
 
 </style>
@@ -1312,10 +1444,10 @@ document.addEventListener('DOMContentLoaded', function() {
   <h2 class="section-title reveal reveal-delay-1">Calcula tus <em>ganancias</em></h2>
   <p class="section-sub reveal reveal-delay-2" style="margin-bottom:48px;">Ajusta los parámetros según tu bar y ve en tiempo real cuánto puedes ganar con VIBRRA.</p>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:3px; background:var(--line); border-radius:16px; overflow:hidden;" class="reveal reveal-delay-3">
+  <div class="calc-grid reveal reveal-delay-3" style="display:grid; grid-template-columns:1fr 1fr; gap:3px; background:var(--line); border-radius:16px; overflow:hidden;">
 
     <!-- Sliders -->
-    <div style="background:var(--panel); padding:40px 36px;">
+    <div class="calc-sliders" style="background:var(--panel); padding:40px 36px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--gold-mid); margin-bottom:28px;">Configura tu escenario</div>
 
       <div class="calc-group">
@@ -1356,7 +1488,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 
     <!-- Resultados -->
-    <div style="background:var(--ink); padding:40px 36px; display:flex; flex-direction:column; gap:0;">
+    <div class="calc-results" style="background:var(--ink); padding:40px 36px; display:flex; flex-direction:column; gap:0;">
       <div style="font-family:'Montserrat',sans-serif; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--gold-mid); margin-bottom:28px;">Tus ganancias estimadas</div>
 
       <div style="background:rgba(255,229,102,.04); border:1px solid var(--line); border-radius:12px; padding:28px; margin-bottom:20px; text-align:center;">
@@ -1365,7 +1497,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div style="font-size:12px; color:var(--muted); font-family:'Montserrat',sans-serif;">COP / mes (70% de todas las transacciones)</div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;">
+      <div class="calc-metrics" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;">
         <div style="background:var(--panel); border-radius:8px; padding:16px;">
           <div style="font-family:'Montserrat',sans-serif; font-size:9px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:6px;">Por conexiones</div>
           <div id="r-conexiones" style="font-size:20px; font-weight:700; color:var(--gold-mid);">$0</div>
@@ -1409,10 +1541,14 @@ document.addEventListener('DOMContentLoaded', function() {
 .login-card { background:var(--panel); border:1px solid var(--edge); border-radius:16px; overflow:hidden; transition:transform .25s, box-shadow .25s; }
 .login-card:hover { transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,0,0,.5); }
 .login-card-header { padding:20px 24px; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--edge); }
-.cliente-h  { background:rgba(255,229,102,.04); }
-.anfitrion-h { background:rgba(212,160,23,.04); }
-.admin-h    { background:rgba(212,160,23,.04); }
-.empresa-h  { background:rgba(96,165,250,.04); }
+.cliente-h  { background:rgba(255,229,102,.10); border-bottom:1px solid rgba(255,229,102,.15); }
+.anfitrion-h { background:rgba(212,160,23,.10); border-bottom:1px solid rgba(212,160,23,.15); }
+.admin-h    { background:rgba(212,160,23,.10); border-bottom:1px solid rgba(212,160,23,.15); }
+.empresa-h  { background:rgba(96,165,250,.10); border-bottom:1px solid rgba(96,165,250,.15); }
+
+#card-cliente  { border-color:rgba(255,229,102,.18); }
+#card-anfitrion { border-color:rgba(212,160,23,.18); }
+#card-empresa  { border-color:rgba(96,165,250,.18); }
 .login-icon { font-size:28px; }
 .login-role { font-size:16px; font-weight:700; }
 .login-subtitle { font-size:12px; color:var(--muted); margin-top:2px; }
@@ -1803,7 +1939,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="login-card-header empresa-h">
         <span class="login-icon">🏛️</span>
         <div>
-          <div class="login-role" style="color:var(--gold);" data-i18n="role_company">Empresa</div>
+          <div class="login-role" style="color:#60A5FA;" data-i18n="role_company">Empresa</div>
           <div class="login-subtitle" data-i18n="role_company_sub">Franquicias y cadenas</div>
         </div>
       </div>
