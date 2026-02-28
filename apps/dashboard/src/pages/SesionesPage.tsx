@@ -14,75 +14,12 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { useSesiones, type Sesion } from "@/hooks/api/useSesiones";
 import { useActiveSession } from "@/hooks/api/useActiveSession";
 import { useEstablishmentStore } from "@/stores/establishment.store";
-import { formatCOP, formatDuration, formatShortDate, formatTime } from "@/lib/format";
-
-/* ── Mock fallback ───────────────────────────────────────────── */
-
-const fallbackSesiones: Sesion[] = [
-  {
-    id: "s1",
-    establishmentId: "e1",
-    establishmentName: "La Terraza Rooftop",
-    startedAt: new Date(Date.now() - 2 * 3600000).toISOString(),
-    endedAt: new Date(Date.now() - 300000).toISOString(),
-    totalRecaudado: 185000,
-    totalCanciones: 24,
-    duracionMinutos: 95,
-    status: "ended",
-    peakConnectedUsers: 58,
-  },
-  {
-    id: "s2",
-    establishmentId: "e2",
-    establishmentName: "Bar El Dorado",
-    startedAt: new Date(Date.now() - 26 * 3600000).toISOString(),
-    endedAt: new Date(Date.now() - 24 * 3600000).toISOString(),
-    totalRecaudado: 142000,
-    totalCanciones: 18,
-    duracionMinutos: 120,
-    status: "ended",
-    peakConnectedUsers: 42,
-  },
-  {
-    id: "s3",
-    establishmentId: "e1",
-    establishmentName: "La Terraza Rooftop",
-    startedAt: new Date(Date.now() - 50 * 3600000).toISOString(),
-    endedAt: new Date(Date.now() - 48 * 3600000).toISOString(),
-    totalRecaudado: 98000,
-    totalCanciones: 12,
-    duracionMinutos: 75,
-    status: "ended",
-    peakConnectedUsers: 35,
-  },
-  {
-    id: "s4",
-    establishmentId: "e2",
-    establishmentName: "Bar El Dorado",
-    startedAt: new Date(Date.now() - 74 * 3600000).toISOString(),
-    endedAt: new Date(Date.now() - 72 * 3600000).toISOString(),
-    totalRecaudado: 210000,
-    totalCanciones: 31,
-    duracionMinutos: 150,
-    status: "ended",
-    peakConnectedUsers: 67,
-  },
-  {
-    id: "s5",
-    establishmentId: "e1",
-    establishmentName: "La Terraza Rooftop",
-    startedAt: new Date(Date.now() - 98 * 3600000).toISOString(),
-    endedAt: new Date(Date.now() - 96 * 3600000).toISOString(),
-    totalRecaudado: 75000,
-    totalCanciones: 9,
-    duracionMinutos: 60,
-    status: "ended",
-    peakConnectedUsers: 28,
-  },
-];
+import { formatDuration, formatShortDate, formatTime } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 export default function SesionesPage() {
   const { t } = useTranslation("sesiones");
+  const fmt = useCurrencyFormatter();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "ended">("all");
   const [estFilter, setEstFilter] = useState<string>("");
@@ -95,7 +32,7 @@ export default function SesionesPage() {
     establishmentId: estFilter || undefined,
   });
 
-  const items: Sesion[] = data?.items ?? fallbackSesiones;
+  const items: Sesion[] = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
 
   const filters: { key: typeof statusFilter; label: string }[] = [
@@ -145,7 +82,7 @@ export default function SesionesPage() {
       align: "right",
       render: (s) => (
         <span className="font-mono font-semibold text-gold">
-          {formatCOP(s.totalRecaudado)}
+          {fmt(s.totalRecaudado)}
         </span>
       ),
     },
@@ -192,7 +129,7 @@ export default function SesionesPage() {
                 <p className="text-xs text-text-muted mt-0.5">
                   {activeSession.connectedUsers} usuarios &middot;{" "}
                   {activeSession.totalCanciones} canciones &middot;{" "}
-                  {formatCOP(activeSession.totalRecaudado)}
+                  {fmt(activeSession.totalRecaudado)}
                 </p>
               </div>
             </div>

@@ -1,79 +1,185 @@
 import { Router } from "express";
-import type { HostProfile } from "../types/index.js";
+import { adminDb } from "../config/firebase-admin.js";
 
 const router = Router();
 
-const mockProfile: HostProfile = {
-  uid: "mock-host-uid-001",
-  nombres: "Santiago",
-  apellidos: "Rodriguez Mejia",
-  email: "santiago.rodriguez@gmail.com",
-  tipoDoc: "CC",
-  numeroDoc: "1020456789",
-  celular: "+573001234567",
-  tipoPersona: "natural",
-  nit: null,
-  regimen: "simplificado",
-  responsableIva: false,
-  banco: "Bancolombia",
-  tipoCuenta: "ahorros",
-  numeroCuenta: "****4532",
-  titularCuenta: "Santiago Rodriguez Mejia",
-  saldoReal: 1_475_000,
-  saldoBono: 130_000,
-  estado: "activo",
-  verificacion: {
-    identidad: true,
-    email: true,
-    celular: true,
-    documentos: false,
-  },
-  legal: {
-    terminosAceptados: true,
-    fechaAceptacion: "2025-11-01T10:30:00.000Z",
-    versionTerminos: "2.1",
-  },
-  creadoEn: "2025-11-01T10:00:00.000Z",
-  actualizadoEn: "2026-02-25T14:30:00.000Z",
-  fotoUrl: null,
-};
-
 // ---- GET /perfil ----
-router.get("/", (_req, res) => {
-  res.json(mockProfile);
+router.get("/", async (req, res) => {
+  try {
+    const uid = req.uid!;
+    const snap = await adminDb().collection("Anfitriones").doc(uid).get();
+
+    if (!snap.exists) {
+      res.json({
+        id: uid,
+        email: "",
+        displayName: "Anfitrion",
+        photoURL: null,
+        phone: null,
+        role: "anfitrion",
+        plan: "basico",
+        createdAt: null,
+        establishmentCount: 0,
+        saldoBono: 0,
+        registroCompleto: false,
+        bonoDisponible: false,
+      });
+      return;
+    }
+
+    const data = snap.data()!;
+
+    // Check if registration is complete (all required fields filled)
+    const registroCompleto = !!(
+      data.nombres &&
+      data.apellidos &&
+      data.celular &&
+      data.banco &&
+      data.numero_cuenta
+    );
+
+    const saldoBono = data.saldoBono ?? 0;
+    const bonoReclamado = data.bonoReclamado === true;
+
+    // Bonus is available only when all conditions are met
+    const bonoDisponible = saldoBono > 0 && registroCompleto && !bonoReclamado;
+
+    // Map Firestore fields to the HostProfile shape the dashboard expects
+    res.json({
+      id: uid,
+      email: data.email ?? "",
+      displayName: data.nombres || data.email || "Anfitrion",
+      photoURL: data.verificacion?.selfieUrl ?? data.foto_selfie_cedula ?? null,
+      phone: data.celular ?? null,
+      role: data.tipo ?? "anfitrion",
+      plan: data.plan ?? "basico",
+      pais: data.pais ?? "CO",
+      createdAt: data.creadoEn?.toDate?.()?.toISOString?.() ?? data.created_at ?? null,
+      establishmentCount: 0,
+      saldoBono,
+      registroCompleto,
+      bonoDisponible,
+    });
+  } catch (err) {
+    console.error("GET /perfil error:", err);
+    res.status(500).json({ error: "Error al obtener perfil." });
+  }
 });
 
 // ---- PUT /perfil ----
-router.put("/", (req, res) => {
-  const allowed: (keyof HostProfile)[] = [
-    "nombres",
-    "apellidos",
-    "celular",
-    "banco",
-    "tipoCuenta",
-    "numeroCuenta",
-    "titularCuenta",
-    "tipoPersona",
-    "nit",
-    "regimen",
-    "responsableIva",
-  ];
-  const body = req.body as Record<string, unknown>;
+router.put("/", async (req, res) => {
+  try {
+    const uid = req.uid!;
+    const body = req.body as Record<string, unknown>;
 
-  for (const key of allowed) {
-    if (key in body) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (mockProfile as any)[key] = body[key];
+    const allowed = [
+      "nombres", "apellidos", "celular", "banco", "tipoCuenta",
+      "numeroCuenta", "titularCuenta", "tipoPersona", "nit", "regimen", "responsableIva",
+    ];
+
+    const updates: Record<string, unknown> = {};
+    for (const key of allowed) {
+      if (key in body) updates[key] = body[key];
     }
-  }
-  mockProfile.actualizadoEn = new Date().toISOString();
 
-  res.json(mockProfile);
+    if (Object.keys(updates).length > 0) {
+      await adminDb().collection("Anfitriones").doc(uid).update(updates);
+    }
+
+    // Return updated profile
+    const snap = await adminDb().collection("Anfitriones").doc(uid).get();
+    const data = snap.data()!;
+
+    res.json({
+      id: uid,
+      email: data.email ?? "",
+      displayName: `${data.nombres ?? ""} ${data.apellidos ?? ""}`.trim(),
+      photoURL: data.verificacion?.selfieUrl ?? null,
+      phone: data.celular ?? null,
+      role: data.tipo ?? "anfitrion",
+      plan: data.plan ?? "basico",
+      createdAt: data.creadoEn?.toDate?.()?.toISOString?.() ?? data.creadoEn ?? null,
+      establishmentCount: 0,
+    });
+  } catch (err) {
+    console.error("PUT /perfil error:", err);
+    res.status(500).json({ error: "Error al actualizar perfil." });
+  }
 });
 
 // ---- GET /perfil/saldo ----
-router.get("/saldo", (_req, res) => {
-  res.json({ saldo: 1_475_000, saldoBono: 50_000 });
+router.get("/saldo", async (req, res) => {
+  try {
+    const uid = req.uid!;
+    const snap = await adminDb().collection("Anfitriones").doc(uid).get();
+
+    if (!snap.exists) {
+      res.json({ saldo: 0, saldoBono: 0 });
+      return;
+    }
+
+    const data = snap.data()!;
+    res.json({
+      saldo: data.saldoReal ?? 0,
+      saldoBono: data.saldoBono ?? 0,
+    });
+  } catch (err) {
+    console.error("GET /perfil/saldo error:", err);
+    res.status(500).json({ error: "Error al obtener saldo." });
+  }
+});
+
+// ---- POST /perfil/reclamar-bono ----
+router.post("/reclamar-bono", async (req, res) => {
+  try {
+    const uid = req.uid!;
+    const snap = await adminDb().collection("Anfitriones").doc(uid).get();
+
+    if (!snap.exists) {
+      res.status(404).json({ error: "Perfil no encontrado." });
+      return;
+    }
+
+    const data = snap.data()!;
+
+    // Validate requirements server-side
+    const registroCompleto = !!(
+      data.nombres &&
+      data.apellidos &&
+      data.celular &&
+      data.banco &&
+      data.numero_cuenta
+    );
+
+    const saldoBono = data.saldoBono ?? 0;
+    const bonoReclamado = data.bonoReclamado === true;
+
+    if (bonoReclamado) {
+      res.status(400).json({ error: "El bono ya fue reclamado." });
+      return;
+    }
+
+    if (!registroCompleto) {
+      res.status(400).json({ error: "Completa tu registro para reclamar el bono." });
+      return;
+    }
+
+    if (saldoBono <= 0) {
+      res.status(400).json({ error: "No tienes bono disponible." });
+      return;
+    }
+
+    // Mark bonus as claimed
+    await adminDb().collection("Anfitriones").doc(uid).update({
+      bonoReclamado: true,
+      bonoReclamadoEn: new Date().toISOString(),
+    });
+
+    res.json({ ok: true, saldoBono });
+  } catch (err) {
+    console.error("POST /perfil/reclamar-bono error:", err);
+    res.status(500).json({ error: "Error al reclamar bono." });
+  }
 });
 
 export default router;

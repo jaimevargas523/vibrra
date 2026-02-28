@@ -14,8 +14,6 @@ import { useQrs } from "@/hooks/api/useQrs";
 import { useEstablecimientos } from "@/hooks/api/useEstablecimientos";
 import { useSessionStore } from "@/stores/session.store";
 
-/* ── Fallback data ───────────────────────────────────────────── */
-
 interface EstQr {
   id: string;
   name: string;
@@ -27,31 +25,6 @@ interface EstQr {
   liveUsers: number;
   registrationRate: number;
 }
-
-const fallbackEstablishments: EstQr[] = [
-  {
-    id: "e1",
-    name: "La Terraza Rooftop",
-    emoji: "\uD83C\uDF1F",
-    city: "Bogota",
-    isLive: true,
-    slug: "terraza-rooftop",
-    scans: 1243,
-    liveUsers: 47,
-    registrationRate: 72,
-  },
-  {
-    id: "e2",
-    name: "Bar El Dorado",
-    emoji: "\uD83C\uDFB5",
-    city: "Medellin",
-    isLive: false,
-    slug: "bar-el-dorado",
-    scans: 856,
-    liveUsers: 0,
-    registrationRate: 65,
-  },
-];
 
 export default function QrsPage() {
   const { t } = useTranslation("qrs");
@@ -76,9 +49,9 @@ export default function QrsPage() {
         slug,
         scans: totalScans ?? est.totalSesiones * 15,
         liveUsers: 0,
-        registrationRate: Math.floor(Math.random() * 30 + 55),
+        registrationRate: 0,
       };
-    }) ?? fallbackEstablishments;
+    }) ?? [];
 
   const handleCopy = (slug: string, id: string) => {
     navigator.clipboard.writeText(`https://vibrra.live/s/${slug}`).catch(() => {});
@@ -231,7 +204,7 @@ export default function QrsPage() {
                           live ? "text-green" : "text-text-muted"
                         )}
                       >
-                        {live ? est.liveUsers || 47 : 0}
+                        {live ? est.liveUsers : 0}
                       </p>
                     </div>
                     <div>

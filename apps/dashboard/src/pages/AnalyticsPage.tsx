@@ -22,7 +22,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 import { useAnalytics, type HeatmapPoint } from "@/hooks/api/useAnalytics";
-import { formatCOP } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 /* ── Heatmap helpers ──────────────────────────────────────── */
 
@@ -71,6 +71,7 @@ function GenreTooltip({ active, payload, label }: any) {
 export default function AnalyticsPage() {
   const { t } = useTranslation("analytics");
   const { data, isLoading } = useAnalytics();
+  const fmt = useCurrencyFormatter();
 
   const kpis = data?.kpis ?? [];
   const heatGrid = data?.heatmap ? buildHeatGrid(data.heatmap) : [];
@@ -100,7 +101,7 @@ export default function AnalyticsPage() {
               label={kpi.label}
               value={
                 kpi.unidad === "COP"
-                  ? formatCOP(kpi.valor)
+                  ? fmt(kpi.valor)
                   : kpi.unidad === "h"
                     ? `${kpi.valor}:00`
                     : kpi.unidad === "%"
@@ -281,7 +282,7 @@ export default function AnalyticsPage() {
                   <span className="text-xl">💰</span>
                   <div>
                     <p className="text-lg font-bold text-gold">
-                      {formatCOP(perfil.ticketPromedio)}
+                      {fmt(perfil.ticketPromedio)}
                     </p>
                     <p className="text-[10px] text-text-muted">
                       {t("clientes.avgTicket")}

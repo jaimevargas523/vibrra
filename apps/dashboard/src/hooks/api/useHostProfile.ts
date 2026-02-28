@@ -9,8 +9,12 @@ export interface HostProfile {
   phone: string | null;
   role: string;
   plan: string;
+  pais: string;
   createdAt: string;
   establishmentCount: number;
+  saldoBono: number;
+  registroCompleto: boolean;
+  bonoDisponible: boolean;
 }
 
 export function useHostProfile() {

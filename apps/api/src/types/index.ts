@@ -8,7 +8,8 @@ export interface HostProfile {
   nombres: string;
   apellidos: string;
   email: string;
-  tipoDoc: "CC" | "CE" | "NIT" | "PAS";
+  pais: string;            // ISO 3166-1 alpha-2 ("CO", "BR", "MX")
+  tipoDoc: string;
   numeroDoc: string;
   celular: string;
   tipoPersona: "natural" | "juridica";
@@ -19,8 +20,8 @@ export interface HostProfile {
   tipoCuenta: "ahorros" | "corriente";
   numeroCuenta: string;
   titularCuenta: string;
-  saldoReal: number;       // COP, integer
-  saldoBono: number;       // COP, integer
+  saldoReal: number;       // currency integer
+  saldoBono: number;       // currency integer
   estado: "activo" | "inactivo" | "suspendido";
   verificacion: VerificacionStatus;
   legal: LegalAcceptance;

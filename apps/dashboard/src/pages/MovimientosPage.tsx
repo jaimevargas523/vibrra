@@ -20,77 +20,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { useMovimientos, type Movimiento } from "@/hooks/api/useMovimientos";
 import { useMovimientosResumen } from "@/hooks/api/useMovimientosResumen";
 import { useEstablishmentStore } from "@/stores/establishment.store";
-import { formatCOP, formatShortDate, formatTime } from "@/lib/format";
-
-/* ── Fallback data ───────────────────────────────────────────── */
-
-const fallbackResumen = {
-  saldoDisponible: 247500,
-  totalIngresos: 1850000,
-  totalRetiros: 1200000,
-  totalBonificaciones: 85000,
-  totalComisiones: 487500,
-  pendientePago: 0,
-  ultimoRetiro: null,
-};
-
-const fallbackMovimientos: Movimiento[] = [
-  {
-    id: "m1",
-    type: "ingreso",
-    amount: 185000,
-    description: "Sesion La Terraza Rooftop",
-    sessionId: "s1",
-    establishmentName: "La Terraza Rooftop",
-    createdAt: new Date(Date.now() - 3600000).toISOString(),
-    status: "completed",
-    reference: null,
-  },
-  {
-    id: "m2",
-    type: "comision",
-    amount: -27750,
-    description: "Comision VIBRRA 15%",
-    sessionId: "s1",
-    establishmentName: "La Terraza Rooftop",
-    createdAt: new Date(Date.now() - 3500000).toISOString(),
-    status: "completed",
-    reference: null,
-  },
-  {
-    id: "m3",
-    type: "ingreso",
-    amount: 142000,
-    description: "Sesion Bar El Dorado",
-    sessionId: "s2",
-    establishmentName: "Bar El Dorado",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    status: "completed",
-    reference: null,
-  },
-  {
-    id: "m4",
-    type: "retiro",
-    amount: -300000,
-    description: "Retiro a Bancolombia ****4521",
-    sessionId: null,
-    establishmentName: null,
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-    status: "completed",
-    reference: "RET-2026-0042",
-  },
-  {
-    id: "m5",
-    type: "bonificacion",
-    amount: 15000,
-    description: "Bono por recarga $100.000",
-    sessionId: null,
-    establishmentName: null,
-    createdAt: new Date(Date.now() - 259200000).toISOString(),
-    status: "completed",
-    reference: null,
-  },
-];
+import { formatShortDate, formatTime } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 /* ── Helpers ─────────────────────────────────────────────────── */
 
@@ -134,6 +65,7 @@ const typeLabels: Record<string, string> = {
 
 export default function MovimientosPage() {
   const { t } = useTranslation("movimientos");
+  const fmt = useCurrencyFormatter();
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<string>("");
   const [estFilter, setEstFilter] = useState<string>("");
@@ -145,29 +77,37 @@ export default function MovimientosPage() {
     type: typeFilter || undefined,
   });
 
-  const res = resumen ?? fallbackResumen;
-  const items: Movimiento[] = data?.items ?? fallbackMovimientos;
+  const res = resumen ?? {
+    saldoDisponible: 0,
+    totalIngresos: 0,
+    totalRetiros: 0,
+    totalBonificaciones: 0,
+    totalComisiones: 0,
+    pendientePago: 0,
+    ultimoRetiro: null,
+  };
+  const items: Movimiento[] = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
 
   const summaryCards = [
     {
       label: "INGRESOS BRUTOS",
-      value: formatCOP(res.totalIngresos),
+      value: fmt(res.totalIngresos),
       color: "text-success",
     },
     {
       label: "DEDUCCIONES",
-      value: formatCOP(res.totalComisiones),
+      value: fmt(res.totalComisiones),
       color: "text-error",
     },
     {
       label: "RETIRADO",
-      value: formatCOP(res.totalRetiros),
+      value: fmt(res.totalRetiros),
       color: "text-info",
     },
     {
       label: "SALDO",
-      value: formatCOP(res.saldoDisponible),
+      value: fmt(res.saldoDisponible),
       color: "text-gold",
     },
   ];
@@ -232,7 +172,7 @@ export default function MovimientosPage() {
               )}
             >
               {isPositive ? "+" : ""}
-              {formatCOP(m.amount)}
+              {fmt(m.amount)}
             </p>
             <Badge
               variant={

@@ -8,7 +8,6 @@
     "bomberos": "Concepto de Bomberos"
   },
   "estados": {
-    "obligatorio": "Obligatorio",
     "sinSubir": "Sin subir",
     "pendiente": "Pendiente revisión",
     "aprobado": "Aprobado",

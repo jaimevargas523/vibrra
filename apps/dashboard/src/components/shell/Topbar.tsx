@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useUIStore } from "@/stores/ui.store";
 import { useSessionStore } from "@/stores/session.store";
-import { formatCOP } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { NotificationBell } from "@/components/shell/NotificationBell";
 import { UserMenu } from "@/components/shell/UserMenu";
@@ -26,6 +26,7 @@ export function Topbar({
   const isMobile = useMediaQuery("(max-width: 899px)");
   const { toggleSidebar } = useUIStore();
   const { isLive } = useSessionStore();
+  const fmt = useCurrencyFormatter();
 
   return (
     <header className="sticky top-0 h-16 bg-surface/80 backdrop-blur border-b border-border z-40 px-4 md:px-6 flex items-center justify-between gap-4">
@@ -66,7 +67,7 @@ export function Topbar({
         {/* Balance */}
         {!isMobile && (
           <span className="font-mono text-gold font-bold text-sm">
-            {formatCOP(balance)}
+            {fmt(balance)}
           </span>
         )}
 

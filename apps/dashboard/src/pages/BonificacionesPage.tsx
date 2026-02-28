@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 import { useBonificaciones } from "@/hooks/api/useBonificaciones";
-import { formatCOP, formatShortDate } from "@/lib/format";
+import { formatShortDate } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 /* ── Recharge bonus table data ───────────────────────────────── */
 
@@ -22,9 +23,10 @@ const bonoTable = [
 export default function BonificacionesPage() {
   const { t } = useTranslation("bonificaciones");
   const { data, isLoading } = useBonificaciones();
+  const fmt = useCurrencyFormatter();
 
-  const totalDisponible = data?.totalDisponible ?? 24500;
-  const totalReclamado = data?.totalReclamado ?? 5500;
+  const totalDisponible = data?.totalDisponible ?? 0;
+  const totalReclamado = data?.totalReclamado ?? 0;
   const totalBono = totalDisponible + totalReclamado;
   const usedPercent = totalBono > 0 ? (totalReclamado / totalBono) * 100 : 0;
 
@@ -63,13 +65,13 @@ export default function BonificacionesPage() {
             <div>
               <p className="text-xs text-text-muted">Disponible</p>
               <p className="font-mono font-semibold text-gold">
-                {formatCOP(totalDisponible)}
+                {fmt(totalDisponible)}
               </p>
             </div>
             <div>
               <p className="text-xs text-text-muted">Usado</p>
               <p className="font-mono font-semibold text-text-primary">
-                {formatCOP(totalReclamado)}
+                {fmt(totalReclamado)}
               </p>
             </div>
           </div>
@@ -137,15 +139,15 @@ export default function BonificacionesPage() {
                 )}
               >
                 <td className="px-4 py-3 font-mono font-medium text-text-primary">
-                  {formatCOP(row.recarga)}
+                  {fmt(row.recarga)}
                 </td>
                 <td className="px-4 py-3 font-mono text-success">
-                  +{formatCOP(row.bono)}
+                  +{fmt(row.bono)}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-semibold text-gold">
-                      {formatCOP(row.recibes)}
+                      {fmt(row.recibes)}
                     </span>
                     {row.popular && (
                       <span className="text-gold">{"\u2605"}</span>
@@ -192,7 +194,7 @@ export default function BonificacionesPage() {
                   </div>
                 </div>
                 <span className="font-mono text-sm font-semibold text-success shrink-0">
-                  +{formatCOP(b.amount)}
+                  +{fmt(b.amount)}
                 </span>
               </div>
             ))}

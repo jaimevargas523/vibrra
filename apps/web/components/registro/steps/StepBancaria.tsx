@@ -3,29 +3,18 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useEnterNavigation } from "@/lib/use-enter-navigation";
-import type { FormData } from "../RegistroWizard";
+import type { RegistrationFormData, CountryConfig } from "@/lib/registration/types";
 import s from "@/styles/registro.module.css";
 
-const BANKS = [
-  { key: "bancolombia", icon: "🏦" },
-  { key: "bogota", icon: "🏦" },
-  { key: "davivienda", icon: "🏦" },
-  { key: "nequi", icon: "💚" },
-  { key: "daviplata", icon: "💙" },
-  { key: "bbva", icon: "🏦" },
-  { key: "scotiabank", icon: "🏦" },
-  { key: "avvillas", icon: "🏦" },
-  { key: "otroBanco", icon: "🏦" },
-] as const;
-
 interface Props {
-  data: FormData;
-  update: (fields: Partial<FormData>) => void;
+  data: RegistrationFormData;
+  update: (fields: Partial<RegistrationFormData>) => void;
   onNext: () => void;
   onBack: () => void;
+  countryConfig: CountryConfig;
 }
 
-export function StepBancaria({ data, update, onNext, onBack }: Props) {
+export function StepBancaria({ data, update, onNext, onBack, countryConfig }: Props) {
   const t = useTranslations("registro.step4");
   const tc = useTranslations("registro.common");
   const tv = useTranslations("registro.validation");
@@ -56,11 +45,11 @@ export function StepBancaria({ data, update, onNext, onBack }: Props) {
         <p className={s.stepSubtitle}>{t("subtitle")}</p>
       </div>
 
-      {/* Bank selector */}
+      {/* Bank selector — driven by countryConfig.banks */}
       <div className={s.formSection}>
         <div className={s.formSectionTitle}>{t("sectionBanco")}</div>
         <div className={s.bankGrid}>
-          {BANKS.map((bank) => {
+          {countryConfig.banks.map((bank) => {
             const label = t(bank.key);
             const selected = data.banco === label;
             return (
@@ -80,7 +69,7 @@ export function StepBancaria({ data, update, onNext, onBack }: Props) {
         {errors.banco && <div className={s.fieldError}>{errors.banco}</div>}
       </div>
 
-      {/* Account data */}
+      {/* Account data — driven by countryConfig.accountTypes */}
       <div className={s.formSection}>
         <div className={s.formSectionTitle}>{t("sectionDatos")}</div>
         <div className={s.formGrid}>
@@ -94,9 +83,11 @@ export function StepBancaria({ data, update, onNext, onBack }: Props) {
               onChange={(e) => update({ tipoCuenta: e.target.value })}
             >
               <option value="">{tc("select")}</option>
-              <option value="ahorros">{t("cuentaAhorros")}</option>
-              <option value="corriente">{t("cuentaCorriente")}</option>
-              <option value="digital">{t("billeteraDigital")}</option>
+              {countryConfig.accountTypes.map((at) => (
+                <option key={at.value} value={at.value}>
+                  {t(at.i18nKey)}
+                </option>
+              ))}
             </select>
             {errors.tipoCuenta && <div className={s.fieldError}>{errors.tipoCuenta}</div>}
           </div>

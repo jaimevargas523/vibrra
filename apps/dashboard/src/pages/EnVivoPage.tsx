@@ -26,62 +26,8 @@ import { useActiveSession } from "@/hooks/api/useActiveSession";
 import { useSessionStore, type QueueItem } from "@/stores/session.store";
 import { useEstablishmentStore } from "@/stores/establishment.store";
 import { useSessionSocket } from "@/hooks/useSessionSocket";
-import { formatCOP, formatDurationLive, formatRelativeTime } from "@/lib/format";
-
-/* ── Mock data ───────────────────────────────────────────────── */
-
-const mockQueue: QueueItem[] = [
-  {
-    id: "q1",
-    songTitle: "Despacito",
-    artistName: "Luis Fonsi",
-    requestedBy: "Carlos M.",
-    amount: 5000,
-    status: "playing",
-    createdAt: new Date(Date.now() - 180000).toISOString(),
-  },
-  {
-    id: "q2",
-    songTitle: "Vivir Mi Vida",
-    artistName: "Marc Anthony",
-    requestedBy: "Andrea L.",
-    amount: 3000,
-    status: "pending",
-    createdAt: new Date(Date.now() - 120000).toISOString(),
-  },
-  {
-    id: "q3",
-    songTitle: "La Bicicleta",
-    artistName: "Shakira & Carlos Vives",
-    requestedBy: "Julian R.",
-    amount: 8000,
-    status: "pending",
-    createdAt: new Date(Date.now() - 60000).toISOString(),
-  },
-  {
-    id: "q4",
-    songTitle: "Felices los 4",
-    artistName: "Maluma",
-    requestedBy: "Sofia P.",
-    amount: 2000,
-    status: "pending",
-    createdAt: new Date(Date.now() - 45000).toISOString(),
-  },
-  {
-    id: "q5",
-    songTitle: "Hawai",
-    artistName: "Maluma",
-    requestedBy: "Diego A.",
-    amount: 4500,
-    status: "pending",
-    createdAt: new Date(Date.now() - 30000).toISOString(),
-  },
-];
-
-const mockMiniChart = Array.from({ length: 30 }, (_, i) => ({
-  t: i,
-  value: Math.floor(Math.random() * 8000 + 2000),
-}));
+import { formatDurationLive, formatRelativeTime } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 /* ── Live timer ──────────────────────────────────────────────── */
 
@@ -119,6 +65,7 @@ export default function EnVivoPage() {
   const selectedEst = useEstablishmentStore((s) => s.getSelected());
   const selectEst = useEstablishmentStore((s) => s.select);
 
+  const fmt = useCurrencyFormatter();
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -128,8 +75,8 @@ export default function EnVivoPage() {
   const sessionStartedAt = startedAt || activeSession?.startedAt;
   const liveUsers = connectedUsers || activeSession?.connectedUsers || 0;
   const liveRecaudado = totalRecaudado || activeSession?.totalRecaudado || 0;
-  const queue = storeQueue.length > 0 ? storeQueue : mockQueue;
-  const slug = selectedEst?.name?.toLowerCase().replace(/\s+/g, "-") ?? "terraza-rooftop";
+  const queue = storeQueue;
+  const slug = selectedEst?.name?.toLowerCase().replace(/\s+/g, "-") ?? "";
   const shareUrl = `vibrra.live/s/${slug}`;
 
   const playingItem = queue.find((q) => q.status === "playing");
@@ -251,7 +198,7 @@ export default function EnVivoPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="font-mono text-gold text-right font-semibold">
-                        {formatCOP(playingItem.amount)}
+                        {fmt(playingItem.amount)}
                       </span>
                       <div className="flex gap-1">
                         <button
@@ -305,7 +252,7 @@ export default function EnVivoPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="font-mono text-gold text-right font-semibold">
-                        {formatCOP(item.amount)}
+                        {fmt(item.amount)}
                       </span>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
@@ -344,7 +291,7 @@ export default function EnVivoPage() {
                 USUARIOS EN VIVO
               </span>
               <p className="text-[32px] font-bold text-green mt-1 leading-tight">
-                {liveUsers || 47}
+                {liveUsers}
               </p>
             </div>
             <div className="bg-surface rounded-xl border border-border p-4">
@@ -352,7 +299,7 @@ export default function EnVivoPage() {
                 RECAUDADO
               </span>
               <p className="text-[32px] font-bold font-mono text-gold mt-1 leading-tight">
-                {formatCOP(liveRecaudado || 185000)}
+                {fmt(liveRecaudado)}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -361,7 +308,7 @@ export default function EnVivoPage() {
                   TOTAL PUJAS
                 </span>
                 <p className="text-xl font-bold text-text-primary mt-1">
-                  {queue.length || 24}
+                  {queue.length}
                 </p>
               </div>
               <div className="bg-surface rounded-xl border border-border p-4">
@@ -369,7 +316,7 @@ export default function EnVivoPage() {
                   PUJA MAXIMA
                 </span>
                 <p className="text-xl font-bold font-mono text-gold mt-1">
-                  {formatCOP(maxBid || 15000)}
+                  {fmt(maxBid)}
                 </p>
               </div>
             </div>
@@ -382,7 +329,7 @@ export default function EnVivoPage() {
             </span>
             <div className="mt-2 h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={mockMiniChart}>
+                <AreaChart data={[]}>
                   <defs>
                     <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#D4A017" stopOpacity={0.4} />
@@ -470,7 +417,7 @@ export default function EnVivoPage() {
         }
       >
         <p className="text-sm text-text-secondary">
-          Hay <span className="font-semibold text-text-primary">{liveUsers || 47}</span> usuarios
+          Hay <span className="font-semibold text-text-primary">{liveUsers}</span> usuarios
           conectados y <span className="font-semibold text-text-primary">{pendingItems.length}</span> canciones
           pendientes en la cola. Al cerrar la sesion, se perderan las pujas pendientes.
         </p>

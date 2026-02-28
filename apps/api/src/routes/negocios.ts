@@ -1,177 +1,178 @@
 import { Router } from "express";
+import { adminDb } from "../config/firebase-admin.js";
 
 const router = Router();
 
-interface Negocio {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  anfitrionId: string;
-  direccion: string;
-  ciudad: string;
-  zona: string;
-  icono: string;
-  precio_conexion: number;
-  precio_nominacion: number;
-  precio_puja_minima: number;
-  precio_dedicatoria: number;
-  modo_musica: string;
-  visible_mapa: boolean;
-  suscripcion_activa: boolean;
-  fotoUrl: string | null;
-  slug: string;
-  activo: boolean;
-  createdAt: string;
-}
-
-const mockNegocios: Negocio[] = [
-  {
-    id: "neg-001",
-    nombre: "Bar La Terraza",
-    descripcion: "Bar con terraza al aire libre en Chapinero",
-    anfitrionId: "mock-host-uid-001",
-    direccion: "Cra 7 #45-12, Chapinero",
-    ciudad: "Bogota",
-    zona: "Chapinero",
-    icono: "bar",
-    precio_conexion: 3000,
-    precio_nominacion: 5000,
-    precio_puja_minima: 2000,
-    precio_dedicatoria: 10000,
-    modo_musica: "dj",
-    visible_mapa: true,
-    suscripcion_activa: true,
-    fotoUrl: null,
-    slug: "bar-la-terraza",
-    activo: true,
-    createdAt: "2025-11-01T10:00:00.000Z",
-  },
-  {
-    id: "neg-002",
-    nombre: "Club Nocturno Vibrra",
-    descripcion: "Club nocturno en la Zona Rosa de Bogota",
-    anfitrionId: "mock-host-uid-001",
-    direccion: "Calle 85 #15-30, Zona Rosa",
-    ciudad: "Bogota",
-    zona: "Zona Rosa",
-    icono: "discoteca",
-    precio_conexion: 5000,
-    precio_nominacion: 7000,
-    precio_puja_minima: 3000,
-    precio_dedicatoria: 15000,
-    modo_musica: "dj",
-    visible_mapa: true,
-    suscripcion_activa: true,
-    fotoUrl: null,
-    slug: "club-nocturno-vibrra",
-    activo: true,
-    createdAt: "2025-12-15T08:00:00.000Z",
-  },
-  {
-    id: "neg-003",
-    nombre: "Karaoke Estrella",
-    descripcion: "Karaoke familiar en el norte de Bogota",
-    anfitrionId: "mock-host-uid-001",
-    direccion: "Av 19 #100-20",
-    ciudad: "Bogota",
-    zona: "Usaquen",
-    icono: "karaoke",
-    precio_conexion: 2000,
-    precio_nominacion: 4000,
-    precio_puja_minima: 1500,
-    precio_dedicatoria: 8000,
-    modo_musica: "karaoke",
-    visible_mapa: false,
-    suscripcion_activa: false,
-    fotoUrl: null,
-    slug: "karaoke-estrella",
-    activo: false,
-    createdAt: "2026-01-10T12:00:00.000Z",
-  },
-];
-
 // ---- GET /negocios ----
-router.get("/", (_req, res) => {
-  res.json(mockNegocios);
+router.get("/", async (req, res) => {
+  try {
+    const uid = req.uid!;
+    const snap = await adminDb()
+      .collection("Negocios")
+      .where("anfitrionId", "==", uid)
+      .get();
+
+    const negocios = snap.docs.map((doc) => {
+      const d = doc.data();
+      return {
+        id: doc.id,
+        name: d.nombre ?? "",
+        address: d.direccion ?? "",
+        city: d.ciudad ?? "",
+        type: d.icono ?? "bar",
+        isActive: d.activo ?? false,
+        imageUrl: d.fotoUrl ?? null,
+        totalSesiones: d.totalSesiones ?? 0,
+        totalRecaudado: d.totalRecaudado ?? 0,
+      };
+    });
+
+    res.json(negocios);
+  } catch (err) {
+    console.error("GET /negocios error:", err);
+    res.status(500).json({ error: "Error al obtener establecimientos." });
+  }
 });
 
 // ---- GET /negocios/check-slug ----
-router.get("/check-slug", (req, res) => {
-  const slug = req.query["slug"] as string | undefined;
-  if (!slug) {
-    res.status(400).json({ error: "Parametro 'slug' es requerido." });
-    return;
+router.get("/check-slug", async (req, res) => {
+  try {
+    const slug = req.query["slug"] as string | undefined;
+    if (!slug) {
+      res.status(400).json({ error: "Parametro 'slug' es requerido." });
+      return;
+    }
+    const snap = await adminDb()
+      .collection("Negocios")
+      .where("slug", "==", slug)
+      .limit(1)
+      .get();
+
+    res.json({ slug, disponible: snap.empty });
+  } catch (err) {
+    console.error("GET /negocios/check-slug error:", err);
+    res.status(500).json({ error: "Error al verificar slug." });
   }
-  const exists = mockNegocios.some((n) => n.slug === slug);
-  res.json({ slug, disponible: !exists });
 });
 
 // ---- GET /negocios/:id ----
-router.get("/:id", (req, res) => {
-  const negocio = mockNegocios.find((n) => n.id === req.params["id"]);
-  if (!negocio) {
-    res.status(404).json({ error: "Negocio no encontrado." });
-    return;
+router.get("/:id", async (req, res) => {
+  try {
+    const snap = await adminDb().collection("Negocios").doc(req.params["id"]!).get();
+
+    if (!snap.exists) {
+      res.status(404).json({ error: "Negocio no encontrado." });
+      return;
+    }
+
+    const d = snap.data()!;
+    res.json({
+      id: snap.id,
+      name: d.nombre ?? "",
+      description: d.descripcion ?? "",
+      address: d.direccion ?? "",
+      city: d.ciudad ?? "",
+      departamento: d.departamento ?? "",
+      zona: d.zona ?? "",
+      slug: d.slug ?? "",
+      type: d.icono ?? "bar",
+      isActive: d.activo ?? false,
+      imageUrl: d.fotoUrl ?? null,
+      precioConexion: d.precio_conexion ?? 0,
+      precioNominacion: d.precio_nominacion ?? 0,
+      precioPujaMin: d.precio_puja_minima ?? 0,
+      precioDedicatoria: d.precio_dedicatoria ?? 0,
+      modoMusica: d.modo_musica !== false,
+      visibleMapa: d.visible_mapa !== false,
+      createdAt: d.createdAt?.toDate?.()?.toISOString?.() ?? d.createdAt ?? null,
+    });
+  } catch (err) {
+    console.error("GET /negocios/:id error:", err);
+    res.status(500).json({ error: "Error al obtener negocio." });
   }
-  res.json(negocio);
 });
 
 // ---- POST /negocios ----
-router.post("/", (req, res) => {
-  const body = req.body as Partial<Negocio>;
-  const newNegocio: Negocio = {
-    id: `neg-${Date.now()}`,
-    nombre: body.nombre ?? "Nuevo Negocio",
-    descripcion: body.descripcion ?? "",
-    anfitrionId: req.uid ?? "mock-host-uid-001",
-    direccion: body.direccion ?? "",
-    ciudad: body.ciudad ?? "Bogota",
-    zona: body.zona ?? "",
-    icono: body.icono ?? "bar",
-    precio_conexion: body.precio_conexion ?? 3000,
-    precio_nominacion: body.precio_nominacion ?? 5000,
-    precio_puja_minima: body.precio_puja_minima ?? 2000,
-    precio_dedicatoria: body.precio_dedicatoria ?? 10000,
-    modo_musica: body.modo_musica ?? "dj",
-    visible_mapa: body.visible_mapa ?? true,
-    suscripcion_activa: false,
-    fotoUrl: null,
-    slug: body.slug ?? `negocio-${Date.now()}`,
-    activo: true,
-    createdAt: new Date().toISOString(),
-  };
-  mockNegocios.push(newNegocio);
-  res.status(201).json(newNegocio);
+router.post("/", async (req, res) => {
+  try {
+    const uid = req.uid!;
+    const body = req.body as Record<string, unknown>;
+
+    const newDoc = {
+      nombre: body.nombre ?? "Nuevo Negocio",
+      descripcion: body.descripcion ?? "",
+      anfitrionId: uid,
+      direccion: body.direccion ?? "",
+      ciudad: body.ciudad ?? "Bogota",
+      zona: body.zona ?? "",
+      icono: body.icono ?? "bar",
+      precio_conexion: body.precio_conexion ?? 3000,
+      precio_nominacion: body.precio_nominacion ?? 5000,
+      precio_puja_minima: body.precio_puja_minima ?? 2000,
+      precio_dedicatoria: body.precio_dedicatoria ?? 10000,
+      modo_musica: body.modo_musica ?? "dj",
+      visible_mapa: body.visible_mapa ?? true,
+      suscripcion_activa: false,
+      fotoUrl: null,
+      slug: body.slug ?? `negocio-${Date.now()}`,
+      activo: true,
+      totalSesiones: 0,
+      totalRecaudado: 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    const ref = await adminDb().collection("Negocios").add(newDoc);
+    res.status(201).json({ id: ref.id, ...newDoc });
+  } catch (err) {
+    console.error("POST /negocios error:", err);
+    res.status(500).json({ error: "Error al crear negocio." });
+  }
 });
 
 // ---- PUT /negocios/:id ----
-router.put("/:id", (req, res) => {
-  const idx = mockNegocios.findIndex((n) => n.id === req.params["id"]);
-  if (idx === -1) {
-    res.status(404).json({ error: "Negocio no encontrado." });
-    return;
+router.put("/:id", async (req, res) => {
+  try {
+    const docRef = adminDb().collection("Negocios").doc(req.params["id"]!);
+    const snap = await docRef.get();
+
+    if (!snap.exists) {
+      res.status(404).json({ error: "Negocio no encontrado." });
+      return;
+    }
+
+    const body = req.body as Record<string, unknown>;
+    // Don't allow changing id or anfitrionId
+    delete body.id;
+    delete body.anfitrionId;
+
+    await docRef.update(body);
+    const updated = await docRef.get();
+    res.json({ id: updated.id, ...updated.data() });
+  } catch (err) {
+    console.error("PUT /negocios/:id error:", err);
+    res.status(500).json({ error: "Error al actualizar negocio." });
   }
-  const body = req.body as Partial<Negocio>;
-  const updated: Negocio = {
-    ...mockNegocios[idx]!,
-    ...body,
-    id: mockNegocios[idx]!.id,
-    anfitrionId: mockNegocios[idx]!.anfitrionId,
-  };
-  mockNegocios[idx] = updated;
-  res.json(updated);
 });
 
 // ---- POST /negocios/:id/foto ----
-router.post("/:id/foto", (req, res) => {
-  const idx = mockNegocios.findIndex((n) => n.id === req.params["id"]);
-  if (idx === -1) {
-    res.status(404).json({ error: "Negocio no encontrado." });
-    return;
+router.post("/:id/foto", async (req, res) => {
+  try {
+    const docRef = adminDb().collection("Negocios").doc(req.params["id"]!);
+    const snap = await docRef.get();
+
+    if (!snap.exists) {
+      res.status(404).json({ error: "Negocio no encontrado." });
+      return;
+    }
+
+    // Stub: In production this would handle file upload to Cloud Storage
+    const fotoUrl = `https://storage.vibrra.co/negocios/${req.params["id"]}/foto.jpg`;
+    await docRef.update({ fotoUrl });
+    res.json({ fotoUrl });
+  } catch (err) {
+    console.error("POST /negocios/:id/foto error:", err);
+    res.status(500).json({ error: "Error al subir foto." });
   }
-  // Stub: In production this would handle file upload to Cloud Storage
-  mockNegocios[idx]!.fotoUrl = `https://storage.vibrra.co/negocios/${req.params["id"]}/foto.jpg`;
-  res.json({ fotoUrl: mockNegocios[idx]!.fotoUrl });
 });
 
 export default router;

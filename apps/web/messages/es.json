@@ -232,6 +232,9 @@
   },
   "registro": {
     "nav": {
+      "step0Label": "Paso 00",
+      "step0Name": "País",
+      "step0Desc": "Selecciona tu país",
       "step1Label": "Paso 01",
       "step1Name": "Cuenta",
       "step1Desc": "Correo y contraseña",
@@ -265,8 +268,17 @@
       "backBtn": "← Atrás",
       "select": "Seleccionar..."
     },
+    "step0": {
+      "eyebrow": "Paso 00 de 06",
+      "title": "¿En qué país operas?",
+      "subtitle": "Selecciona el país donde está tu establecimiento. Los requisitos legales, tributarios y bancarios se adaptan automáticamente.",
+      "colombia": "Colombia",
+      "comingSoon": "Próximamente",
+      "countryNote": "Actualmente operamos solo en Colombia. Próximamente abriremos en más países de Latinoamérica.",
+      "detecting": "Detectando..."
+    },
     "step1": {
-      "eyebrow": "Paso 01 de 05",
+      "eyebrow": "Paso 01 de 06",
       "title": "Crea tu cuenta",
       "subtitle": "Con este correo accederás al dashboard de anfitrión desde cualquier dispositivo.",
       "emailLabel": "Correo electrónico",
@@ -279,7 +291,7 @@
       "securityNote": "Tu contraseña se almacena de forma segura con cifrado bcrypt. VIBRRA nunca tendrá acceso a ella en texto plano."
     },
     "step2": {
-      "eyebrow": "Paso 02 de 05",
+      "eyebrow": "Paso 02 de 06",
       "title": "Verificación de identidad",
       "subtitle": "Requerido por la UIAF (Unidad de Información y Análisis Financiero) para plataformas que procesan pagos en Colombia.",
       "sectionPersonal": "Datos personales",
@@ -305,7 +317,7 @@
       "docUploaded": "Cargado"
     },
     "step3": {
-      "eyebrow": "Paso 03 de 05",
+      "eyebrow": "Paso 03 de 06",
       "title": "Información tributaria",
       "subtitle": "Requerido para la facturación electrónica ante la DIAN y el correcto cálculo de retenciones en tus retiros.",
       "sectionTipo": "Tipo de persona",
@@ -334,7 +346,7 @@
       "siIvaDesc": "Superas el umbral o tienes registro especial ante la DIAN."
     },
     "step4": {
-      "eyebrow": "Paso 04 de 05",
+      "eyebrow": "Paso 04 de 06",
       "title": "Cuenta bancaria",
       "subtitle": "Aquí recibirás tus retiros. La cuenta debe estar a tu nombre o al nombre de la empresa registrada.",
       "sectionBanco": "Selecciona tu banco",
@@ -360,7 +372,7 @@
       "retiroInfo": "Los retiros se procesan a través de ePayco Split Payments. El tiempo estimado de acreditación es de 1–3 días hábiles. Se aplica retención en la fuente según tu régimen tributario."
     },
     "step5": {
-      "eyebrow": "Paso 05 de 05",
+      "eyebrow": "Paso 05 de 06",
       "title": "Términos y privacidad",
       "subtitle": "Lee y acepta cada punto. Son obligatorios para activar tu cuenta y acreditar el bono de bienvenida.",
       "sectionObligatorio": "Aceptaciones obligatorias",

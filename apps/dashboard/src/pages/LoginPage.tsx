@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent, type KeyboardEvent } from "react";
 import { Navigate, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -14,6 +14,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
+  const handleEmailKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      passwordRef.current?.focus();
+    }
+  };
 
   /* Handle token from landing page (hash fragment) */
   useEffect(() => {
@@ -82,6 +90,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleEmailKeyDown}
                 required
                 autoComplete="email"
                 className="w-full rounded-lg border border-border bg-bg px-4 py-3 text-sm text-text-primary placeholder-text-muted outline-none transition-colors focus:border-gold focus:ring-1 focus:ring-gold"
@@ -99,6 +108,7 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <input
+                  ref={passwordRef}
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}

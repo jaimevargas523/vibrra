@@ -8,6 +8,7 @@ const mockProfile: HostProfile = {
   nombres: "Santiago",
   apellidos: "Rodriguez Mejia",
   email: "santiago.rodriguez@gmail.com",
+  pais: "CO",
   tipoDoc: "CC",
   numeroDoc: "1020456789",
   celular: "+573001234567",

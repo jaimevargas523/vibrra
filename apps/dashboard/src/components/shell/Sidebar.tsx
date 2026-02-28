@@ -7,11 +7,9 @@ import {
   ArrowLeftRight,
   Wallet,
   Gift,
-  CreditCard,
   Building2,
   BarChart3,
   UserCircle,
-  FileText,
   LogOut,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -29,6 +27,7 @@ interface NavSection {
     labelKey: string;
     to: string;
     badge?: string;
+    end?: boolean;
   }[];
 }
 
@@ -36,7 +35,7 @@ const NAV_SECTIONS: NavSection[] = [
   {
     labelKey: "sidebar.groups.principal",
     items: [
-      { icon: LayoutDashboard, labelKey: "sidebar.items.resumen", to: "/anfitrion" },
+      { icon: LayoutDashboard, labelKey: "sidebar.items.resumen", to: "/anfitrion", end: true },
       { icon: Radio, labelKey: "sidebar.items.enVivo", to: "/anfitrion/envivo" },
     ],
   },
@@ -65,11 +64,6 @@ const NAV_SECTIONS: NavSection[] = [
         labelKey: "sidebar.items.bonificaciones",
         to: "/anfitrion/bonificaciones",
       },
-      {
-        icon: CreditCard,
-        labelKey: "sidebar.items.suscripcion",
-        to: "/anfitrion/suscripcion",
-      },
     ],
   },
   {
@@ -90,11 +84,6 @@ const NAV_SECTIONS: NavSection[] = [
         labelKey: "sidebar.items.miCuenta",
         to: "/anfitrion/cuenta",
       },
-      {
-        icon: FileText,
-        labelKey: "sidebar.items.documentos",
-        to: "/anfitrion/documentos",
-      },
     ],
   },
 ];
@@ -107,12 +96,7 @@ function SidebarContent() {
     <div className="flex flex-col h-full bg-surface border-r border-border w-[280px]">
       {/* Logo */}
       <div className="px-6 pt-6 pb-2">
-        <h1
-          className="font-display text-gold text-[48px] leading-none tracking-[8px] select-none"
-          aria-label="VIBRRA"
-        >
-          VIBRRA
-        </h1>
+        <img src="/vibrra-logo.svg" alt="VIBRRA" className="h-10 w-auto" />
       </div>
 
       {/* Establishment selector */}
@@ -132,6 +116,7 @@ function SidebarContent() {
                 label={t(item.labelKey)}
                 to={item.to}
                 badge={item.badge}
+                end={item.end}
               />
             ))}
           </div>

@@ -7,6 +7,7 @@ import { env } from "./config/env.js";
 import { authMiddleware } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import apiRoutes from "./routes/index.js";
+import paisRouter from "./routes/pais.js";
 import { setupSocket } from "./socket/index.js";
 
 // ---------------------------------------------------------------------------
@@ -39,6 +40,11 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+// ---------------------------------------------------------------------------
+// Public API routes (no auth)
+// ---------------------------------------------------------------------------
+app.use("/api/pais", paisRouter);
 
 // ---------------------------------------------------------------------------
 // API routes (auth-protected)

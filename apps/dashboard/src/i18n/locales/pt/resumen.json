@@ -1,11 +1,26 @@
 {
   "title": "Resumo",
   "greeting": "{{timeOfDay}}, {{name}}",
+  "welcome": {
+    "title": "Bem-vindo, {{name}}",
+    "subtitle": "Para começar:",
+    "step1": "Adicione um estabelecimento",
+    "step2": "Abra sua primeira sessão",
+    "step3": "Compartilhe o QR com seus clientes"
+  },
+  "bonus": {
+    "title": "Você tem um bônus de {{amount}} disponível",
+    "subtitle": "Use-o para cobrir lances nas suas primeiras sessões",
+    "claim": "Resgatar bônus",
+    "claiming": "Resgatando..."
+  },
   "sessionBanner": {
     "active": "SESSÃO ATIVA",
     "inactive": "Sem sessão ativa",
     "open": "Iniciar sessão",
-    "goTo": "Ir para sessão ao vivo →",
+    "goTo": "Ir para sessão ao vivo",
+    "openDescription": "Inicie uma sessão para começar a receber lances",
+    "establishment": "Estabelecimento",
     "duration": "Duração",
     "users": "usuários conectados"
   },
@@ -14,6 +29,10 @@
     "saldoSub": "Disponível para saque",
     "generado": "Gerado este mês",
     "sesiones": "Sessões do mês",
+    "canciones": "Músicas do mês",
+    "esteMes": "Este mês",
+    "sinDatosMes": "Sem dados do mês anterior",
+    "vsMesAnterior": "+{{percent}}% vs mês anterior",
     "usuarios": "Usuários únicos"
   },
   "saldo": {
@@ -25,12 +44,17 @@
   },
   "chart": {
     "title": "RECEITA ÚLTIMOS 7 DIAS",
-    "empty": "Os dados aparecerão com sessões ativas"
+    "sinDatos": "Sem dados",
+    "empty": "Os dados de receita aparecerão aqui quando você tiver sessões"
   },
   "sesiones": {
     "title": "SESSÕES RECENTES",
     "verTodas": "Ver todas →",
-    "empty": "O histórico de sessões aparecerá aqui"
+    "sinSesiones": "Sem sessões",
+    "empty": "Suas sessões recentes aparecerão aqui quando você abrir a primeira sessão",
+    "canciones": "músicas",
+    "enVivo": "AO VIVO",
+    "finalizada": "FINALIZADA"
   },
   "acciones": {
     "titulo": "Ações rápidas",

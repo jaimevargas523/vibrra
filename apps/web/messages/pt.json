@@ -232,6 +232,9 @@
   },
   "registro": {
     "nav": {
+      "step0Label": "Passo 00",
+      "step0Name": "País",
+      "step0Desc": "Selecione seu país",
       "step1Label": "Passo 01",
       "step1Name": "Conta",
       "step1Desc": "E-mail e senha",
@@ -265,8 +268,17 @@
       "backBtn": "← Voltar",
       "select": "Selecionar..."
     },
+    "step0": {
+      "eyebrow": "Passo 00 de 06",
+      "title": "Em que país você opera?",
+      "subtitle": "Selecione o país onde está seu estabelecimento. Os requisitos legais, tributários e bancários se adaptam automaticamente.",
+      "colombia": "Colômbia",
+      "comingSoon": "Em breve",
+      "countryNote": "Atualmente operamos apenas na Colômbia. Em breve abriremos em mais países da América Latina.",
+      "detecting": "Detectando..."
+    },
     "step1": {
-      "eyebrow": "Passo 01 de 05",
+      "eyebrow": "Passo 01 de 06",
       "title": "Crie sua conta",
       "subtitle": "Com este e-mail você acessará o dashboard de anfitrião de qualquer dispositivo.",
       "emailLabel": "E-mail",
@@ -279,7 +291,7 @@
       "securityNote": "Sua senha é armazenada de forma segura com criptografia bcrypt. A VIBRRA nunca terá acesso a ela em texto simples."
     },
     "step2": {
-      "eyebrow": "Passo 02 de 05",
+      "eyebrow": "Passo 02 de 06",
       "title": "Verificação de identidade",
       "subtitle": "Exigido pela UIAF (Unidade de Informação e Análise Financeira) para plataformas que processam pagamentos na Colômbia.",
       "sectionPersonal": "Dados pessoais",
@@ -305,7 +317,7 @@
       "docUploaded": "Enviado"
     },
     "step3": {
-      "eyebrow": "Passo 03 de 05",
+      "eyebrow": "Passo 03 de 06",
       "title": "Informações tributárias",
       "subtitle": "Necessário para faturamento eletrônico junto à DIAN e cálculo correto de retenções nos seus saques.",
       "sectionTipo": "Tipo de pessoa",
@@ -334,7 +346,7 @@
       "siIvaDesc": "Você ultrapassa o limite ou tem registro especial junto à DIAN."
     },
     "step4": {
-      "eyebrow": "Passo 04 de 05",
+      "eyebrow": "Passo 04 de 06",
       "title": "Conta bancária",
       "subtitle": "Aqui você receberá seus saques. A conta deve estar no seu nome ou no nome da empresa registrada.",
       "sectionBanco": "Selecione seu banco",
@@ -360,7 +372,7 @@
       "retiroInfo": "Os saques são processados via ePayco Split Payments. O tempo estimado de compensação é de 1–3 dias úteis. Retenção na fonte aplicada conforme seu regime tributário."
     },
     "step5": {
-      "eyebrow": "Passo 05 de 05",
+      "eyebrow": "Passo 05 de 06",
       "title": "Termos e privacidade",
       "subtitle": "Leia e aceite cada item. São obrigatórios para ativar sua conta e creditar o bônus de boas-vindas.",
       "sectionObligatorio": "Aceitações obrigatórias",

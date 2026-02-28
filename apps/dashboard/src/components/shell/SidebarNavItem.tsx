@@ -7,6 +7,7 @@ interface SidebarNavItemProps {
   label: string;
   to: string;
   badge?: string;
+  end?: boolean;
 }
 
 export function SidebarNavItem({
@@ -14,10 +15,12 @@ export function SidebarNavItem({
   label,
   to,
   badge,
+  end,
 }: SidebarNavItemProps) {
   return (
     <NavLink
       to={to}
+      end={end}
       className={({ isActive }) =>
         clsx(
           "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200 group relative",

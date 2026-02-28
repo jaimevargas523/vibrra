@@ -8,7 +8,6 @@
     "bomberos": "Certificado dos Bombeiros"
   },
   "estados": {
-    "obligatorio": "Obrigatório",
     "sinSubir": "Não enviado",
     "pendiente": "Pendente de revisão",
     "aprobado": "Aprovado",

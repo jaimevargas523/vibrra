@@ -18,7 +18,8 @@
       "establecimientos": "Establecimientos",
       "analiticas": "Analíticas",
       "miCuenta": "Mi Cuenta",
-      "documentos": "Documentos"
+      "documentos": "Documentos",
+      "recargarCliente": "Recargar cliente"
     },
     "logout": "Cerrar sesión"
   },

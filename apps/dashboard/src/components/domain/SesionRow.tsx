@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { formatCOP, formatDuration } from "@/lib/format";
+import { formatDuration } from "@/lib/format";
 import { Badge } from "@/components/ui/Badge";
 
 type SesionEstado = "activa" | "finalizada" | "cancelada";
@@ -12,6 +12,7 @@ interface SesionRowProps {
   canciones: number;
   ingresos: number;
   estado: SesionEstado;
+  fmt: (n: number) => string;
   onClick?: () => void;
 }
 
@@ -34,6 +35,7 @@ export function SesionRow({
   canciones,
   ingresos,
   estado,
+  fmt,
   onClick,
 }: SesionRowProps) {
   const { day, month } = parseFecha(fecha);
@@ -89,7 +91,7 @@ export function SesionRow({
 
       {/* Amount */}
       <span className="font-mono font-bold text-gold text-sm shrink-0 text-right">
-        {formatCOP(ingresos)}
+        {fmt(ingresos)}
       </span>
     </div>
   );

@@ -1,6 +1,7 @@
 /**
  * Format a number as Colombian Pesos (COP).
  * Example: 125000 -> "$125.000"
+ * @deprecated Use formatCurrency() or useCurrencyFormatter() instead.
  */
 export function formatCOP(n: number): string {
   const rounded = Math.round(n);
@@ -9,6 +10,25 @@ export function formatCOP(n: number): string {
     minimumFractionDigits: 0,
   });
   return `$${formatted}`;
+}
+
+/**
+ * Format a number in the given currency.
+ * Uses Intl.NumberFormat for locale-aware formatting.
+ * Example: formatCurrency(125000, { symbol: "$", locale: "es-CO" }) -> "$125.000"
+ */
+export function formatCurrency(
+  n: number,
+  moneda?: { symbol: string; locale: string },
+): string {
+  const symbol = moneda?.symbol ?? "$";
+  const locale = moneda?.locale ?? "es-CO";
+  const rounded = Math.round(n);
+  const formatted = rounded.toLocaleString(locale, {
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+  return `${symbol}${formatted}`;
 }
 
 /**

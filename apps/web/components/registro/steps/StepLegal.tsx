@@ -1,16 +1,17 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { FormData } from "../RegistroWizard";
+import type { RegistrationFormData, CountryConfig } from "@/lib/registration/types";
 import s from "@/styles/registro.module.css";
 
 interface Props {
-  data: FormData;
-  update: (fields: Partial<FormData>) => void;
+  data: RegistrationFormData;
+  update: (fields: Partial<RegistrationFormData>) => void;
   onComplete: () => void;
   onBack: () => void;
   submitting: boolean;
   error: string;
+  countryConfig: CountryConfig;
 }
 
 function Toggle({
@@ -57,12 +58,30 @@ function Toggle({
   );
 }
 
-export function StepLegal({ data, update, onComplete, onBack, submitting, error }: Props) {
+export function StepLegal({ data, update, onComplete, onBack, submitting, error, countryConfig }: Props) {
   const t = useTranslations("registro.step5");
   const tc = useTranslations("registro.common");
   const tv = useTranslations("registro.validation");
 
-  const allRequired = data.aceptaTerminos && data.aceptaDatos && data.aceptaPagos && data.aceptaPublicidad;
+  const requiredDocs = countryConfig.legalDocs.filter((d) => d.required);
+  const allRequired = requiredDocs.every((d) => data.legalAcceptances[d.key]);
+
+  function toggleAcceptance(key: string) {
+    update({
+      legalAcceptances: {
+        ...data.legalAcceptances,
+        [key]: !data.legalAcceptances[key],
+      },
+    });
+  }
+
+  function acceptAll() {
+    const acc: Record<string, boolean> = { ...data.legalAcceptances };
+    for (const doc of requiredDocs) {
+      acc[doc.key] = true;
+    }
+    update({ legalAcceptances: acc });
+  }
 
   function handleComplete() {
     if (!allRequired) return;
@@ -77,7 +96,7 @@ export function StepLegal({ data, update, onComplete, onBack, submitting, error 
         <p className={s.stepSubtitle}>{t("subtitle")}</p>
       </div>
 
-      {/* Mandatory */}
+      {/* Mandatory — driven by countryConfig.legalDocs */}
       <div className={s.formSection}>
         <div className={s.formSectionTitle}>{t("sectionObligatorio")}</div>
 
@@ -85,47 +104,21 @@ export function StepLegal({ data, update, onComplete, onBack, submitting, error 
           type="button"
           className={s.btnSecondary}
           style={{ width: "100%", marginBottom: 16 }}
-          onClick={() =>
-            update({
-              aceptaTerminos: true,
-              aceptaDatos: true,
-              aceptaPagos: true,
-              aceptaPublicidad: true,
-            })
-          }
+          onClick={acceptAll}
         >
           {t("acceptAllBtn")}
         </button>
 
-        <Toggle
-          on={data.aceptaTerminos}
-          onToggle={() => update({ aceptaTerminos: !data.aceptaTerminos })}
-          title={t("terminosTitle")}
-          desc={t("terminosDesc")}
-          link="/vibrra-terminos.html"
-        />
-
-        <Toggle
-          on={data.aceptaDatos}
-          onToggle={() => update({ aceptaDatos: !data.aceptaDatos })}
-          title={t("datosTitle")}
-          desc={t("datosDesc")}
-          link="/vibrra-politica-datos.html"
-        />
-
-        <Toggle
-          on={data.aceptaPagos}
-          onToggle={() => update({ aceptaPagos: !data.aceptaPagos })}
-          title={t("pagosTitle")}
-          desc={t("pagosDesc")}
-        />
-
-        <Toggle
-          on={data.aceptaPublicidad}
-          onToggle={() => update({ aceptaPublicidad: !data.aceptaPublicidad })}
-          title={t("publicidadTitle")}
-          desc={t("publicidadDesc")}
-        />
+        {requiredDocs.map((doc) => (
+          <Toggle
+            key={doc.key}
+            on={!!data.legalAcceptances[doc.key]}
+            onToggle={() => toggleAcceptance(doc.key)}
+            title={t(`${doc.key}Title`)}
+            desc={t(`${doc.key}Desc`)}
+            link={doc.linkUrl}
+          />
+        ))}
       </div>
 
       {/* Optional */}

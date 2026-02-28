@@ -5,31 +5,19 @@ import clsx from "clsx";
 
 import { Badge } from "@/components/ui/Badge";
 import { useMovimientosResumen } from "@/hooks/api/useMovimientosResumen";
-import { formatCOP } from "@/lib/format";
-
-/* ── Plan options ────────────────────────────────────────────── */
-
-interface Plan {
-  amount: number;
-  bonusPercent: number;
-  bonus: number;
-  total: number;
-  recommended?: boolean;
-}
-
-const plans: Plan[] = [
-  { amount: 30000, bonusPercent: 5, bonus: 1500, total: 31500 },
-  { amount: 50000, bonusPercent: 8, bonus: 4000, total: 54000 },
-  { amount: 100000, bonusPercent: 12, bonus: 12000, total: 112000, recommended: true },
-  { amount: 200000, bonusPercent: 15, bonus: 30000, total: 230000 },
-];
+import { usePais } from "@/hooks/api/usePais";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 export default function RecargarPage() {
   const { t } = useTranslation("recargar");
   const { data: resumen } = useMovimientosResumen();
+  const { data: pais } = usePais();
+  const fmt = useCurrencyFormatter();
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
 
   const balance = resumen?.saldoDisponible ?? 0;
+  const plans = pais?.recargaAnfitrion?.planes ?? [];
+  const pasarela = pais?.recargaAnfitrion?.pasarela;
   const selected = plans.find((p) => p.amount === selectedPlan);
 
   return (
@@ -41,7 +29,7 @@ export default function RecargarPage() {
           SALDO ACTUAL
         </span>
         <p className="text-[36px] font-mono font-bold text-green mt-2 leading-tight">
-          {formatCOP(balance)}
+          {fmt(balance)}
         </p>
         <p className="text-xs text-text-secondary mt-1">
           Recarga para empezar a operar
@@ -84,7 +72,7 @@ export default function RecargarPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-lg font-bold text-text-primary">
-                      {formatCOP(plan.amount)}
+                      {fmt(plan.amount)}
                     </span>
                     <span className="text-xs text-success font-semibold">
                       Bono +{plan.bonusPercent}%
@@ -94,7 +82,7 @@ export default function RecargarPage() {
                     )}
                   </div>
                   <p className="text-xs text-text-secondary mt-0.5">
-                    Recibes {formatCOP(plan.total)}
+                    Recibes {fmt(plan.total)}
                   </p>
                 </div>
               </button>
@@ -109,20 +97,20 @@ export default function RecargarPage() {
           <div className="flex items-center justify-between text-sm">
             <span className="text-text-secondary">Pagas:</span>
             <span className="font-mono font-semibold text-text-primary">
-              {formatCOP(selected.amount)}
+              {fmt(selected.amount)}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-text-secondary">Bono acreditado:</span>
             <span className="font-mono font-semibold text-gold">
-              +{formatCOP(selected.bonus)}
+              +{fmt(selected.bonus)}
             </span>
           </div>
           <div className="border-t border-success/20 pt-2">
             <div className="flex items-center justify-between text-sm">
               <span className="font-semibold text-text-primary">Total en saldo:</span>
               <span className="font-mono text-lg font-bold text-green">
-                {formatCOP(selected.total)}
+                {fmt(selected.total)}
               </span>
             </div>
           </div>
@@ -130,29 +118,31 @@ export default function RecargarPage() {
       )}
 
       {/* ── Payment method ────────────────────────────── */}
-      <div className="bg-gradient-to-r from-purple/10 to-purple/5 border border-purple/20 rounded-xl p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple/15 shrink-0">
-            <Heart className="w-5 h-5 text-purple" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold text-text-primary">
-                Wompi &middot; Bancolombia
-              </p>
-              <Badge variant="purple" size="sm">UNICO METODO</Badge>
+      {pasarela && (
+        <div className="bg-gradient-to-r from-purple/10 to-purple/5 border border-purple/20 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple/15 shrink-0">
+              <Heart className="w-5 h-5 text-purple" />
             </div>
-            <p className="text-xs text-text-muted mt-0.5">
-              Tarjeta credito/debito &middot; PSE &middot; Nequi &middot; Efectivo (Efecty)
-            </p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold text-text-primary">
+                  {pasarela.nombre} &middot; {pasarela.proveedores.join(", ")}
+                </p>
+                <Badge variant="purple" size="sm">UNICO METODO</Badge>
+              </div>
+              <p className="text-xs text-text-muted mt-0.5">
+                {pasarela.metodos.join(" \u00B7 ")}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Disclaimer ────────────────────────────────── */}
       <p className="text-[10px] text-text-disabled leading-relaxed">
         Al realizar el pago, aceptas los terminos y condiciones de VIBRRA y de
-        Wompi como pasarela de pago. Los bonos no son dinero real ni retirable.
+        la pasarela de pago. Los bonos no son dinero real ni retirable.
         El saldo recargado se acredita inmediatamente despues de la confirmacion
         del pago. Las recargas no son reembolsables.
       </p>
@@ -169,7 +159,9 @@ export default function RecargarPage() {
         )}
       >
         <Wallet className="w-5 h-5" />
-        {selectedPlan ? "Pagar con Wompi" : "Selecciona un plan para continuar"}
+        {selectedPlan && pasarela
+          ? `Pagar con ${pasarela.nombre}`
+          : "Selecciona un plan para continuar"}
       </button>
     </div>
   );

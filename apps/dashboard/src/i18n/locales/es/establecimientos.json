@@ -32,6 +32,11 @@
     "title": "Aún no tienes establecimientos",
     "desc": "Registra tu primer local para empezar a usar VIBRRA"
   },
+  "tabs": {
+    "configuracion": "Configuracion",
+    "documentos": "Documentos",
+    "suscripcion": "Suscripcion"
+  },
   "detalle": {
     "title": "Configuración",
     "info": "INFORMACIÓN BÁSICA",

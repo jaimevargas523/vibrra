@@ -1,5 +1,5 @@
 import { Check, Clock } from "lucide-react";
-import { formatCOP } from "@/lib/format";
+import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 import { Button } from "@/components/ui/Button";
 
 interface EstablishmentSaldo {
@@ -22,6 +22,8 @@ export function SaldoBox({
   ventanaAbierta,
   proximaVentana,
 }: SaldoBoxProps) {
+  const fmt = useCurrencyFormatter();
+
   return (
     <div className="bg-surface rounded-xl border border-border p-5">
       {/* Section label */}
@@ -31,7 +33,7 @@ export function SaldoBox({
 
       {/* Main value */}
       <p className="text-[32px] font-mono font-bold text-gold mt-2 leading-tight">
-        {formatCOP(saldoReal)}
+        {fmt(saldoReal)}
       </p>
       <p className="text-xs text-text-secondary mt-1">Disponible para retirar</p>
 
@@ -40,7 +42,7 @@ export function SaldoBox({
         <p className="text-xs text-text-muted mt-2">
           Saldo bono:{" "}
           <span className="font-mono text-gold-light">
-            {formatCOP(saldoBono)}
+            {fmt(saldoBono)}
           </span>
         </p>
       )}
@@ -57,7 +59,7 @@ export function SaldoBox({
                 {est.name}
               </span>
               <span className="font-mono text-text-primary shrink-0">
-                {formatCOP(est.saldo)}
+                {fmt(est.saldo)}
               </span>
             </div>
           ))}

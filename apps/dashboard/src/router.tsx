@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
 // Lazy-loaded layout
@@ -14,14 +14,17 @@ const QrsPage = lazy(() => import("@/pages/QrsPage"));
 const MovimientosPage = lazy(() => import("@/pages/MovimientosPage"));
 const RecargarPage = lazy(() => import("@/pages/RecargarPage"));
 const BonificacionesPage = lazy(() => import("@/pages/BonificacionesPage"));
-const SuscripcionPage = lazy(() => import("@/pages/SuscripcionPage"));
 const EstablecimientosPage = lazy(() => import("@/pages/EstablecimientosPage"));
 const AnalyticsPage = lazy(() => import("@/pages/AnalyticsPage"));
 const CuentaPage = lazy(() => import("@/pages/CuentaPage"));
-const DocumentosPage = lazy(() => import("@/pages/DocumentosPage"));
 const EstablecimientoDetallePage = lazy(() => import("@/pages/EstablecimientoDetallePage"));
+const RecargarClientePage = lazy(() => import("@/pages/RecargarClientePage"));
 
 export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Navigate to="/anfitrion" replace />,
+  },
   {
     path: "/login",
     element: <LoginPage />,
@@ -40,13 +43,12 @@ export const router = createBrowserRouter([
       { path: "qrs", element: <QrsPage /> },
       { path: "movimientos", element: <MovimientosPage /> },
       { path: "recargar", element: <RecargarPage /> },
+      { path: "recargar-cliente", element: <RecargarClientePage /> },
       { path: "bonificaciones", element: <BonificacionesPage /> },
-      { path: "suscripcion", element: <SuscripcionPage /> },
       { path: "establecimientos", element: <EstablecimientosPage /> },
       { path: "establecimientos/:id", element: <EstablecimientoDetallePage /> },
       { path: "analytics", element: <AnalyticsPage /> },
       { path: "cuenta", element: <CuentaPage /> },
-      { path: "documentos", element: <DocumentosPage /> },
     ],
   },
 ]);

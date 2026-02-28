@@ -2,16 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api-client";
 
 export interface Suscripcion {
-  id: string;
-  hostUid: string;
-  plan: "gratuito" | "basico" | "profesional" | "empresarial";
+  id: string | null;
   estado: "activa" | "cancelada" | "vencida";
   precioMensual: number;
-  fechaInicio: string;
-  fechaRenovacion: string;
-  establecimientosMax: number;
-  sesionesMax: number;
-  caracteristicas: string[];
+  fechaInicio: string | null;
+  fechaRenovacion: string | null;
+  mesesPagados: number;
 }
 
 export function useSuscripcion() {

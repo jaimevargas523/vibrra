@@ -32,6 +32,11 @@
     "title": "You don't have any venues yet",
     "desc": "Register your first venue to start using VIBRRA"
   },
+  "tabs": {
+    "configuracion": "Settings",
+    "documentos": "Documents",
+    "suscripcion": "Subscription"
+  },
   "detalle": {
     "title": "Settings",
     "info": "BASIC INFORMATION",

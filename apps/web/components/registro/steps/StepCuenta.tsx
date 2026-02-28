@@ -3,16 +3,17 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useEnterNavigation } from "@/lib/use-enter-navigation";
-import type { FormData } from "../RegistroWizard";
+import type { RegistrationFormData } from "@/lib/registration/types";
 import s from "@/styles/registro.module.css";
 
 interface Props {
-  data: FormData;
-  update: (fields: Partial<FormData>) => void;
+  data: RegistrationFormData;
+  update: (fields: Partial<RegistrationFormData>) => void;
   onNext: () => void;
+  onBack: () => void;
 }
 
-export function StepCuenta({ data, update, onNext }: Props) {
+export function StepCuenta({ data, update, onNext, onBack }: Props) {
   const t = useTranslations("registro.step1");
   const tc = useTranslations("registro.common");
   const tv = useTranslations("registro.validation");
@@ -127,6 +128,7 @@ export function StepCuenta({ data, update, onNext }: Props) {
       </div>
 
       <div className={s.formNav}>
+        <button className={s.btnSecondary} onClick={onBack}>{tc("backBtn")}</button>
         <button className={s.btnPrimary} onClick={handleNext}>
           {tc("continueBtn")}
         </button>

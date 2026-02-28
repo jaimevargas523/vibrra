@@ -5,6 +5,7 @@ import { VibrraLogo } from "@/components/ui/VibrraLogo";
 import s from "@/styles/registro.module.css";
 
 const STEPS = [
+  { labelKey: "step0Label", nameKey: "step0Name", descKey: "step0Desc" },
   { labelKey: "step1Label", nameKey: "step1Name", descKey: "step1Desc" },
   { labelKey: "step2Label", nameKey: "step2Name", descKey: "step2Desc" },
   { labelKey: "step3Label", nameKey: "step3Name", descKey: "step3Desc" },

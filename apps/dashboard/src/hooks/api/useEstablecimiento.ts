@@ -4,17 +4,26 @@ import { apiGet } from "@/lib/api-client";
 export interface EstablecimientoDetail {
   id: string;
   name: string;
+  description: string | null;
   address: string;
   city: string;
+  departamento: string;
+  zona: string;
+  slug: string;
   type: string;
   isActive: boolean;
   imageUrl: string | null;
-  description: string | null;
   phone: string | null;
   whatsapp: string | null;
   instagram: string | null;
   horarios: Record<string, { open: string; close: string }>;
   qrCodes: { id: string; label: string; url: string }[];
+  precioConexion: number;
+  precioNominacion: number;
+  precioPujaMin: number;
+  precioDedicatoria: number;
+  modoMusica: boolean;
+  visibleMapa: boolean;
   stats: {
     totalSesiones: number;
     totalRecaudado: number;

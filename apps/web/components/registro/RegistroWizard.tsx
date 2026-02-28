@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -9,8 +9,13 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "@vibrra/shared";
 import { useTranslations } from "next-intl";
 
+import type { RegistrationFormData, CountryConfig } from "@/lib/registration/types";
+import { INITIAL_REGISTRATION_DATA } from "@/lib/registration/types";
+import { getCountryConfig } from "@/lib/registration/countries";
+
 import { LeftPanel } from "./LeftPanel";
 import { ProgressBar } from "./ProgressBar";
+import { StepPais } from "./steps/StepPais";
 import { StepCuenta } from "./steps/StepCuenta";
 import { StepIdentidad } from "./steps/StepIdentidad";
 import { StepTributario } from "./steps/StepTributario";
@@ -18,68 +23,10 @@ import { StepBancaria } from "./steps/StepBancaria";
 import { StepLegal } from "./steps/StepLegal";
 import s from "@/styles/registro.module.css";
 
-export interface FormData {
-  // Step 1
-  email: string;
-  password: string;
-  // Step 2
-  nombres: string;
-  apellidos: string;
-  tipoDoc: string;
-  numeroDoc: string;
-  fechaNac: string;
-  celular: string;
-  docFrontal: File | null;
-  docPosterior: File | null;
-  selfie: File | null;
-  // Step 3
-  tipoPersona: "natural" | "juridica";
-  nit: string;
-  regimen: string;
-  responsableIva: boolean;
-  rutFile: File | null;
-  // Step 4
-  banco: string;
-  tipoCuenta: string;
-  numeroCuenta: string;
-  titularCuenta: string;
-  // Step 5
-  aceptaTerminos: boolean;
-  aceptaDatos: boolean;
-  aceptaPagos: boolean;
-  aceptaPublicidad: boolean;
-  recibeReportes: boolean;
-}
+// Re-export for backward compat with step imports
+export type FormData = RegistrationFormData;
 
-const INITIAL_DATA: FormData = {
-  email: "",
-  password: "",
-  nombres: "",
-  apellidos: "",
-  tipoDoc: "",
-  numeroDoc: "",
-  fechaNac: "",
-  celular: "",
-  docFrontal: null,
-  docPosterior: null,
-  selfie: null,
-  tipoPersona: "natural",
-  nit: "",
-  regimen: "simple",
-  responsableIva: false,
-  rutFile: null,
-  banco: "",
-  tipoCuenta: "",
-  numeroCuenta: "",
-  titularCuenta: "",
-  aceptaTerminos: false,
-  aceptaDatos: false,
-  aceptaPagos: false,
-  aceptaPublicidad: false,
-  recibeReportes: false,
-};
-
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 export function RegistroWizard() {
   const { user, loading } = useAuth();
@@ -88,10 +35,20 @@ export function RegistroWizard() {
 
   const [current, setCurrent] = useState(0);
   const [completed, setCompleted] = useState<Set<number>>(new Set());
-  const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
+  const [formData, setFormData] = useState<RegistrationFormData>(INITIAL_REGISTRATION_DATA);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const rightPanelRef = useRef<HTMLDivElement>(null);
+
+  // Derive country config from selected country (null if none selected yet)
+  const countryConfig: CountryConfig | null = useMemo(() => {
+    if (!formData.country) return null;
+    try {
+      return getCountryConfig(formData.country);
+    } catch {
+      return null;
+    }
+  }, [formData.country]);
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
@@ -100,7 +57,7 @@ export function RegistroWizard() {
     }
   }, [user, loading, router]);
 
-  const updateFields = useCallback((fields: Partial<FormData>) => {
+  const updateFields = useCallback((fields: Partial<RegistrationFormData>) => {
     setFormData((prev) => ({ ...prev, ...fields }));
   }, []);
 
@@ -122,6 +79,7 @@ export function RegistroWizard() {
   }
 
   async function handleComplete() {
+    if (!countryConfig) return;
     setSubmitting(true);
     setSubmitError("");
 
@@ -139,9 +97,16 @@ export function RegistroWizard() {
           formData.rutFile ? uploadFile(uid, "rut", formData.rutFile) : Promise.resolve(null),
         ]);
 
-        // 3. Write Firestore document
-        await setDoc(doc(db, "Usuarios", uid), {
+        // 3. Build legal acceptances object
+        const legalObj: Record<string, boolean> = {};
+        for (const doc of countryConfig.legalDocs) {
+          legalObj[doc.key] = formData.legalAcceptances[doc.key] ?? false;
+        }
+
+        // 4. Write Firestore document (country-aware schema)
+        await setDoc(doc(db, "Anfitriones", uid), {
           tipo: "anfitrion",
+          pais: formData.country,
           email: formData.email,
           nombres: formData.nombres,
           apellidos: formData.apellidos,
@@ -158,10 +123,7 @@ export function RegistroWizard() {
           numeroCuenta: formData.numeroCuenta,
           titularCuenta: formData.titularCuenta,
           legal: {
-            aceptaTerminos: formData.aceptaTerminos,
-            aceptaDatos: formData.aceptaDatos,
-            aceptaPagos: formData.aceptaPagos,
-            aceptaPublicidad: formData.aceptaPublicidad,
+            ...legalObj,
             recibeReportes: formData.recibeReportes,
             fechaAceptacion: new Date().toISOString(),
           },
@@ -173,12 +135,13 @@ export function RegistroWizard() {
             rutUrl,
           },
           saldoReal: 0,
-          saldoBono: 30000,
+          saldoBono: countryConfig.activationBonus,
+          moneda: countryConfig.currency.code,
           estado: "pendiente_verificacion",
           creadoEn: serverTimestamp(),
         });
 
-        // 4. Redirect to dashboard
+        // 5. Redirect to dashboard
         router.replace("/dashboard");
       } catch (innerErr) {
         // Cleanup: delete the auth user if Firestore/Storage failed
@@ -207,18 +170,21 @@ export function RegistroWizard() {
           <ProgressBar current={current} total={TOTAL_STEPS} />
 
           {current === 0 && (
-            <StepCuenta data={formData} update={updateFields} onNext={goNext} />
+            <StepPais data={formData} update={updateFields} onNext={goNext} />
           )}
           {current === 1 && (
-            <StepIdentidad data={formData} update={updateFields} onNext={goNext} onBack={goBack} />
+            <StepCuenta data={formData} update={updateFields} onNext={goNext} onBack={goBack} />
           )}
-          {current === 2 && (
-            <StepTributario data={formData} update={updateFields} onNext={goNext} onBack={goBack} />
+          {current === 2 && countryConfig && (
+            <StepIdentidad data={formData} update={updateFields} onNext={goNext} onBack={goBack} countryConfig={countryConfig} />
           )}
-          {current === 3 && (
-            <StepBancaria data={formData} update={updateFields} onNext={goNext} onBack={goBack} />
+          {current === 3 && countryConfig && (
+            <StepTributario data={formData} update={updateFields} onNext={goNext} onBack={goBack} countryConfig={countryConfig} />
           )}
-          {current === 4 && (
+          {current === 4 && countryConfig && (
+            <StepBancaria data={formData} update={updateFields} onNext={goNext} onBack={goBack} countryConfig={countryConfig} />
+          )}
+          {current === 5 && countryConfig && (
             <StepLegal
               data={formData}
               update={updateFields}
@@ -226,6 +192,7 @@ export function RegistroWizard() {
               onBack={goBack}
               submitting={submitting}
               error={submitError}
+              countryConfig={countryConfig}
             />
           )}
         </div>

@@ -232,6 +232,9 @@
   },
   "registro": {
     "nav": {
+      "step0Label": "Step 00",
+      "step0Name": "Country",
+      "step0Desc": "Select your country",
       "step1Label": "Step 01",
       "step1Name": "Account",
       "step1Desc": "Email and password",
@@ -265,8 +268,17 @@
       "backBtn": "← Back",
       "select": "Select..."
     },
+    "step0": {
+      "eyebrow": "Step 00 of 06",
+      "title": "Where does your venue operate?",
+      "subtitle": "Select the country where your venue is located. Legal, tax and banking requirements will adapt automatically.",
+      "colombia": "Colombia",
+      "comingSoon": "Coming soon",
+      "countryNote": "We currently operate only in Colombia. More Latin American countries coming soon.",
+      "detecting": "Detecting..."
+    },
     "step1": {
-      "eyebrow": "Step 01 of 05",
+      "eyebrow": "Step 01 of 06",
       "title": "Create your account",
       "subtitle": "You'll use this email to access the host dashboard from any device.",
       "emailLabel": "Email address",
@@ -279,7 +291,7 @@
       "securityNote": "Your password is securely stored with bcrypt encryption. VIBRRA will never have access to it in plain text."
     },
     "step2": {
-      "eyebrow": "Step 02 of 05",
+      "eyebrow": "Step 02 of 06",
       "title": "Identity verification",
       "subtitle": "Required by the UIAF (Financial Information and Analysis Unit) for platforms that process payments in Colombia.",
       "sectionPersonal": "Personal information",
@@ -305,7 +317,7 @@
       "docUploaded": "Uploaded"
     },
     "step3": {
-      "eyebrow": "Step 03 of 05",
+      "eyebrow": "Step 03 of 06",
       "title": "Tax information",
       "subtitle": "Required for electronic invoicing with DIAN and correct withholding calculations on your withdrawals.",
       "sectionTipo": "Person type",
@@ -334,7 +346,7 @@
       "siIvaDesc": "You exceed the threshold or have a special registration with DIAN."
     },
     "step4": {
-      "eyebrow": "Step 04 of 05",
+      "eyebrow": "Step 04 of 06",
       "title": "Bank account",
       "subtitle": "This is where you'll receive your withdrawals. The account must be in your name or the registered company's name.",
       "sectionBanco": "Select your bank",
@@ -360,7 +372,7 @@
       "retiroInfo": "Withdrawals are processed via ePayco Split Payments. Estimated clearing time is 1–3 business days. Withholding tax applies based on your tax regime."
     },
     "step5": {
-      "eyebrow": "Step 05 of 05",
+      "eyebrow": "Step 05 of 06",
       "title": "Terms and privacy",
       "subtitle": "Read and accept each item. They are mandatory to activate your account and credit the welcome bonus.",
       "sectionObligatorio": "Mandatory acceptances",

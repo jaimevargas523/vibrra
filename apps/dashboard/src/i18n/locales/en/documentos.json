@@ -8,7 +8,6 @@
     "bomberos": "Fire department certificate"
   },
   "estados": {
-    "obligatorio": "Required",
     "sinSubir": "Not uploaded",
     "pendiente": "Pending review",
     "aprobado": "Approved",

@@ -3,48 +3,27 @@
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useEnterNavigation } from "@/lib/use-enter-navigation";
-import type { FormData } from "../RegistroWizard";
+import type { RegistrationFormData, CountryConfig } from "@/lib/registration/types";
 import s from "@/styles/registro.module.css";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_IMG = ["image/jpeg", "image/png"];
 
-const COUNTRY_CODES = [
-  { code: "+57", label: "🇨🇴 +57" },
-  { code: "+1", label: "🇺🇸 +1" },
-  { code: "+52", label: "🇲🇽 +52" },
-  { code: "+55", label: "🇧🇷 +55" },
-  { code: "+34", label: "🇪🇸 +34" },
-  { code: "+51", label: "🇵🇪 +51" },
-  { code: "+56", label: "🇨🇱 +56" },
-  { code: "+54", label: "🇦🇷 +54" },
-  { code: "+593", label: "🇪🇨 +593" },
-  { code: "+507", label: "🇵🇦 +507" },
-  { code: "+58", label: "🇻🇪 +58" },
-  { code: "+506", label: "🇨🇷 +506" },
-  { code: "+502", label: "🇬🇹 +502" },
-  { code: "+591", label: "🇧🇴 +591" },
-  { code: "+595", label: "🇵🇾 +595" },
-  { code: "+598", label: "🇺🇾 +598" },
-  { code: "+503", label: "🇸🇻 +503" },
-  { code: "+504", label: "🇭🇳 +504" },
-  { code: "+505", label: "🇳🇮 +505" },
-];
-
 interface Props {
-  data: FormData;
-  update: (fields: Partial<FormData>) => void;
+  data: RegistrationFormData;
+  update: (fields: Partial<RegistrationFormData>) => void;
   onNext: () => void;
   onBack: () => void;
+  countryConfig: CountryConfig;
 }
 
-export function StepIdentidad({ data, update, onNext, onBack }: Props) {
+export function StepIdentidad({ data, update, onNext, onBack, countryConfig }: Props) {
   const t = useTranslations("registro.step2");
   const tc = useTranslations("registro.common");
   const tv = useTranslations("registro.validation");
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [countryCode, setCountryCode] = useState("+57");
+  const [countryCode, setCountryCode] = useState(countryConfig.defaultPhonePrefix);
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const frontRef = useRef<HTMLInputElement>(null);
@@ -76,7 +55,6 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
     update({ [key]: file });
   }
 
-  // TODO: hacer obligatorio en producción — validar que frontal, posterior y selfie estén presentes antes de nextStep()
   function validate(): boolean {
     const errs: Record<string, string> = {};
     if (!data.nombres.trim()) errs.nombres = tv("fieldRequired");
@@ -133,6 +111,7 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
             {errors.apellidos && <div className={s.fieldError}>{errors.apellidos}</div>}
           </div>
 
+          {/* Document type — driven by countryConfig.identityDocs */}
           <div className={s.formGroup}>
             <div className={s.formLabel}>
               {t("tipoDocLabel")} <span className={s.formRequired}>{tc("requiredShort")}</span>
@@ -143,9 +122,11 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
               onChange={(e) => update({ tipoDoc: e.target.value })}
             >
               <option value="">{tc("select")}</option>
-              <option value="CC">{t("tipoDocCC")}</option>
-              <option value="CE">{t("tipoDocCE")}</option>
-              <option value="PA">{t("tipoDocPA")}</option>
+              {countryConfig.identityDocs.map((doc) => (
+                <option key={doc.value} value={doc.value}>
+                  {t(doc.i18nKey)}
+                </option>
+              ))}
             </select>
             {errors.tipoDoc && <div className={s.fieldError}>{errors.tipoDoc}</div>}
           </div>
@@ -179,6 +160,7 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
             {errors.fechaNac && <div className={s.fieldError}>{errors.fechaNac}</div>}
           </div>
 
+          {/* Phone — driven by countryConfig.phonePrefixes */}
           <div className={s.formGroup}>
             <div className={s.formLabel}>
               {t("celularLabel")} <span className={s.formRequired}>{tc("requiredShort")}</span>
@@ -192,7 +174,7 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
                   update({ celular: `${e.target.value} ${phoneNumber}` });
                 }}
               >
-                {COUNTRY_CODES.map((c) => (
+                {countryConfig.phonePrefixes.map((c) => (
                   <option key={c.code} value={c.code}>{c.label}</option>
                 ))}
               </select>
@@ -223,7 +205,7 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
             className={`${s.docCard} ${data.docFrontal ? s.docCardDone : ""}`}
             onClick={() => frontRef.current?.click()}
           >
-            <div className={s.docCardIcon}>{data.docFrontal ? "✅" : "📄"}</div>
+            <div className={s.docCardIcon}>{data.docFrontal ? "\u2705" : "\u{1F4C4}"}</div>
             <div className={`${s.docCardLabel} ${data.docFrontal ? s.docCardLabelDone : ""}`}>
               {data.docFrontal ? t("docUploaded") : t("docFront")}
             </div>
@@ -241,7 +223,7 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
             className={`${s.docCard} ${data.docPosterior ? s.docCardDone : ""}`}
             onClick={() => backRef.current?.click()}
           >
-            <div className={s.docCardIcon}>{data.docPosterior ? "✅" : "📄"}</div>
+            <div className={s.docCardIcon}>{data.docPosterior ? "\u2705" : "\u{1F4C4}"}</div>
             <div className={`${s.docCardLabel} ${data.docPosterior ? s.docCardLabelDone : ""}`}>
               {data.docPosterior ? t("docUploaded") : t("docBack")}
             </div>
@@ -259,7 +241,7 @@ export function StepIdentidad({ data, update, onNext, onBack }: Props) {
             className={`${s.docCard} ${data.selfie ? s.docCardDone : ""}`}
             onClick={() => selfieRef.current?.click()}
           >
-            <div className={s.docCardIcon}>{data.selfie ? "✅" : "🤳"}</div>
+            <div className={s.docCardIcon}>{data.selfie ? "\u2705" : "\u{1F933}"}</div>
             <div className={`${s.docCardLabel} ${data.selfie ? s.docCardLabelDone : ""}`}>
               {data.selfie ? t("docUploaded") : t("docSelfie")}
             </div>

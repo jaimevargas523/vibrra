@@ -1,11 +1,26 @@
 {
   "title": "Overview",
   "greeting": "{{timeOfDay}}, {{name}}",
+  "welcome": {
+    "title": "Welcome, {{name}}",
+    "subtitle": "To get started:",
+    "step1": "Add an establishment",
+    "step2": "Open your first session",
+    "step3": "Share the QR with your customers"
+  },
+  "bonus": {
+    "title": "You have a bonus of {{amount}} available",
+    "subtitle": "Use it to cover bids in your first sessions",
+    "claim": "Claim bonus",
+    "claiming": "Claiming..."
+  },
   "sessionBanner": {
     "active": "ACTIVE SESSION",
     "inactive": "No active session",
     "open": "Start session",
-    "goTo": "Go to live session →",
+    "goTo": "Go to live session",
+    "openDescription": "Start a session to begin receiving bids",
+    "establishment": "Establishment",
     "duration": "Duration",
     "users": "connected users"
   },
@@ -14,6 +29,10 @@
     "saldoSub": "Available for withdrawal",
     "generado": "Generated this month",
     "sesiones": "Sessions this month",
+    "canciones": "Songs this month",
+    "esteMes": "This month",
+    "sinDatosMes": "No data from previous month",
+    "vsMesAnterior": "+{{percent}}% vs previous month",
     "usuarios": "Unique users"
   },
   "saldo": {
@@ -25,12 +44,17 @@
   },
   "chart": {
     "title": "REVENUE LAST 7 DAYS",
-    "empty": "Data will appear with active sessions"
+    "sinDatos": "No data",
+    "empty": "Revenue data will appear here when you have sessions"
   },
   "sesiones": {
     "title": "RECENT SESSIONS",
     "verTodas": "View all →",
-    "empty": "Session history will appear here"
+    "sinSesiones": "No sessions",
+    "empty": "Your recent sessions will appear here when you open your first session",
+    "canciones": "songs",
+    "enVivo": "LIVE",
+    "finalizada": "FINISHED"
   },
   "acciones": {
     "titulo": "Quick actions",

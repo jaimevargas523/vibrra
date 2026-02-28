@@ -1,11 +1,26 @@
 {
   "title": "Resumen",
   "greeting": "{{timeOfDay}}, {{name}}",
+  "welcome": {
+    "title": "Bienvenido, {{name}}",
+    "subtitle": "Para empezar:",
+    "step1": "Agrega un establecimiento",
+    "step2": "Abre tu primera sesión",
+    "step3": "Comparte el QR con tus clientes"
+  },
+  "bonus": {
+    "title": "Tienes un bono de {{amount}} disponible",
+    "subtitle": "Úsalo para cubrir pujas en tus primeras sesiones",
+    "claim": "Reclamar bono",
+    "claiming": "Reclamando..."
+  },
   "sessionBanner": {
     "active": "SESIÓN ACTIVA",
     "inactive": "Sin sesión activa",
     "open": "Abrir sesión",
-    "goTo": "Ir a sesión en vivo →",
+    "goTo": "Ir a sesión en vivo",
+    "openDescription": "Abre una sesión para empezar a recibir pujas",
+    "establishment": "Establecimiento",
     "duration": "Duración",
     "users": "usuarios conectados"
   },
@@ -14,6 +29,10 @@
     "saldoSub": "Disponible para retirar",
     "generado": "Generado este mes",
     "sesiones": "Sesiones del mes",
+    "canciones": "Canciones del mes",
+    "esteMes": "Este mes",
+    "sinDatosMes": "Sin datos del mes anterior",
+    "vsMesAnterior": "+{{percent}}% vs mes anterior",
     "usuarios": "Usuarios únicos"
   },
   "saldo": {
@@ -25,12 +44,17 @@
   },
   "chart": {
     "title": "INGRESOS ÚLTIMOS 7 DÍAS",
-    "empty": "Los datos aparecerán con sesiones activas"
+    "sinDatos": "Sin datos",
+    "empty": "Los datos de ingresos aparecerán aquí cuando tengas sesiones"
   },
   "sesiones": {
     "title": "SESIONES RECIENTES",
     "verTodas": "Ver todas →",
-    "empty": "El historial de sesiones aparecerá aquí"
+    "sinSesiones": "Sin sesiones",
+    "empty": "Tus sesiones recientes aparecerán aquí cuando abras tu primera sesión",
+    "canciones": "canciones",
+    "enVivo": "EN VIVO",
+    "finalizada": "FINALIZADA"
   },
   "acciones": {
     "titulo": "Acciones rápidas",

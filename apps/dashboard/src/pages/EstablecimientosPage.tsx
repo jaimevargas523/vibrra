@@ -24,33 +24,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { useEstablecimientos, type EstablecimientoListItem } from "@/hooks/api/useEstablecimientos";
 import { useSessionStore } from "@/stores/session.store";
 
-/* ── Fallback data ───────────────────────────────────────────── */
-
-const fallbackEstablishments: EstablecimientoListItem[] = [
-  {
-    id: "e1",
-    name: "La Terraza Rooftop",
-    address: "Cra 7 #85-24",
-    city: "Bogota",
-    type: "bar",
-    isActive: true,
-    imageUrl: null,
-    totalSesiones: 42,
-    totalRecaudado: 3250000,
-  },
-  {
-    id: "e2",
-    name: "Bar El Dorado",
-    address: "Cll 10 #43-12",
-    city: "Medellin",
-    type: "bar",
-    isActive: true,
-    imageUrl: null,
-    totalSesiones: 18,
-    totalRecaudado: 1420000,
-  },
-];
-
 const emojiOptions = [
   "\uD83C\uDF1F", "\uD83C\uDFB5", "\uD83C\uDFB6", "\uD83C\uDF7A", "\uD83C\uDF78",
   "\uD83C\uDF7E", "\uD83C\uDF89", "\uD83D\uDD25", "\uD83D\uDC8E", "\uD83C\uDFAD",
@@ -71,7 +44,7 @@ export default function EstablecimientosPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(emojiOptions[0]);
 
-  const estData = establecimientos ?? fallbackEstablishments;
+  const estData = establecimientos ?? [];
 
   return (
     <div className="space-y-6">

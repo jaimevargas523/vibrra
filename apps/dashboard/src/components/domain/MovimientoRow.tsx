@@ -8,7 +8,6 @@ import {
   Gift,
 } from "lucide-react";
 import clsx from "clsx";
-import { formatCOP } from "@/lib/format";
 import type { LucideIcon } from "lucide-react";
 
 type MovimientoTipo =
@@ -31,6 +30,7 @@ interface MovimientoRowProps {
   comisionWompi: number;
   montoNeto: number;
   estado: string;
+  fmt: (n: number) => string;
   onClick?: () => void;
 }
 
@@ -68,6 +68,7 @@ export function MovimientoRow({
   comisionVibrra,
   comisionWompi,
   montoNeto,
+  fmt,
   onClick,
 }: MovimientoRowProps) {
   const config = TIPO_CONFIG[tipo] ?? TIPO_CONFIG.puja;
@@ -121,11 +122,11 @@ export function MovimientoRow({
           )}
         >
           {isPositive ? "+" : ""}
-          {formatCOP(montoNeto)}
+          {fmt(montoNeto)}
         </span>
         <span className="text-[10px] text-text-muted mt-0.5 whitespace-nowrap">
-          Bruto {formatCOP(bruto)} &middot; VIBRRA {formatCOP(comisionVibrra)} &middot; Wompi{" "}
-          {formatCOP(comisionWompi)}
+          Bruto {fmt(bruto)} &middot; VIBRRA {fmt(comisionVibrra)} &middot; Wompi{" "}
+          {fmt(comisionWompi)}
         </span>
       </div>
     </div>

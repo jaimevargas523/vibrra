@@ -18,7 +18,8 @@
       "establecimientos": "Venues",
       "analiticas": "Analytics",
       "miCuenta": "My Account",
-      "documentos": "Documents"
+      "documentos": "Documents",
+      "recargarCliente": "Recharge client"
     },
     "logout": "Log out"
   },

@@ -23,6 +23,7 @@ export async function apiClient<T>(path: string, options: RequestInit = {}): Pro
     ...options,
     headers: {
       "Content-Type": "application/json",
+      "Accept-Language": localStorage.getItem("vibrra-lang") || "es",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
