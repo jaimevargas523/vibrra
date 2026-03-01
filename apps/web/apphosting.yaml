@@ -11,3 +11,8 @@ env:
     availability:
       - BUILD
       - RUNTIME
+  - variable: NEXT_PUBLIC_DASHBOARD_URL
+    value: https://vibrra-6cd01.web.app
+    availability:
+      - BUILD
+      - RUNTIME

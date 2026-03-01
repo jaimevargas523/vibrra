@@ -25,7 +25,7 @@ export function Mechanics() {
   return (
     <section
       id="mecanicas"
-      className="px-[60px] py-[100px] border-t border-line max-[1100px]:px-8"
+      className="px-5 py-16 lg:px-[60px] lg:py-[100px] border-t border-line"
     >
       <RevealSection>
         <div className="section-eyebrow">{t("eyebrow")}</div>
@@ -41,7 +41,7 @@ export function Mechanics() {
         <p className="section-sub mb-12">{t("sub")}</p>
       </RevealSection>
 
-      <div className="grid grid-cols-3 gap-4 max-[720px]:grid-cols-1">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {MECHANICS.map((mech, i) => (
           <RevealSection
             key={KEYS[i]}

@@ -13,7 +13,7 @@ export function Steps() {
   return (
     <section
       id="como-funciona"
-      className="px-[60px] py-[100px] border-t border-line max-[1100px]:px-8"
+      className="px-5 py-16 lg:px-[60px] lg:py-[100px] border-t border-line"
     >
       <RevealSection>
         <div className="section-eyebrow">{t("eyebrow")}</div>
@@ -30,14 +30,14 @@ export function Steps() {
       </RevealSection>
 
       <div
-        className="grid grid-cols-3 gap-[3px] rounded-2xl overflow-hidden max-[720px]:grid-cols-1"
+        className="grid grid-cols-1 gap-[3px] rounded-2xl overflow-hidden md:grid-cols-3"
         style={{
           background: "var(--line)",
         }}
       >
         {STEPS.map((step, i) => (
           <RevealSection key={i} delay={(i + 1) as 1 | 2 | 3}>
-            <div className="bg-panel p-8 relative group hover:bg-[#101020] transition-colors min-h-[280px]">
+            <div className="bg-panel p-6 md:p-8 relative group hover:bg-[#101020] transition-colors md:min-h-[280px]">
               <div
                 className="absolute top-4 right-4 font-display text-[72px] font-black opacity-[0.06] leading-none select-none"
               >

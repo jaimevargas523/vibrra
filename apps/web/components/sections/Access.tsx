@@ -8,7 +8,7 @@ export function Access() {
   return (
     <section
       id="acceso"
-      className="px-[60px] py-[100px] border-t border-line max-[1100px]:px-8"
+      className="px-5 py-16 lg:px-[60px] lg:py-[100px] border-t border-line"
     >
       <RevealSection>
         <div className="section-eyebrow">{t("eyebrow")}</div>
