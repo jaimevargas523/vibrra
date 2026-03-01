@@ -42,6 +42,14 @@ export async function POST(req: NextRequest) {
         throw new Error("Completa tu registro para reclamar el bono.");
       }
 
+      // Verify at least 1 establishment
+      const negociosSnap = await tx.get(
+        db.collection("Negocios").where("anfitrionId", "==", uid).limit(1)
+      );
+      if (negociosSnap.empty) {
+        throw new Error("Crea al menos un establecimiento para reclamar el bono.");
+      }
+
       // Get bonus amount from country config
       const paisCode = data.pais ?? "CO";
       const paisConfig = await getPaisConfig(paisCode);
@@ -78,7 +86,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Error al reclamar bono.";
-    const status = message.includes("ya fue reclamado") || message.includes("Completa") || message.includes("No hay bono")
+    const status = message.includes("ya fue reclamado") || message.includes("Completa") || message.includes("No hay bono") || message.includes("establecimiento")
       ? 400
       : message.includes("no encontrado") ? 404 : 500;
     console.error("POST /api/perfil/reclamar-bono error:", err);
