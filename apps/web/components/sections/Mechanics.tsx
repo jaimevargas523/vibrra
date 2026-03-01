@@ -25,7 +25,7 @@ export function Mechanics() {
   return (
     <section
       id="mecanicas"
-      className="px-5 py-16 lg:px-[60px] lg:py-[100px] border-t border-line"
+      className="landing-section"
     >
       <RevealSection>
         <div className="section-eyebrow">{t("eyebrow")}</div>

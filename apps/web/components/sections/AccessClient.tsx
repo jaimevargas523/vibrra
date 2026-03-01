@@ -28,7 +28,10 @@ export function AccessClient() {
     try {
       const cred = await signInWithEmailAndPassword(auth, hostEmail, hostPassword);
       const idToken = await cred.user.getIdToken();
-      window.location.href = `${DASHBOARD_URL}/login#token=${encodeURIComponent(idToken)}`;
+      window.open(`${DASHBOARD_URL}/login#token=${encodeURIComponent(idToken)}`, "_blank");
+      setHostLoading(false);
+      setHostEmail("");
+      setHostPassword("");
     } catch {
       setHostError(t("loginError"));
       setHostLoading(false);

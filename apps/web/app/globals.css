@@ -169,3 +169,19 @@ body::before {
   color: var(--gold);
   border-color: var(--gold-mid);
 }
+
+/* ══════════════════════════════════════════════════
+   Section layout — mobile-first
+══════════════════════════════════════════════════ */
+.landing-section {
+  padding: 64px 20px;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 768px) {
+  .landing-section { padding: 80px 32px; }
+}
+
+@media (min-width: 1024px) {
+  .landing-section { padding: 100px 60px; }
+}

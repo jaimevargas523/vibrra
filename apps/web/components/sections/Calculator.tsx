@@ -8,7 +8,7 @@ export function Calculator() {
   return (
     <section
       id="calculadora"
-      className="px-5 py-16 lg:px-[60px] lg:py-[100px] border-t border-line bg-deep"
+      className="landing-section" style={{ background: "var(--deep)" }}
     >
       <RevealSection>
         <div className="section-eyebrow">{t("eyebrow")}</div>
