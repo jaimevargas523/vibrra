@@ -193,6 +193,8 @@
 
 @media (max-width: 768px) {
   .calcGrid { grid-template-columns: 1fr; }
-  .slidersPanel, .resultsPanel { padding: 28px 20px; }
+  .resultsPanel { order: -1; padding: 28px 20px; }
+  .slidersPanel { padding: 28px 20px; }
   .totalAmount { font-size: 36px; }
+  .resultGrid { grid-template-columns: 1fr 1fr; }
 }

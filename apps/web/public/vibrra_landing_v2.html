@@ -1542,13 +1542,13 @@ document.addEventListener('DOMContentLoaded', function() {
 .login-card:hover { transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,0,0,.5); }
 .login-card-header { padding:20px 24px; display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--edge); }
 .cliente-h  { background:rgba(255,229,102,.10); border-bottom:1px solid rgba(255,229,102,.15); }
-.anfitrion-h { background:rgba(212,160,23,.10); border-bottom:1px solid rgba(212,160,23,.15); }
+.anfitrion-h { background:rgba(46,204,113,.10); border-bottom:1px solid rgba(46,204,113,.15); }
 .admin-h    { background:rgba(212,160,23,.10); border-bottom:1px solid rgba(212,160,23,.15); }
-.empresa-h  { background:rgba(96,165,250,.10); border-bottom:1px solid rgba(96,165,250,.15); }
+.empresa-h  { background:rgba(168,85,247,.10); border-bottom:1px solid rgba(168,85,247,.15); }
 
 #card-cliente  { border-color:rgba(255,229,102,.18); }
-#card-anfitrion { border-color:rgba(212,160,23,.18); }
-#card-empresa  { border-color:rgba(96,165,250,.18); }
+#card-anfitrion { border-color:rgba(46,204,113,.18); }
+#card-empresa  { border-color:rgba(168,85,247,.18); }
 .login-icon { font-size:28px; }
 .login-role { font-size:16px; font-weight:700; }
 .login-subtitle { font-size:12px; color:var(--muted); margin-top:2px; }
@@ -1566,8 +1566,10 @@ document.addEventListener('DOMContentLoaded', function() {
 .login-btn { width:100%; padding:13px; border-radius:8px; border:none; font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; font-family:'Outfit',sans-serif; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:4px; }
 .gold-btn   { background:var(--gold); color:var(--ink); }
 .gold-btn:hover { background:#fff; }
-.purple-btn { background:var(--gold-dk); color:var(--ink); }
-.purple-btn:hover { filter:brightness(1.1); }
+.green-btn  { background:#2ECC71; color:var(--ink); }
+.green-btn:hover { background:#3ddc84; }
+.purple-btn { background:#A855F7; color:#fff; }
+.purple-btn:hover { background:#c084fc; }
 .outline-btn { background:transparent; color:var(--txt); border:1px solid var(--edge); }
 .outline-btn:hover { border-color:var(--line); }
 .login-divider { text-align:center; margin:14px 0; position:relative; font-size:11px; color:var(--muted); font-family:'Montserrat',sans-serif; }
@@ -1914,22 +1916,22 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="login-card-header anfitrion-h">
         <span class="login-icon">🏢</span>
         <div>
-          <div class="login-role" style="color:var(--gold-mid);" data-i18n="role_host">Anfitrión</div>
+          <div class="login-role" style="color:#2ECC71;" data-i18n="role_host">Anfitrión</div>
           <div class="login-subtitle" data-i18n="role_host_sub">Panel de tu establecimiento</div>
         </div>
       </div>
       <div class="login-body">
         <div class="login-field"><span class="login-field-icon">✉️</span><input type="email" class="login-input" data-i18n-ph="ph_email_bar" placeholder="admin@tubar.com"></div>
         <div class="login-field"><span class="login-field-icon">🔒</span><input type="password" class="login-input" data-i18n-ph="ph_password" placeholder="Contraseña"></div>
-        <button class="login-btn gold-btn" data-i18n="btn_enter_panel">Entrar al panel</button>
+        <button class="login-btn green-btn" data-i18n="btn_enter_panel">Entrar al panel</button>
         <div style="text-align:right; margin-top:8px; font-size:11px;">
           <a href="#" style="color:var(--muted);" data-i18n="forgot_pw">¿Olvidaste tu contraseña?</a>
         </div>
         <div class="login-footer-link">
-          <span data-i18n="new_vibrra">¿Nuevo en VIBRRA?</span>&nbsp;<a href="#anfitrion-cta" style="color:var(--gold-mid);" data-i18n="register_bar">Registra tu bar</a>
+          <span data-i18n="new_vibrra">¿Nuevo en VIBRRA?</span>&nbsp;<a href="#anfitrion-cta" style="color:#2ECC71;" data-i18n="register_bar">Registra tu bar</a>
         </div>
-        <div style="margin-top:10px; padding:10px 12px; background:rgba(212,160,23,.04); border:1px solid var(--line); border-radius:6px; font-size:11px; color:var(--muted); line-height:1.6;">
-          🔌 <span data-i18n="chrome_hint">Inicia sesión escaneando el QR desde la <strong style="color:var(--gold-mid);">extensión Chrome</strong></span>
+        <div style="margin-top:10px; padding:10px 12px; background:rgba(46,204,113,.04); border:1px solid var(--line); border-radius:6px; font-size:11px; color:var(--muted); line-height:1.6;">
+          🔌 <span data-i18n="chrome_hint">Inicia sesión escaneando el QR desde la <strong style="color:#2ECC71;">extensión Chrome</strong></span>
         </div>
       </div>
     </div>
@@ -1939,23 +1941,23 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="login-card-header empresa-h">
         <span class="login-icon">🏛️</span>
         <div>
-          <div class="login-role" style="color:#60A5FA;" data-i18n="role_company">Empresa</div>
+          <div class="login-role" style="color:#A855F7;" data-i18n="role_company">Empresa</div>
           <div class="login-subtitle" data-i18n="role_company_sub">Franquicias y cadenas</div>
         </div>
       </div>
       <div class="login-body">
-        <div style="background:rgba(212,160,23,.04); border:1px solid var(--line); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:11px; color:var(--muted); line-height:1.6;">
+        <div style="background:rgba(168,85,247,.04); border:1px solid rgba(168,85,247,.12); border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:11px; color:var(--muted); line-height:1.6;">
           <span data-i18n="company_hint">Gestiona múltiples establecimientos desde un solo panel corporativo.</span>
         </div>
         <div class="login-field"><span class="login-field-icon">🏛️</span><input type="text" class="login-input" data-i18n-ph="ph_nit" placeholder="NIT de la empresa"></div>
         <div class="login-field"><span class="login-field-icon">✉️</span><input type="email" class="login-input" data-i18n-ph="ph_email_company" placeholder="admin@tuempresa.com"></div>
         <div class="login-field"><span class="login-field-icon">🔒</span><input type="password" class="login-input" data-i18n-ph="ph_password" placeholder="Contraseña"></div>
-        <button class="login-btn gold-btn" data-i18n="btn_enter_corp">Acceder al panel corporativo</button>
+        <button class="login-btn purple-btn" data-i18n="btn_enter_corp">Acceder al panel corporativo</button>
         <div style="text-align:right; margin-top:8px; font-size:11px;">
           <a href="#" style="color:var(--muted);" data-i18n="forgot_pw">¿Olvidaste tu contraseña?</a>
         </div>
         <div class="login-footer-link">
-          <span data-i18n="want_join">¿Quieres unirte?</span>&nbsp;<a href="#anfitrion-cta" style="color:var(--gold-mid);" data-i18n="register_company">Registra tu empresa</a>
+          <span data-i18n="want_join">¿Quieres unirte?</span>&nbsp;<a href="#anfitrion-cta" style="color:#A855F7;" data-i18n="register_company">Registra tu empresa</a>
         </div>
       </div>
     </div>
