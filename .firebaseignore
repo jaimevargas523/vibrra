@@ -1,0 +1,14 @@
+node_modules
+.next
+.turbo
+.claude
+dist
+out
+*.log
+.git
+apps/dashboard
+apps/api
+apps/web/node_modules
+apps/web/.next
+packages/shared/node_modules
+pnpm-lock.yaml

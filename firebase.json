@@ -36,7 +36,14 @@
     "rootDir": "apps/web",
     "ignore": [
       "node_modules",
+      ".next",
       ".git",
+      ".turbo",
+      ".claude",
+      "dist",
+      "out",
+      "apps/dashboard",
+      "apps/api",
       "firebase-debug.log",
       "firebase-debug.*.log"
     ]
