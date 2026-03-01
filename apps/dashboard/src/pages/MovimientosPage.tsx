@@ -1,17 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  Gift,
-  Percent,
-  Download,
-  Wallet,
-} from "lucide-react";
+import { Wallet, Download } from "lucide-react";
 import clsx from "clsx";
 
 import { PageHeader } from "@/components/ui/PageHeader";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { DataTable, type Column } from "@/components/ui/DataTable";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -19,46 +11,51 @@ import { EmptyState } from "@/components/ui/EmptyState";
 
 import { useMovimientos, type Movimiento } from "@/hooks/api/useMovimientos";
 import { useMovimientosResumen } from "@/hooks/api/useMovimientosResumen";
-import { useEstablishmentStore } from "@/stores/establishment.store";
 import { formatShortDate, formatTime } from "@/lib/format";
 import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  TIPOS_MOVIMIENTO,
+  CATEGORIAS,
+  esEgreso,
+  type TipoMovimiento,
+  type CategoriaMovimiento,
+} from "@/types/movimiento";
 
 /* ── Helpers ─────────────────────────────────────────────────── */
 
-function TypeIcon({ type }: { type: Movimiento["type"] }) {
-  switch (type) {
-    case "ingreso":
-      return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-success/10 shrink-0">
-          <ArrowDownLeft className="w-4 h-4 text-success" />
-        </div>
-      );
-    case "retiro":
-      return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-error/10 shrink-0">
-          <ArrowUpRight className="w-4 h-4 text-error" />
-        </div>
-      );
-    case "bonificacion":
-      return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple/10 shrink-0">
-          <Gift className="w-4 h-4 text-purple" />
-        </div>
-      );
-    case "comision":
-      return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-warning/10 shrink-0">
-          <Percent className="w-4 h-4 text-warning" />
-        </div>
-      );
-  }
+function TipoIcon({ tipo }: { tipo: string }) {
+  const meta = TIPOS_MOVIMIENTO[tipo as TipoMovimiento];
+  if (!meta) return <span className="text-base">{"\u2022"}</span>;
+
+  const bgClass: Record<string, string> = {
+    success: "bg-success/10",
+    error: "bg-error/10",
+    warning: "bg-warning/10",
+    info: "bg-info/10",
+    gold: "bg-gold/10",
+    purple: "bg-purple/10",
+  };
+
+  return (
+    <div
+      className={clsx(
+        "flex items-center justify-center w-8 h-8 rounded-full shrink-0",
+        bgClass[meta.color] ?? "bg-surface",
+      )}
+    >
+      <span className="text-sm leading-none">{meta.icon}</span>
+    </div>
+  );
 }
 
-const typeLabels: Record<string, string> = {
-  ingreso: "Ingreso",
-  retiro: "Retiro",
-  bonificacion: "Bonificacion",
-  comision: "Comision",
+const CATEGORIA_LABELS: Record<string, string> = {
+  "": "Todos",
+  INGRESO_REAL: "Ingresos reales",
+  INGRESO_BONO: "Ingresos bono",
+  EGRESO_REAL: "Egresos reales",
+  EGRESO_BONO: "Egresos bono",
+  EGRESO_MIXTO: "Egresos mixtos",
 };
 
 /* ── Page ─────────────────────────────────────────────────────── */
@@ -67,21 +64,23 @@ export default function MovimientosPage() {
   const { t } = useTranslation("movimientos");
   const fmt = useCurrencyFormatter();
   const [page, setPage] = useState(1);
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [estFilter, setEstFilter] = useState<string>("");
+  const [catFilter, setCatFilter] = useState<string>("");
 
-  const establishments = useEstablishmentStore((s) => s.establishments);
   const { data: resumen, isLoading: resumenLoading } = useMovimientosResumen();
   const { data, isLoading } = useMovimientos({
     page,
-    type: typeFilter || undefined,
+    categoria: catFilter || undefined,
   });
 
   const res = resumen ?? {
-    saldoDisponible: 0,
-    totalIngresos: 0,
+    saldoReal: 0,
+    saldoBono: 0,
+    saldoTotal: 0,
+    totalIngresosReal: 0,
+    totalIngresosBono: 0,
+    totalEgresosReal: 0,
+    totalEgresosBono: 0,
     totalRetiros: 0,
-    totalBonificaciones: 0,
     totalComisiones: 0,
     pendientePago: 0,
     ultimoRetiro: null,
@@ -91,158 +90,150 @@ export default function MovimientosPage() {
 
   const summaryCards = [
     {
-      label: "INGRESOS BRUTOS",
-      value: fmt(res.totalIngresos),
+      label: t("resumen.saldoReal"),
+      value: fmt(res.saldoReal),
+      sub: t("resumen.disponibleRetiro"),
+      color: "text-gold",
+    },
+    {
+      label: t("resumen.saldoBono"),
+      value: fmt(res.saldoBono),
+      sub: t("resumen.creditoInterno"),
+      color: "text-purple",
+    },
+    {
+      label: t("resumen.ingresos"),
+      value: fmt(res.totalIngresosReal + res.totalIngresosBono),
+      sub: `${t("resumen.real")} ${fmt(res.totalIngresosReal)} + ${t("resumen.bono")} ${fmt(res.totalIngresosBono)}`,
       color: "text-success",
     },
     {
-      label: "DEDUCCIONES",
-      value: fmt(res.totalComisiones),
+      label: t("resumen.egresos"),
+      value: fmt(res.totalEgresosReal + res.totalEgresosBono),
+      sub: `${t("resumen.real")} ${fmt(res.totalEgresosReal)} + ${t("resumen.bono")} ${fmt(res.totalEgresosBono)}`,
       color: "text-error",
-    },
-    {
-      label: "RETIRADO",
-      value: fmt(res.totalRetiros),
-      color: "text-info",
-    },
-    {
-      label: "SALDO",
-      value: fmt(res.saldoDisponible),
-      color: "text-gold",
     },
   ];
 
+  async function handleExportCsv() {
+    const token = useAuthStore.getState().token;
+    const res = await fetch("/api/movimientos/exportar", {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "movimientos.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const columns: Column<Movimiento>[] = [
     {
-      key: "type",
-      header: "TIPO",
-      render: (m) => (
-        <div className="flex items-center gap-3">
-          <TypeIcon type={m.type} />
-          <div>
-            <p className="text-sm font-medium text-text-primary">
-              {typeLabels[m.type] ?? m.type}
-            </p>
-            <p className="text-xs text-text-muted truncate max-w-[200px]">
-              {m.description}
-            </p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: "establishmentName",
-      header: "ESTABLECIMIENTO",
+      key: "tipo",
+      header: t("table.tipo"),
       render: (m) => {
-        const d = new Date(m.createdAt);
+        const tipoLabel = t(`tipos.${m.tipo}`, { defaultValue: m.tipo });
         return (
-          <div>
-            <p className="text-sm text-text-secondary">
-              {m.establishmentName ?? "General"}
-            </p>
-            <p className="text-xs text-text-muted">
-              {formatShortDate(d)} {formatTime(d)}
-            </p>
+          <div className="flex items-center gap-3">
+            <TipoIcon tipo={m.tipo} />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-text-primary truncate">
+                {tipoLabel}
+              </p>
+              <p className="text-xs text-text-muted truncate max-w-[220px]">
+                {m.descripcion}
+              </p>
+            </div>
           </div>
         );
       },
     },
     {
-      key: "reference",
-      header: "REFERENCIA",
-      render: (m) =>
-        m.reference ? (
-          <span className="font-mono text-xs text-text-muted">{m.reference}</span>
-        ) : (
-          <span className="text-xs text-text-disabled">&mdash;</span>
-        ),
+      key: "timestamp",
+      header: t("table.fecha"),
+      render: (m) => {
+        const d = new Date(m.timestamp);
+        return (
+          <div>
+            <p className="text-sm text-text-secondary">{formatShortDate(d)}</p>
+            <p className="text-xs text-text-muted">{formatTime(d)}</p>
+          </div>
+        );
+      },
     },
     {
-      key: "amount",
-      header: "MONTO NETO",
+      key: "monto_real",
+      header: t("table.real"),
       align: "right",
       render: (m) => {
-        const isPositive = m.type === "ingreso" || m.type === "bonificacion";
+        if (m.monto_real === 0) return <span className="text-xs text-text-disabled">&mdash;</span>;
+        const neg = esEgreso(m.categoria as CategoriaMovimiento);
         return (
-          <div className="text-right">
-            <p
-              className={clsx(
-                "font-mono text-sm font-semibold",
-                isPositive ? "text-success" : "text-error"
-              )}
-            >
-              {isPositive ? "+" : ""}
-              {fmt(m.amount)}
-            </p>
-            <Badge
-              variant={
-                m.status === "completed"
-                  ? "success"
-                  : m.status === "pending"
-                    ? "warning"
-                    : "error"
-              }
-              size="sm"
-            >
-              {m.status === "completed"
-                ? "Completado"
-                : m.status === "pending"
-                  ? "Pendiente"
-                  : "Fallido"}
-            </Badge>
-          </div>
+          <span className={clsx("font-mono text-sm font-semibold", neg ? "text-error" : "text-success")}>
+            {neg ? "-" : "+"}{fmt(m.monto_real)}
+          </span>
         );
       },
+    },
+    {
+      key: "monto_bono",
+      header: t("table.bono"),
+      align: "right",
+      render: (m) => {
+        if (m.monto_bono === 0) return <span className="text-xs text-text-disabled">&mdash;</span>;
+        const neg = esEgreso(m.categoria as CategoriaMovimiento);
+        return (
+          <span className={clsx("font-mono text-sm font-semibold", neg ? "text-purple" : "text-gold")}>
+            {neg ? "-" : "+"}{fmt(m.monto_bono)}
+          </span>
+        );
+      },
+    },
+    {
+      key: "saldo_real_post",
+      header: t("table.saldo"),
+      align: "right",
+      render: (m) => (
+        <div className="text-right">
+          <p className="font-mono text-sm text-text-primary">
+            {fmt(m.saldo_real_post)}
+          </p>
+          <p className="font-mono text-[10px] text-text-muted">
+            +{fmt(m.saldo_bono_post)} {t("table.bono").toLowerCase()}
+          </p>
+        </div>
+      ),
     },
   ];
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Movimientos"
-        subtitle="Historial de transacciones y balance"
-      />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {/* Sticky filter bar */}
       <div className="sticky top-0 z-10 bg-bg -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 border-b border-border flex items-center gap-3 flex-wrap">
-        {establishments.length > 1 && (
-          <select
-            value={estFilter}
-            onChange={(e) => {
-              setEstFilter(e.target.value);
-              setPage(1);
-            }}
-            className="bg-card-dark border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:border-gold outline-none"
-          >
-            <option value="">Todos</option>
-            {establishments.map((est) => (
-              <option key={est.id} value={est.id}>
-                {est.name}
-              </option>
-            ))}
-          </select>
-        )}
-
         <select
-          value={typeFilter}
+          value={catFilter}
           onChange={(e) => {
-            setTypeFilter(e.target.value);
+            setCatFilter(e.target.value);
             setPage(1);
           }}
           className="bg-card-dark border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:border-gold outline-none"
         >
-          <option value="">Todos los tipos</option>
-          <option value="ingreso">Ingresos</option>
-          <option value="retiro">Retiros</option>
-          <option value="bonificacion">Bonificaciones</option>
-          <option value="comision">Comisiones</option>
+          {Object.entries(CATEGORIA_LABELS).map(([val, label]) => (
+            <option key={val} value={val}>
+              {t(`categorias.${val || "todos"}`, { defaultValue: label })}
+            </option>
+          ))}
         </select>
 
         <div className="flex-1" />
 
-        <Button variant="secondary" size="sm">
+        <Button variant="secondary" size="sm" onClick={handleExportCsv}>
           <Download className="w-4 h-4" />
-          Exportar CSV
+          {t("filters.exportar")}
         </Button>
       </div>
 
@@ -266,6 +257,7 @@ export default function MovimientosPage() {
               <p className={clsx("text-xl font-mono font-bold mt-2", card.color)}>
                 {card.value}
               </p>
+              <p className="text-[10px] text-text-muted mt-1">{card.sub}</p>
             </div>
           ))}
         </div>
@@ -273,7 +265,7 @@ export default function MovimientosPage() {
 
       {/* Section label */}
       <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold block">
-        TRANSACCIONES
+        {t("table.titulo")}
       </span>
 
       {/* Table */}
@@ -289,8 +281,8 @@ export default function MovimientosPage() {
         emptyState={
           <EmptyState
             icon={<Wallet className="w-12 h-12" />}
-            title="Sin movimientos"
-            description="Los movimientos de tus sesiones y retiros apareceran aqui."
+            title={t("empty.title")}
+            description={t("empty.desc")}
           />
         }
       />

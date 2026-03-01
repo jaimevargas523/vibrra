@@ -1,31 +1,75 @@
 {
-  "title": "Movimentações",
+  "title": "Movimentacoes",
+  "subtitle": "Historico de transacoes e saldos",
   "filters": {
     "establecimiento": "Todos os estabelecimentos",
-    "periodo": "Mês / Ano",
+    "periodo": "Mes / Ano",
     "tipo": "Todos os tipos",
     "exportar": "Exportar CSV"
   },
   "tipos": {
-    "puja": "Lance",
-    "conexion": "Conexão",
-    "retiro": "Saque",
-    "suscripcion": "Assinatura",
-    "recarga": "Recarga",
-    "dedicatoria": "Dedicatória",
-    "veto": "Veto",
-    "batalla": "Batalha",
-    "bono": "Bônus"
+    "RECARGA_WOMPI": "Recarga Wompi",
+    "COMISION_SESION": "Comissao de sessao",
+    "DEVOLUCION_ADMIN": "Reembolso",
+    "BONO_ACTIVACION": "Bonus de boas-vindas",
+    "BONO_RECARGA_5": "Bonus de recarga (+5%)",
+    "BONO_RECARGA_10": "Bonus de recarga (+10%)",
+    "BONO_RECARGA_15": "Bonus de recarga (+15%)",
+    "BONO_RECARGA_20": "Bonus de recarga (+20%)",
+    "BONO_REFERIDO": "Bonus por indicacao",
+    "BONO_AJUSTE_ADMIN": "Ajuste de bonus",
+    "RECARGA_CLIENTE_BONO": "Recarga de cliente",
+    "PUJA_BONO": "Lance (bonus)",
+    "NOMINACION_BONO": "Nomeacao (bonus)",
+    "CONEXION_BONO": "Conexao (bonus)",
+    "VETO_BONO": "Veto (bonus)",
+    "DEDICATORIA_BONO": "Dedicatoria (bonus)",
+    "BONO_EXPIRADO": "Bonus expirado",
+    "RECARGA_CLIENTE_REAL": "Recarga de cliente",
+    "PUJA_REAL": "Lance (real)",
+    "NOMINACION_REAL": "Nomeacao (real)",
+    "CONEXION_REAL": "Conexao (real)",
+    "VETO_REAL": "Veto (real)",
+    "DEDICATORIA_REAL": "Dedicatoria (real)",
+    "SUSCRIPCION_COBRO": "Assinatura mensal",
+    "RETIRO_SOLICITADO": "Saque",
+    "FEE_WOMPI_RETIRO": "Taxa gateway de pagamento",
+    "RETENCION_FUENTE": "Retencao na fonte",
+    "ICA_COBRO": "ICA",
+    "RECARGA_CLIENTE_MIXTA": "Recarga de cliente (misto)"
+  },
+  "categorias": {
+    "todos": "Todos",
+    "INGRESO_REAL": "Receitas reais",
+    "INGRESO_BONO": "Receitas bonus",
+    "EGRESO_REAL": "Despesas reais",
+    "EGRESO_BONO": "Despesas bonus",
+    "EGRESO_MIXTO": "Despesas mistas"
   },
   "resumen": {
-    "ingresos": "Receita Bruta",
-    "deducciones": "Deduções",
+    "saldoReal": "Saldo Real",
+    "saldoBono": "Saldo Bonus",
+    "ingresos": "Receitas",
+    "egresos": "Despesas",
+    "deducciones": "Deducoes",
     "retirado": "Sacado",
-    "saldo": "Saldo Disponível"
+    "saldo": "Saldo Disponivel",
+    "disponibleRetiro": "Disponivel para saque",
+    "creditoInterno": "Credito interno",
+    "real": "Real",
+    "bono": "Bonus"
   },
   "table": {
-    "titulo": "TRANSAÇÕES"
+    "titulo": "TRANSACOES",
+    "tipo": "TIPO",
+    "fecha": "DATA",
+    "real": "REAL",
+    "bono": "BONUS",
+    "saldo": "SALDO"
   },
   "desglose": "Bruto {{bruto}} · VIBRRA {{vibrra}} · Wompi {{wompi}}",
-  "empty": "As movimentações aparecerão aqui quando você tiver atividade"
+  "empty": {
+    "title": "Sem movimentacoes",
+    "desc": "As movimentacoes aparecerao aqui quando voce tiver atividade"
+  }
 }

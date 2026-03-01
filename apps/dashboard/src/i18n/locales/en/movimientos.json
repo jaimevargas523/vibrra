@@ -1,5 +1,6 @@
 {
   "title": "Transactions",
+  "subtitle": "Transaction history and balances",
   "filters": {
     "establecimiento": "All venues",
     "periodo": "Month / Year",
@@ -7,25 +8,68 @@
     "exportar": "Export CSV"
   },
   "tipos": {
-    "puja": "Bid",
-    "conexion": "Connection",
-    "retiro": "Withdrawal",
-    "suscripcion": "Subscription",
-    "recarga": "Top-up",
-    "dedicatoria": "Dedication",
-    "veto": "Veto",
-    "batalla": "Battle",
-    "bono": "Bonus"
+    "RECARGA_WOMPI": "Wompi Top-up",
+    "COMISION_SESION": "Session commission",
+    "DEVOLUCION_ADMIN": "Refund",
+    "BONO_ACTIVACION": "Welcome bonus",
+    "BONO_RECARGA_5": "Top-up bonus (+5%)",
+    "BONO_RECARGA_10": "Top-up bonus (+10%)",
+    "BONO_RECARGA_15": "Top-up bonus (+15%)",
+    "BONO_RECARGA_20": "Top-up bonus (+20%)",
+    "BONO_REFERIDO": "Referral bonus",
+    "BONO_AJUSTE_ADMIN": "Bonus adjustment",
+    "RECARGA_CLIENTE_BONO": "Client top-up",
+    "PUJA_BONO": "Bid (bonus)",
+    "NOMINACION_BONO": "Nomination (bonus)",
+    "CONEXION_BONO": "Connection (bonus)",
+    "VETO_BONO": "Veto (bonus)",
+    "DEDICATORIA_BONO": "Dedication (bonus)",
+    "BONO_EXPIRADO": "Bonus expired",
+    "RECARGA_CLIENTE_REAL": "Client top-up",
+    "PUJA_REAL": "Bid (real)",
+    "NOMINACION_REAL": "Nomination (real)",
+    "CONEXION_REAL": "Connection (real)",
+    "VETO_REAL": "Veto (real)",
+    "DEDICATORIA_REAL": "Dedication (real)",
+    "SUSCRIPCION_COBRO": "Monthly subscription",
+    "RETIRO_SOLICITADO": "Withdrawal",
+    "FEE_WOMPI_RETIRO": "Payment gateway fee",
+    "RETENCION_FUENTE": "Withholding tax",
+    "ICA_COBRO": "ICA tax",
+    "RECARGA_CLIENTE_MIXTA": "Client top-up (mixed)"
+  },
+  "categorias": {
+    "todos": "All",
+    "INGRESO_REAL": "Real income",
+    "INGRESO_BONO": "Bonus income",
+    "EGRESO_REAL": "Real expenses",
+    "EGRESO_BONO": "Bonus expenses",
+    "EGRESO_MIXTO": "Mixed expenses"
   },
   "resumen": {
-    "ingresos": "Gross Revenue",
+    "saldoReal": "Real Balance",
+    "saldoBono": "Bonus Balance",
+    "ingresos": "Income",
+    "egresos": "Expenses",
     "deducciones": "Deductions",
     "retirado": "Withdrawn",
-    "saldo": "Available Balance"
+    "saldo": "Available Balance",
+    "disponibleRetiro": "Available for withdrawal",
+    "creditoInterno": "Internal credit",
+    "real": "Real",
+    "bono": "Bonus"
   },
   "table": {
-    "titulo": "TRANSACTIONS"
+    "titulo": "TRANSACTIONS",
+    "tipo": "TYPE",
+    "fecha": "DATE",
+    "real": "REAL",
+    "bono": "BONUS",
+    "saldo": "BALANCE"
   },
   "desglose": "Gross {{bruto}} · VIBRRA {{vibrra}} · Wompi {{wompi}}",
-  "empty": "Transactions will appear here when you have activity"
+  "empty": {
+    "title": "No transactions",
+    "desc": "Transactions will appear here when you have activity"
+  }
 }

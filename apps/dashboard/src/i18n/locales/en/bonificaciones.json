@@ -14,7 +14,12 @@
     "usado": "Used",
     "nota": "Non-withdrawable · consumable only",
     "vence": "Expires: 30 days after registration",
-    "consejo": "Use it to cover your own bids and try the platform at no cost"
+    "consejo": "Use it to cover your own bids and try the platform at no cost",
+    "reclamar": "Claim bonus",
+    "reclamando": "Claiming...",
+    "reclamado": "CLAIMED",
+    "reclamarExito": "Bonus claimed successfully!",
+    "completaRegistro": "Complete your registration to claim the bonus"
   },
   "tabla": {
     "title": "TOP-UP BONUSES · MODEL A",

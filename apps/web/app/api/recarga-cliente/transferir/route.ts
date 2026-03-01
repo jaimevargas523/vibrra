@@ -4,6 +4,7 @@ import { adminDb } from "@/lib/api/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { verifyAuth } from "@/lib/api/auth";
 import { getPaisConfig } from "@/lib/api/pais-config";
+import { crearMovimiento, type TipoMovimiento } from "@/lib/api/movimiento-types";
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -72,10 +73,11 @@ export async function POST(req: NextRequest) {
       }
 
       const anfitrionData = anfitrionSnap.data()!;
-      const saldoActual =
-        (anfitrionData.saldoReal ?? 0) + (anfitrionData.saldoBono ?? 0);
+      const saldoReal = anfitrionData.saldoReal ?? 0;
+      const saldoBono = anfitrionData.saldoBono ?? 0;
+      const saldoTotal = saldoReal + saldoBono;
 
-      if (saldoActual - recarga.minimoBloqueado < costoTotal) {
+      if (saldoTotal - recarga.minimoBloqueado < costoTotal) {
         const symbol = paisConfig.moneda.symbol;
         const min = recarga.minimoBloqueado.toLocaleString();
         throw new Error(
@@ -88,9 +90,12 @@ export async function POST(req: NextRequest) {
       const clienteNombre =
         clienteData.nombre ?? clienteData.displayName ?? "Cliente";
 
-      const saldoReal = anfitrionData.saldoReal ?? 0;
-      const descuentoReal = Math.min(saldoReal, costoTotal);
-      const descuentoBono = costoTotal - descuentoReal;
+      // Bono primero, luego real
+      const descuentoBono = Math.min(saldoBono, costoTotal);
+      const descuentoReal = costoTotal - descuentoBono;
+
+      const nuevoSaldoReal = saldoReal - descuentoReal;
+      const nuevoSaldoBono = saldoBono - descuentoBono;
 
       tx.update(anfitrionRef, {
         saldoReal: FieldValue.increment(-descuentoReal),
@@ -107,23 +112,33 @@ export async function POST(req: NextRequest) {
         { merge: true },
       );
 
-      const movRef = db.collection("Movimientos").doc();
-      tx.set(movRef, {
-        tipo: "recarga_anfitrion",
-        anfitrion_uid: anfitrionId,
-        clienteId,
-        clienteNombre,
-        montoId,
-        modoId,
-        monto: monto.valor,
-        costoTotal,
-        bonos,
-        moneda: paisConfig.moneda.code,
-        fecha: new Date().toISOString(),
+      // Determinar tipo segun fuente de pago
+      let tipo: TipoMovimiento;
+      if (descuentoBono > 0 && descuentoReal > 0) {
+        tipo = "RECARGA_CLIENTE_MIXTA";
+      } else if (descuentoBono > 0) {
+        tipo = "RECARGA_CLIENTE_BONO";
+      } else {
+        tipo = "RECARGA_CLIENTE_REAL";
+      }
+
+      const movDoc = crearMovimiento(anfitrionId, tipo, {
+        monto_real: descuentoReal,
+        monto_bono: descuentoBono,
+        saldo_real_post: nuevoSaldoReal,
+        saldo_bono_post: nuevoSaldoBono,
+        descripcion: `Recarga ${paisConfig.moneda.symbol}${monto.valor.toLocaleString()} a ${clienteNombre} (${modoId})`,
+        cliente_id: clienteId,
+        creado_por: "user",
       });
 
+      const movRef = db.collection("Movimientos").doc();
+      tx.set(movRef, movDoc);
+
       return {
-        nuevoSaldoAnfitrion: saldoActual - costoTotal,
+        nuevoSaldoAnfitrion: nuevoSaldoReal + nuevoSaldoBono,
+        nuevoSaldoReal,
+        nuevoSaldoBono,
         clienteNombre,
         montoAcreditado: monto.valor,
         bonos,

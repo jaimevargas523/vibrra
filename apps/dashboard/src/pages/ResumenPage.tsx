@@ -39,6 +39,7 @@ import { useResumenKpis } from "@/hooks/api/useResumenKpis";
 import { useResumenChart } from "@/hooks/api/useResumenChart";
 import { useResumenSesiones } from "@/hooks/api/useResumenSesiones";
 import { useEstablecimientos } from "@/hooks/api/useEstablecimientos";
+import { useMovimientosResumen } from "@/hooks/api/useMovimientosResumen";
 import { useSessionStore } from "@/stores/session.store";
 import { useEstablishmentStore } from "@/stores/establishment.store";
 import { useMensajes, useMensajeActions } from "@/hooks/api/useMensajes";
@@ -140,6 +141,7 @@ export default function ResumenPage() {
   const { data: chartData, isLoading: chartLoading } = useResumenChart("7d");
   const { data: sesiones, isLoading: sesionesLoading } = useResumenSesiones();
   const { data: establecimientos } = useEstablecimientos();
+  const { data: movResumen } = useMovimientosResumen();
 
   const authUser = useAuthStore((s) => s.user);
   const isLive = useSessionStore((s) => s.isLive);
@@ -296,8 +298,8 @@ export default function ResumenPage() {
       {/* ── Two columns: Saldo + Chart ────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <SaldoBox
-          saldoReal={kpis?.totalRecaudado ?? 0}
-          saldoBono={0}
+          saldoReal={movResumen?.saldoReal ?? profile?.saldoBono ?? 0}
+          saldoBono={movResumen?.saldoBono ?? profile?.saldoBono ?? 0}
           establecimientos={saldoEstablecimientos}
           ventanaAbierta={false}
           proximaVentana="---"

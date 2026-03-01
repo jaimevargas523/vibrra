@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { adminDb } from "@/lib/api/firebase-admin";
 import { verifyAuth } from "@/lib/api/auth";
+import { crearMovimiento } from "@/lib/api/movimiento-types";
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -9,60 +10,69 @@ export async function POST(req: NextRequest) {
   const uid = auth;
 
   try {
-    const snap = await adminDb().collection("Anfitriones").doc(uid).get();
+    const db = adminDb();
 
-    if (!snap.exists) {
-      return NextResponse.json(
-        { error: "Perfil no encontrado." },
-        { status: 404 },
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(db.collection("Anfitriones").doc(uid));
+
+      if (!snap.exists) {
+        throw new Error("Perfil no encontrado.");
+      }
+
+      const data = snap.data()!;
+
+      const registroCompleto = !!(
+        data.nombres &&
+        data.apellidos &&
+        data.celular &&
+        data.banco &&
+        data.numero_cuenta
       );
-    }
 
-    const data = snap.data()!;
+      const saldoReal = data.saldoReal ?? 0;
+      const saldoBono = data.saldoBono ?? 0;
+      const bonoReclamado = data.bonoReclamado === true;
 
-    const registroCompleto = !!(
-      data.nombres &&
-      data.apellidos &&
-      data.celular &&
-      data.banco &&
-      data.numero_cuenta
-    );
+      if (bonoReclamado) {
+        throw new Error("El bono ya fue reclamado.");
+      }
 
-    const saldoBono = data.saldoBono ?? 0;
-    const bonoReclamado = data.bonoReclamado === true;
+      if (!registroCompleto) {
+        throw new Error("Completa tu registro para reclamar el bono.");
+      }
 
-    if (bonoReclamado) {
-      return NextResponse.json(
-        { error: "El bono ya fue reclamado." },
-        { status: 400 },
-      );
-    }
+      if (saldoBono <= 0) {
+        throw new Error("No tienes bono disponible.");
+      }
 
-    if (!registroCompleto) {
-      return NextResponse.json(
-        { error: "Completa tu registro para reclamar el bono." },
-        { status: 400 },
-      );
-    }
+      tx.update(db.collection("Anfitriones").doc(uid), {
+        bonoReclamado: true,
+        bonoReclamadoEn: new Date().toISOString(),
+      });
 
-    if (saldoBono <= 0) {
-      return NextResponse.json(
-        { error: "No tienes bono disponible." },
-        { status: 400 },
-      );
-    }
+      const movDoc = crearMovimiento(uid, "BONO_ACTIVACION", {
+        monto_real: 0,
+        monto_bono: saldoBono,
+        saldo_real_post: saldoReal,
+        saldo_bono_post: saldoBono,
+        descripcion: "Bono de bienvenida reclamado",
+        creado_por: "user",
+      });
 
-    await adminDb().collection("Anfitriones").doc(uid).update({
-      bonoReclamado: true,
-      bonoReclamadoEn: new Date().toISOString(),
+      const movRef = db.collection("Movimientos").doc();
+      tx.set(movRef, movDoc);
+
+      return { ok: true, saldoBono };
     });
 
-    return NextResponse.json({ ok: true, saldoBono });
+    return NextResponse.json(result);
   } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Error al reclamar bono.";
+    const status = message.includes("ya fue reclamado") || message.includes("Completa") || message.includes("No tienes")
+      ? 400
+      : message.includes("no encontrado") ? 404 : 500;
     console.error("POST /api/perfil/reclamar-bono error:", err);
-    return NextResponse.json(
-      { error: "Error al reclamar bono." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: message }, { status });
   }
 }

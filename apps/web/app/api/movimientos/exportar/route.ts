@@ -11,21 +11,27 @@ export async function GET(req: NextRequest) {
   try {
     const snap = await adminDb()
       .collection("Movimientos")
-      .where("anfitrion_uid", "==", uid)
-      .orderBy("fecha", "desc")
+      .where("anfitrion_id", "==", uid)
+      .orderBy("timestamp", "desc")
       .get();
 
-    const headers = "id,tipo,titulo,subtitulo,fecha,bruto,neto";
+    const headers =
+      "id,tipo,categoria,descripcion,monto_real,monto_bono,monto_total,saldo_real_post,saldo_bono_post,timestamp";
+
     const rows = snap.docs.map((doc) => {
       const d = doc.data();
+      const desc = String(d.descripcion ?? "").replace(/"/g, '""');
       return [
         doc.id,
         d.tipo,
-        `"${d.titulo}"`,
-        `"${d.subtitulo}"`,
-        d.fecha,
-        d.bruto,
-        d.neto,
+        d.categoria,
+        `"${desc}"`,
+        d.monto_real ?? 0,
+        d.monto_bono ?? 0,
+        d.monto_total ?? 0,
+        d.saldo_real_post ?? 0,
+        d.saldo_bono_post ?? 0,
+        d.timestamp,
       ].join(",");
     });
 
@@ -37,8 +43,9 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch {
-    return new NextResponse("id,tipo,titulo,subtitulo,fecha,bruto,neto\n", {
-      headers: { "Content-Type": "text/csv" },
-    });
+    return new NextResponse(
+      "id,tipo,categoria,descripcion,monto_real,monto_bono,monto_total,saldo_real_post,saldo_bono_post,timestamp\n",
+      { headers: { "Content-Type": "text/csv" } },
+    );
   }
 }

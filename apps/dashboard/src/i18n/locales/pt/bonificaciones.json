@@ -14,7 +14,12 @@
     "usado": "Usado",
     "nota": "Não sacável · apenas consumível",
     "vence": "Vence: 30 dias após o cadastro",
-    "consejo": "Use para cobrir seus próprios lances e testar a plataforma sem custo"
+    "consejo": "Use para cobrir seus próprios lances e testar a plataforma sem custo",
+    "reclamar": "Resgatar bônus",
+    "reclamando": "Resgatando...",
+    "reclamado": "RESGATADO",
+    "reclamarExito": "Bônus resgatado com sucesso!",
+    "completaRegistro": "Complete seu cadastro para resgatar o bônus"
   },
   "tabla": {
     "title": "BÔNUS POR RECARGA · MODELO A",

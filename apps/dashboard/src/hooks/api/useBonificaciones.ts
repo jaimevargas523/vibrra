@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiGet } from "@/lib/api-client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiGet, apiPost } from "@/lib/api-client";
 
 export interface Bonificacion {
   id: string;
@@ -23,5 +23,18 @@ export function useBonificaciones() {
     queryKey: ["bonificaciones"],
     queryFn: () => apiGet<BonificacionesResponse>("/api/bonos"),
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useReclamarBono() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: () =>
+      apiPost<{ ok: boolean; saldoBono: number }>("/api/perfil/reclamar-bono"),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["host-profile"] });
+      qc.invalidateQueries({ queryKey: ["bonificaciones"] });
+    },
   });
 }

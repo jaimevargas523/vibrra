@@ -14,7 +14,12 @@
     "usado": "Usado",
     "nota": "No retirable · solo consumible",
     "vence": "Vence: 30 días después del registro",
-    "consejo": "Úsalo para cubrir tus propias pujas y probar la plataforma sin costo"
+    "consejo": "Úsalo para cubrir tus propias pujas y probar la plataforma sin costo",
+    "reclamar": "Reclamar bono",
+    "reclamando": "Reclamando...",
+    "reclamado": "RECLAMADO",
+    "reclamarExito": "¡Bono reclamado exitosamente!",
+    "completaRegistro": "Completa tu registro para reclamar el bono"
   },
   "tabla": {
     "title": "BONOS POR RECARGA · MODELO A",

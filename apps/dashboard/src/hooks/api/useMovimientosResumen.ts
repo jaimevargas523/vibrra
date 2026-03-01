@@ -2,16 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api-client";
 
 export interface MovimientosResumen {
-  saldoDisponible: number;
-  totalIngresos: number;
+  saldoReal: number;
+  saldoBono: number;
+  saldoTotal: number;
+  totalIngresosReal: number;
+  totalIngresosBono: number;
+  totalEgresosReal: number;
+  totalEgresosBono: number;
   totalRetiros: number;
-  totalBonificaciones: number;
   totalComisiones: number;
   pendientePago: number;
-  ultimoRetiro: {
-    amount: number;
-    date: string;
-  } | null;
+  ultimoRetiro: { amount: number; date: string } | null;
 }
 
 export function useMovimientosResumen() {

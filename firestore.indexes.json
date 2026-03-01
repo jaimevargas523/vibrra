@@ -1,4 +1,39 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "Movimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "anfitrion_id", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "Movimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "anfitrion_id", "order": "ASCENDING" },
+        { "fieldPath": "tipo", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "Movimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "anfitrion_id", "order": "ASCENDING" },
+        { "fieldPath": "categoria", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "Movimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "anfitrion_id", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

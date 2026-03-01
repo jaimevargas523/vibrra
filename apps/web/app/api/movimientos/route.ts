@@ -9,28 +9,32 @@ export async function GET(req: NextRequest) {
   const uid = auth;
 
   try {
-    const page = Math.max(
-      1,
-      parseInt(req.nextUrl.searchParams.get("page") ?? "1"),
-    );
+    const params = req.nextUrl.searchParams;
+    const page = Math.max(1, parseInt(params.get("page") ?? "1"));
     const pageSize = Math.min(
       50,
-      Math.max(1, parseInt(req.nextUrl.searchParams.get("pageSize") ?? "10")),
+      Math.max(1, parseInt(params.get("pageSize") ?? "20")),
     );
+    const tipo = params.get("tipo");
+    const categoria = params.get("categoria");
 
-    const snap = await adminDb()
+    let query: FirebaseFirestore.Query = adminDb()
       .collection("Movimientos")
-      .where("anfitrion_uid", "==", uid)
-      .orderBy("fecha", "desc")
-      .get();
+      .where("anfitrion_id", "==", uid);
 
+    if (tipo) query = query.where("tipo", "==", tipo);
+    if (categoria) query = query.where("categoria", "==", categoria);
+
+    query = query.orderBy("timestamp", "desc");
+
+    const snap = await query.get();
     const all = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     const total = all.length;
     const start = (page - 1) * pageSize;
-    const data = all.slice(start, start + pageSize);
+    const items = all.slice(start, start + pageSize);
 
     return NextResponse.json({
-      data,
+      items,
       total,
       page,
       pageSize,
@@ -38,10 +42,10 @@ export async function GET(req: NextRequest) {
     });
   } catch {
     return NextResponse.json({
-      data: [],
+      items: [],
       total: 0,
       page: 1,
-      pageSize: 10,
+      pageSize: 20,
       totalPages: 0,
     });
   }

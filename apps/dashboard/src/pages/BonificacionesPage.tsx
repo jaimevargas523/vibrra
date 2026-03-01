@@ -1,13 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Gift } from "lucide-react";
+import { Gift, CheckCircle } from "lucide-react";
 import clsx from "clsx";
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 
-import { useBonificaciones } from "@/hooks/api/useBonificaciones";
+import { useBonificaciones, useReclamarBono } from "@/hooks/api/useBonificaciones";
+import { useHostProfile } from "@/hooks/api/useHostProfile";
 import { usePais } from "@/hooks/api/usePais";
 import { formatShortDate } from "@/lib/format";
 import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
@@ -15,16 +17,30 @@ import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 export default function BonificacionesPage() {
   const { t } = useTranslation("bonificaciones");
   const { data, isLoading } = useBonificaciones();
+  const { data: profile } = useHostProfile();
   const { data: pais } = usePais();
   const fmt = useCurrencyFormatter();
+  const reclamar = useReclamarBono();
+  const [reclamadoExito, setReclamadoExito] = useState(false);
 
-  const totalDisponible = data?.totalDisponible ?? 0;
+  const saldoBono = profile?.saldoBono ?? 0;
+  const bonoDisponible = profile?.bonoDisponible ?? false;
+  const registroCompleto = profile?.registroCompleto ?? false;
+  const yaReclamado = !bonoDisponible && saldoBono > 0 && registroCompleto;
+
+  const totalDisponible = data?.totalDisponible ?? saldoBono;
   const totalReclamado = data?.totalReclamado ?? 0;
   const totalBono = totalDisponible + totalReclamado;
   const usedPercent = totalBono > 0 ? (totalReclamado / totalBono) * 100 : 0;
 
   const bonoActivacion = pais?.suscripcion?.bonoActivacion ?? 0;
   const planes = pais?.recargaAnfitrion?.planes ?? [];
+
+  function handleReclamar() {
+    reclamar.mutate(undefined, {
+      onSuccess: () => setReclamadoExito(true),
+    });
+  }
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -52,7 +68,13 @@ export default function BonificacionesPage() {
               {fmt(bonoActivacion)}
             </p>
           </div>
-          <Badge variant="gold">{t("bienvenida.activo")}</Badge>
+          <Badge variant={yaReclamado || reclamadoExito ? "default" : "gold"}>
+            {yaReclamado || reclamadoExito
+              ? t("bienvenida.reclamado")
+              : saldoBono <= 0
+                ? t("bienvenida.agotado")
+                : t("bienvenida.activo")}
+          </Badge>
         </div>
 
         <div className="border-t border-gold/15 mt-4 pt-4">
@@ -87,12 +109,48 @@ export default function BonificacionesPage() {
           </p>
         </div>
 
-        {/* Tip */}
-        <div className="bg-gold/5 border border-gold/10 rounded-lg p-3 mt-4">
-          <p className="text-xs text-text-secondary leading-relaxed">
-            {"\uD83D\uDCA1"} {t("bienvenida.consejo")}
+        {/* Claim bonus button */}
+        {reclamadoExito ? (
+          <div className="flex items-center gap-2 mt-4 p-3 bg-success/10 border border-success/20 rounded-lg">
+            <CheckCircle className="w-4 h-4 text-success shrink-0" />
+            <p className="text-sm text-success font-medium">
+              {t("bienvenida.reclamarExito")}
+            </p>
+          </div>
+        ) : bonoDisponible ? (
+          <Button
+            className="w-full mt-4"
+            size="lg"
+            onClick={handleReclamar}
+            disabled={reclamar.isPending}
+          >
+            <Gift className="w-5 h-5" />
+            {reclamar.isPending
+              ? t("bienvenida.reclamando")
+              : t("bienvenida.reclamar")}
+          </Button>
+        ) : !registroCompleto && saldoBono > 0 ? (
+          <Link to="/anfitrion/perfil" className="block mt-4">
+            <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg text-center">
+              <p className="text-xs text-warning font-medium">
+                {t("bienvenida.completaRegistro")}
+              </p>
+            </div>
+          </Link>
+        ) : !yaReclamado ? (
+          <div className="bg-gold/5 border border-gold/10 rounded-lg p-3 mt-4">
+            <p className="text-xs text-text-secondary leading-relaxed">
+              {"\uD83D\uDCA1"} {t("bienvenida.consejo")}
+            </p>
+          </div>
+        ) : null}
+
+        {/* Error */}
+        {reclamar.isError && (
+          <p className="text-xs text-error mt-2 text-center">
+            {(reclamar.error as Error).message}
           </p>
-        </div>
+        )}
       </div>
 
       {/* ── Recharge bonus table ──────────────────────── */}

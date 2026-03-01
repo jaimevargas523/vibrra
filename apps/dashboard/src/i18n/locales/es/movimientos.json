@@ -1,31 +1,75 @@
 {
   "title": "Movimientos",
+  "subtitle": "Historial de transacciones y saldos",
   "filters": {
     "establecimiento": "Todos los establecimientos",
-    "periodo": "Mes / Año",
+    "periodo": "Mes / Ano",
     "tipo": "Todos los tipos",
     "exportar": "Exportar CSV"
   },
   "tipos": {
-    "puja": "Puja",
-    "conexion": "Conexión",
-    "retiro": "Retiro",
-    "suscripcion": "Suscripción",
-    "recarga": "Recarga",
-    "dedicatoria": "Dedicatoria",
-    "veto": "Veto",
-    "batalla": "Batalla",
-    "bono": "Bono"
+    "RECARGA_WOMPI": "Recarga Wompi",
+    "COMISION_SESION": "Comision de sesion",
+    "DEVOLUCION_ADMIN": "Devolucion",
+    "BONO_ACTIVACION": "Bono de bienvenida",
+    "BONO_RECARGA_5": "Bono de recarga (+5%)",
+    "BONO_RECARGA_10": "Bono de recarga (+10%)",
+    "BONO_RECARGA_15": "Bono de recarga (+15%)",
+    "BONO_RECARGA_20": "Bono de recarga (+20%)",
+    "BONO_REFERIDO": "Bono por referido",
+    "BONO_AJUSTE_ADMIN": "Ajuste de bono",
+    "RECARGA_CLIENTE_BONO": "Recarga a cliente",
+    "PUJA_BONO": "Puja (bono)",
+    "NOMINACION_BONO": "Nominacion (bono)",
+    "CONEXION_BONO": "Conexion (bono)",
+    "VETO_BONO": "Veto (bono)",
+    "DEDICATORIA_BONO": "Dedicatoria (bono)",
+    "BONO_EXPIRADO": "Bono expirado",
+    "RECARGA_CLIENTE_REAL": "Recarga a cliente",
+    "PUJA_REAL": "Puja (real)",
+    "NOMINACION_REAL": "Nominacion (real)",
+    "CONEXION_REAL": "Conexion (real)",
+    "VETO_REAL": "Veto (real)",
+    "DEDICATORIA_REAL": "Dedicatoria (real)",
+    "SUSCRIPCION_COBRO": "Suscripcion mensual",
+    "RETIRO_SOLICITADO": "Retiro",
+    "FEE_WOMPI_RETIRO": "Fee pasarela (retiro)",
+    "RETENCION_FUENTE": "Retencion en la fuente",
+    "ICA_COBRO": "ICA",
+    "RECARGA_CLIENTE_MIXTA": "Recarga a cliente (mixto)"
+  },
+  "categorias": {
+    "todos": "Todos",
+    "INGRESO_REAL": "Ingresos reales",
+    "INGRESO_BONO": "Ingresos bono",
+    "EGRESO_REAL": "Egresos reales",
+    "EGRESO_BONO": "Egresos bono",
+    "EGRESO_MIXTO": "Egresos mixtos"
   },
   "resumen": {
-    "ingresos": "Ingresos Brutos",
+    "saldoReal": "Saldo Real",
+    "saldoBono": "Saldo Bono",
+    "ingresos": "Ingresos",
+    "egresos": "Egresos",
     "deducciones": "Deducciones",
     "retirado": "Retirado",
-    "saldo": "Saldo Disponible"
+    "saldo": "Saldo Disponible",
+    "disponibleRetiro": "Disponible para retiro",
+    "creditoInterno": "Credito interno",
+    "real": "Real",
+    "bono": "Bono"
   },
   "table": {
-    "titulo": "TRANSACCIONES"
+    "titulo": "TRANSACCIONES",
+    "tipo": "TIPO",
+    "fecha": "FECHA",
+    "real": "REAL",
+    "bono": "BONO",
+    "saldo": "SALDO"
   },
   "desglose": "Bruto {{bruto}} · VIBRRA {{vibrra}} · Wompi {{wompi}}",
-  "empty": "Los movimientos aparecerán aquí cuando tengas actividad"
+  "empty": {
+    "title": "Sin movimientos",
+    "desc": "Los movimientos apareceran aqui cuando tengas actividad"
+  }
 }

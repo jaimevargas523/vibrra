@@ -13,8 +13,18 @@ service cloud.firestore {
     // ── Anfitriones ─────────────────────────────────────────────────────────
     match /Anfitriones/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
-      allow create: if request.auth != null && request.auth.uid == uid;
-      allow update: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && !("saldoReal" in request.resource.data)
+        && !("saldoBono" in request.resource.data);
+      allow update: if request.auth != null && request.auth.uid == uid
+        && !("saldoReal" in request.resource.data.diff(resource.data).affectedKeys())
+        && !("saldoBono" in request.resource.data.diff(resource.data).affectedKeys());
+    }
+
+    // ── Movimientos ─────────────────────────────────────────────────────────
+    match /Movimientos/{docId} {
+      allow read: if request.auth != null
+        && resource.data.anfitrion_id == request.auth.uid;
     }
 
     // ── Negocios ────────────────────────────────────────────────────────────
