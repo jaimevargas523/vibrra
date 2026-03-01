@@ -7,14 +7,14 @@ export async function GET(req: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   return NextResponse.json({
-    kpis: {
-      totalSesiones: 0,
-      totalCanciones: 0,
-      ingresoTotal: 0,
-      promedioSesion: 0,
-    },
+    kpis: [],
     heatmap: [],
     generos: [],
-    perfilCliente: [],
+    perfilCliente: {
+      edadPromedio: 0,
+      generoPredominante: "",
+      ticketPromedio: 0,
+      frecuenciaVisita: 0,
+    },
   });
 }

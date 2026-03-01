@@ -147,8 +147,9 @@ export default function ResumenPage() {
   const startedAt = useSessionStore((s) => s.startedAt);
   const selectedEst = useEstablishmentStore((s) => s.getSelected());
 
-  // Unified: API profile first, Firebase Auth as fallback
-  const displayName = profile?.displayName || authUser?.displayName || authUser?.email || "Anfitrion";
+  // Unified: show first name only in greeting
+  const fullName = profile?.displayName || authUser?.displayName || authUser?.email || "Anfitrion";
+  const displayName = fullName.split(" ")[0];
   const recentSesiones = sesiones ?? [];
   const chart = chartData?.data ?? [];
 
