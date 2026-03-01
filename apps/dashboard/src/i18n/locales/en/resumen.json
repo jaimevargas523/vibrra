@@ -38,8 +38,9 @@
   "saldo": {
     "title": "CONSOLIDATED BALANCE",
     "disponible": "Available for withdrawal",
+    "saldoBono": "Bonus balance",
     "ventanaAbierta": "Withdrawal window open",
-    "ventanaCerrada": "Next window: {{month}} 1st",
+    "proximoCobro": "Next billing",
     "solicitar": "Request withdrawal"
   },
   "chart": {

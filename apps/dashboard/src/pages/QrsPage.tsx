@@ -81,7 +81,7 @@ export default function QrsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Codigos QR" subtitle="Codigos QR de tus establecimientos" />
+        <PageHeader title={t("title")} subtitle={t("subtitle")} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {Array.from({ length: 2 }).map((_, i) => (
             <Skeleton key={i} variant="card" className="h-72" />
@@ -94,11 +94,11 @@ export default function QrsPage() {
   if (estData.length === 0) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Codigos QR" subtitle="Codigos QR de tus establecimientos" />
+        <PageHeader title={t("title")} subtitle={t("subtitle")} />
         <EmptyState
           icon={<QrCode className="w-16 h-16" />}
-          title="Sin establecimientos"
-          description="Agrega un establecimiento para generar codigos QR automaticamente."
+          title={t("empty.title")}
+          description={t("empty.desc")}
         />
       </div>
     );
@@ -106,7 +106,7 @@ export default function QrsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Codigos QR" subtitle="Codigos QR de tus establecimientos" />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {estData.map((est) => {
@@ -131,7 +131,7 @@ export default function QrsPage() {
                 </div>
                 {live && (
                   <Badge variant="live" pulsing>
-                    EN SESION
+                    {t("enSesion")}
                   </Badge>
                 )}
               </div>
@@ -146,7 +146,7 @@ export default function QrsPage() {
                       live ? "text-green" : "text-text-muted"
                     )}
                   >
-                    QR DE ENTRADA
+                    {t("qrLabel")}
                   </span>
                   <div
                     className={clsx(
@@ -170,7 +170,7 @@ export default function QrsPage() {
                       onClick={() => handleCopy(est.slug, est.id)}
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      {copiedId === est.id ? "Copiado" : "Copiar link"}
+                      {copiedId === est.id ? t("copiado") : t("copiarLink")}
                     </Button>
                     <Button
                       variant="ghost"
@@ -178,7 +178,7 @@ export default function QrsPage() {
                       onClick={() => handleDownload(est.slug)}
                     >
                       <Download className="w-3.5 h-3.5" />
-                      Descargar PNG
+                      {t("descargarPng")}
                     </Button>
                   </div>
                 </div>
@@ -188,15 +188,15 @@ export default function QrsPage() {
                   <div className="grid grid-cols-3 gap-3">
                     <div>
                       <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                        Escaneos
+                        {t("stats.escaneos")}
                       </p>
                       <p className="text-lg font-bold text-text-primary mt-0.5">
-                        {est.scans.toLocaleString("es-CO")}
+                        {est.scans.toLocaleString()}
                       </p>
                     </div>
                     <div>
                       <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                        En vivo
+                        {t("stats.enVivo")}
                       </p>
                       <p
                         className={clsx(
@@ -209,7 +209,7 @@ export default function QrsPage() {
                     </div>
                     <div>
                       <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                        Registro %
+                        {t("stats.registro")} %
                       </p>
                       <p className="text-lg font-bold text-text-primary mt-0.5">
                         {est.registrationRate}%

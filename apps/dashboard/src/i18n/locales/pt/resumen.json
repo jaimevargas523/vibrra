@@ -38,8 +38,9 @@
   "saldo": {
     "title": "SALDO CONSOLIDADO",
     "disponible": "Disponível para saque",
+    "saldoBono": "Saldo bônus",
     "ventanaAbierta": "Janela de saque aberta",
-    "ventanaCerrada": "Próxima janela: 1 de {{month}}",
+    "proximoCobro": "Próxima cobrança",
     "solicitar": "Solicitar saque"
   },
   "chart": {

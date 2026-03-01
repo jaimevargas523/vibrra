@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Check, Clock } from "lucide-react";
 import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 import { Button } from "@/components/ui/Button";
@@ -22,25 +23,26 @@ export function SaldoBox({
   ventanaAbierta,
   proximaVentana,
 }: SaldoBoxProps) {
+  const { t } = useTranslation("resumen");
   const fmt = useCurrencyFormatter();
 
   return (
     <div className="bg-surface rounded-xl border border-border p-5">
       {/* Section label */}
       <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
-        SALDO CONSOLIDADO
+        {t("saldo.title")}
       </span>
 
       {/* Main value */}
       <p className="text-[32px] font-mono font-bold text-gold mt-2 leading-tight">
         {fmt(saldoReal)}
       </p>
-      <p className="text-xs text-text-secondary mt-1">Disponible para retirar</p>
+      <p className="text-xs text-text-secondary mt-1">{t("saldo.disponible")}</p>
 
       {/* Bono balance */}
       {saldoBono > 0 && (
         <p className="text-xs text-text-muted mt-2">
-          Saldo bono:{" "}
+          {t("saldo.saldoBono")}:{" "}
           <span className="font-mono text-gold-light">
             {fmt(saldoBono)}
           </span>
@@ -72,13 +74,13 @@ export function SaldoBox({
           {ventanaAbierta ? (
             <div className="flex items-center gap-2 text-sm text-success">
               <Check className="w-4 h-4 shrink-0" />
-              <span>Ventana de retiro abierta</span>
+              <span>{t("saldo.ventanaAbierta")}</span>
             </div>
           ) : (
             <div className="flex items-center gap-2 text-sm text-warning">
               <Clock className="w-4 h-4 shrink-0" />
               <span>
-                Pr&oacute;xima ventana:{" "}
+                {t("saldo.proximoCobro")}:{" "}
                 <span className="font-medium">{proximaVentana}</span>
               </span>
             </div>
@@ -89,7 +91,7 @@ export function SaldoBox({
       {/* CTA */}
       {ventanaAbierta && (
         <Button variant="secondary" size="md" className="w-full mt-4">
-          Solicitar retiro
+          {t("saldo.solicitar")}
         </Button>
       )}
     </div>

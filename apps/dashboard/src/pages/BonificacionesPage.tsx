@@ -68,12 +68,12 @@ export default function BonificacionesPage() {
               {fmt(bonoActivacion)}
             </p>
           </div>
-          <Badge variant={yaReclamado || reclamadoExito ? "default" : "gold"}>
+          <Badge variant={yaReclamado || reclamadoExito ? "default" : bonoDisponible ? "gold" : "default"}>
             {yaReclamado || reclamadoExito
               ? t("bienvenida.reclamado")
-              : saldoBono <= 0
-                ? t("bienvenida.agotado")
-                : t("bienvenida.activo")}
+              : bonoDisponible
+                ? t("bienvenida.activo")
+                : t("bienvenida.agotado")}
           </Badge>
         </div>
 

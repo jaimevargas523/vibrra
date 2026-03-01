@@ -1,6 +1,9 @@
 {
-  "title": "My QRs",
+  "title": "QR Codes",
+  "subtitle": "QR codes for your venues",
   "qrLabel": "ENTRY QR",
+  "enSesion": "IN SESSION",
+  "copiado": "Copied",
   "stats": {
     "escaneos": "Scans",
     "enVivo": "Live",
@@ -12,5 +15,8 @@
   },
   "copiarLink": "Copy link",
   "descargarPng": "Download PNG",
-  "empty": "Create your first venue to see its QR"
+  "empty": {
+    "title": "No venues",
+    "desc": "Add a venue to automatically generate QR codes."
+  }
 }

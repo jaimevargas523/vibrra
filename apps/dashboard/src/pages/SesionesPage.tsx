@@ -36,22 +36,22 @@ export default function SesionesPage() {
   const totalPages = data?.totalPages ?? 1;
 
   const filters: { key: typeof statusFilter; label: string }[] = [
-    { key: "all", label: "Todas" },
-    { key: "active", label: "Activas" },
-    { key: "ended", label: "Cerradas" },
+    { key: "all", label: t("filters.todas") },
+    { key: "active", label: t("filters.activas") },
+    { key: "ended", label: t("filters.cerradas") },
   ];
 
   const columns: Column<Sesion>[] = [
     {
       key: "establishmentName",
-      header: "ESTABLECIMIENTO",
+      header: t("table.establecimiento"),
       render: (s) => (
         <span className="font-medium text-text-primary">{s.establishmentName}</span>
       ),
     },
     {
       key: "startedAt",
-      header: "FECHA",
+      header: t("table.fecha"),
       render: (s) => {
         const d = new Date(s.startedAt);
         return (
@@ -63,14 +63,14 @@ export default function SesionesPage() {
     },
     {
       key: "duracionMinutos",
-      header: "DURACION",
+      header: t("table.duracion"),
       render: (s) => (
         <span className="text-text-secondary">{formatDuration(s.duracionMinutos)}</span>
       ),
     },
     {
       key: "totalCanciones",
-      header: "CANCIONES",
+      header: t("table.canciones"),
       align: "center",
       render: (s) => (
         <span className="text-text-secondary">{s.totalCanciones}</span>
@@ -78,7 +78,7 @@ export default function SesionesPage() {
     },
     {
       key: "totalRecaudado",
-      header: "INGRESOS",
+      header: t("table.ingresos"),
       align: "right",
       render: (s) => (
         <span className="font-mono font-semibold text-gold">
@@ -88,7 +88,7 @@ export default function SesionesPage() {
     },
     {
       key: "status",
-      header: "ESTADO",
+      header: t("table.estado"),
       align: "center",
       render: (s) => (
         <Badge
@@ -96,7 +96,7 @@ export default function SesionesPage() {
           size="sm"
           pulsing={s.status === "active"}
         >
-          {s.status === "active" ? "EN VIVO" : "FINALIZADA"}
+          {s.status === "active" ? t("table.estadoActiva") : t("table.estadoFinalizada")}
         </Badge>
       ),
     },
@@ -104,15 +104,13 @@ export default function SesionesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Sesiones" subtitle="Historial de sesiones de todos tus establecimientos" />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {/* Info banner */}
       <div className="bg-info/10 border border-info/30 rounded-xl p-4 flex items-start gap-3">
         <Info className="w-5 h-5 text-info shrink-0 mt-0.5" />
         <p className="text-sm text-text-secondary">
-          Instala la <span className="font-semibold text-info">extension de Chrome</span> para
-          controlar sesiones directamente desde tu navegador mientras pones musica en YouTube o
-          Spotify.
+          {t("infoBanner")}
         </p>
       </div>
 
@@ -124,18 +122,18 @@ export default function SesionesPage() {
               <StatusDot status="live" />
               <div>
                 <p className="text-sm font-bold text-green">
-                  Sesion activa &mdash; {activeSession.establishmentName}
+                  {t("active.title")} &mdash; {activeSession.establishmentName}
                 </p>
                 <p className="text-xs text-text-muted mt-0.5">
-                  {activeSession.connectedUsers} usuarios &middot;{" "}
-                  {activeSession.totalCanciones} canciones &middot;{" "}
+                  {activeSession.connectedUsers} {t("active.usuarios")} &middot;{" "}
+                  {activeSession.totalCanciones} {t("active.canciones")} &middot;{" "}
                   {fmt(activeSession.totalRecaudado)}
                 </p>
               </div>
             </div>
             <Link to="/anfitrion/envivo">
               <Button size="sm" className="bg-green text-black hover:bg-green/90">
-                Ir al control
+                {t("active.goTo")}
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -154,7 +152,7 @@ export default function SesionesPage() {
             }}
             className="bg-card-dark border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:border-gold outline-none"
           >
-            <option value="">Todos los establecimientos</option>
+            <option value="">{t("filters.establecimiento")}</option>
             {establishments.map((est) => (
               <option key={est.id} value={est.id}>
                 {est.name}
@@ -198,8 +196,8 @@ export default function SesionesPage() {
         emptyState={
           <EmptyState
             icon={<Clock className="w-12 h-12" />}
-            title="El historial de sesiones aparecera aqui"
-            description="Cuando abras y cierres sesiones, podras ver el historial completo en esta tabla."
+            title={t("empty.title")}
+            description={t("empty.desc")}
           />
         }
       />

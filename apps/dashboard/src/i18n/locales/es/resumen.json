@@ -38,8 +38,9 @@
   "saldo": {
     "title": "SALDO CONSOLIDADO",
     "disponible": "Disponible para retirar",
+    "saldoBono": "Saldo bono",
     "ventanaAbierta": "Ventana de retiro abierta",
-    "ventanaCerrada": "Próxima ventana: 1 de {{month}}",
+    "proximoCobro": "Próximo cobro",
     "solicitar": "Solicitar retiro"
   },
   "chart": {

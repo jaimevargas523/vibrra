@@ -155,6 +155,16 @@ export default function ResumenPage() {
   const recentSesiones = sesiones ?? [];
   const chart = chartData?.data ?? [];
 
+  // Calculate next billing cutoff date (1 month cycles from registration)
+  const proximoCobro = (() => {
+    if (!profile?.createdAt) return "---";
+    const created = new Date(profile.createdAt);
+    const today = new Date();
+    const cutoff = new Date(today.getFullYear(), today.getMonth(), created.getDate());
+    if (cutoff <= today) cutoff.setMonth(cutoff.getMonth() + 1);
+    return cutoff.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  })();
+
   // Dynamic messages from Firestore
   const { data: mensajes } = useMensajes();
   const { marcarLeido, eliminar } = useMensajeActions();
@@ -302,7 +312,7 @@ export default function ResumenPage() {
           saldoBono={movResumen?.saldoBono ?? profile?.saldoBono ?? 0}
           establecimientos={saldoEstablecimientos}
           ventanaAbierta={false}
-          proximaVentana="---"
+          proximaVentana={proximoCobro}
         />
 
         <div className="bg-surface rounded-xl border border-border p-5">

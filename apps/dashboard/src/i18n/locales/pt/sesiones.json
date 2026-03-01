@@ -1,9 +1,14 @@
 {
   "title": "Sessões",
+  "subtitle": "Histórico de sessões de todos os seus estabelecimentos",
+  "infoBanner": "Instale a extensão do Chrome para controlar sessões diretamente do seu navegador enquanto toca música no YouTube ou Spotify.",
+  "infoBannerLink": "extensão do Chrome",
   "banner": "Para iniciar uma sessão, abra a extensão Chrome do VIBRRA no seu computador ou use o botão em 'Ao Vivo'",
   "active": {
     "title": "Sessão ativa",
-    "goTo": "Ir aos controles →"
+    "goTo": "Ir aos controles",
+    "usuarios": "usuários",
+    "canciones": "músicas"
   },
   "filters": {
     "establecimiento": "Todos os estabelecimentos",
@@ -14,18 +19,21 @@
     "cerradas": "Encerradas"
   },
   "table": {
-    "establecimiento": "Estabelecimento",
-    "fecha": "Data",
-    "duracion": "Duração",
-    "canciones": "Músicas",
-    "ingresos": "Receita",
-    "estado": "Status",
-    "estadoActiva": "Ativa",
-    "estadoFinalizada": "Finalizada"
+    "establecimiento": "ESTABELECIMENTO",
+    "fecha": "DATA",
+    "duracion": "DURAÇÃO",
+    "canciones": "MÚSICAS",
+    "ingresos": "RECEITA",
+    "estado": "STATUS",
+    "estadoActiva": "AO VIVO",
+    "estadoFinalizada": "FINALIZADA"
   },
   "detail": {
     "top5": "Top 5 músicas",
     "distribucion": "Distribuição de lances"
   },
-  "empty": "O histórico de sessões aparecerá aqui"
+  "empty": {
+    "title": "O histórico de sessões aparecerá aqui",
+    "desc": "Quando você abrir e fechar sessões, poderá ver o histórico completo nesta tabela."
+  }
 }

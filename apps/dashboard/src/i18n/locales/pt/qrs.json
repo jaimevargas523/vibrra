@@ -1,6 +1,9 @@
 {
-  "title": "Meus QRs",
+  "title": "Códigos QR",
+  "subtitle": "Códigos QR dos seus estabelecimentos",
   "qrLabel": "QR DE ENTRADA",
+  "enSesion": "EM SESSÃO",
+  "copiado": "Copiado",
   "stats": {
     "escaneos": "Escaneamentos",
     "enVivo": "Ao vivo",
@@ -12,5 +15,8 @@
   },
   "copiarLink": "Copiar link",
   "descargarPng": "Baixar PNG",
-  "empty": "Crie seu primeiro estabelecimento para ver o QR"
+  "empty": {
+    "title": "Sem estabelecimentos",
+    "desc": "Adicione um estabelecimento para gerar códigos QR automaticamente."
+  }
 }

@@ -1,9 +1,14 @@
 {
   "title": "Sessions",
+  "subtitle": "Session history across all your venues",
+  "infoBanner": "Install the Chrome extension to control sessions directly from your browser while playing music on YouTube or Spotify.",
+  "infoBannerLink": "Chrome extension",
   "banner": "To start a session, open the VIBRRA Chrome extension on your computer or use the button from 'Live'",
   "active": {
     "title": "Active session",
-    "goTo": "Go to controls →"
+    "goTo": "Go to controls",
+    "usuarios": "users",
+    "canciones": "songs"
   },
   "filters": {
     "establecimiento": "All venues",
@@ -14,18 +19,21 @@
     "cerradas": "Closed"
   },
   "table": {
-    "establecimiento": "Venue",
-    "fecha": "Date",
-    "duracion": "Duration",
-    "canciones": "Songs",
-    "ingresos": "Revenue",
-    "estado": "Status",
-    "estadoActiva": "Active",
-    "estadoFinalizada": "Finished"
+    "establecimiento": "VENUE",
+    "fecha": "DATE",
+    "duracion": "DURATION",
+    "canciones": "SONGS",
+    "ingresos": "REVENUE",
+    "estado": "STATUS",
+    "estadoActiva": "LIVE",
+    "estadoFinalizada": "FINISHED"
   },
   "detail": {
     "top5": "Top 5 songs",
     "distribucion": "Bid distribution"
   },
-  "empty": "Session history will appear here"
+  "empty": {
+    "title": "Session history will appear here",
+    "desc": "When you open and close sessions, you'll be able to see the full history in this table."
+  }
 }
