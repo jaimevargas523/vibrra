@@ -33,6 +33,10 @@ router.get("/", async (req, res) => {
 
     const data = snap.data()!;
 
+    // Build display name: Firestore full name > Firebase Auth displayName > email
+    const fullName = [data.nombres, data.apellidos].filter(Boolean).join(" ").trim();
+    const displayName = fullName || authUser.displayName || data.email || authEmail || "Anfitrion";
+
     // Check if registration is complete (all required fields filled)
     const registroCompleto = !!(
       data.nombres &&
@@ -60,7 +64,7 @@ router.get("/", async (req, res) => {
     res.json({
       id: uid,
       email: data.email || authEmail,
-      displayName: data.nombres || data.email || authEmail || "Anfitrion",
+      displayName,
       photoURL: data.verificacion?.selfieUrl ?? data.foto_selfie_cedula ?? null,
       phone: data.celular ?? null,
       role: data.tipo ?? "anfitrion",

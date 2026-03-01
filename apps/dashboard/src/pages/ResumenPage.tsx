@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 import { useHostProfile } from "@/hooks/api/useHostProfile";
+import { useAuthStore } from "@/stores/auth.store";
 import { useResumenKpis } from "@/hooks/api/useResumenKpis";
 import { useResumenChart } from "@/hooks/api/useResumenChart";
 import { useResumenSesiones } from "@/hooks/api/useResumenSesiones";
@@ -140,12 +141,14 @@ export default function ResumenPage() {
   const { data: sesiones, isLoading: sesionesLoading } = useResumenSesiones();
   const { data: establecimientos } = useEstablecimientos();
 
+  const authUser = useAuthStore((s) => s.user);
   const isLive = useSessionStore((s) => s.isLive);
   const connectedUsers = useSessionStore((s) => s.connectedUsers);
   const startedAt = useSessionStore((s) => s.startedAt);
   const selectedEst = useEstablishmentStore((s) => s.getSelected());
 
-  const displayName = profile?.displayName ?? "Anfitrion";
+  // Unified: API profile first, Firebase Auth as fallback
+  const displayName = profile?.displayName || authUser?.displayName || authUser?.email || "Anfitrion";
   const recentSesiones = sesiones ?? [];
   const chart = chartData?.data ?? [];
 

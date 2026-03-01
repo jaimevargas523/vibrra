@@ -26,6 +26,7 @@ export default function CuentaPage() {
   const { t } = useTranslation("cuenta");
   const { data: profile, isLoading } = useHostProfile();
   const { data: pais } = usePais();
+  const authUser = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const queryClient = useQueryClient();
 
@@ -171,12 +172,12 @@ export default function CuentaPage() {
               />
             ) : (
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gold-muted text-2xl font-bold text-gold">
-                {profile?.displayName?.charAt(0)?.toUpperCase() || "?"}
+                {(profile?.displayName || authUser?.displayName || "?").charAt(0).toUpperCase()}
               </div>
             )}
             <div>
               <p className="text-lg font-semibold text-text-primary">
-                {profile?.displayName || "Usuario"}
+                {profile?.displayName || authUser?.displayName || "Usuario"}
               </p>
               <p className="text-sm text-text-secondary">
                 {t("perfil.tipo", { count: profile?.establishmentCount ?? 0 })}
@@ -187,11 +188,11 @@ export default function CuentaPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b border-border">
             <span className="text-sm text-text-secondary">{t("perfil.nombre")}</span>
-            <span className="text-sm text-text-primary">{profile?.displayName || "—"}</span>
+            <span className="text-sm text-text-primary">{profile?.displayName || authUser?.displayName || "—"}</span>
           </div>
           <div className="flex items-center justify-between py-2 border-b border-border">
             <span className="text-sm text-text-secondary">{t("perfil.email")}</span>
-            <span className="text-sm text-text-primary">{profile?.email || "—"}</span>
+            <span className="text-sm text-text-primary">{profile?.email || authUser?.email || "—"}</span>
           </div>
           <div className="flex items-center justify-between py-2">
             <span className="text-sm text-text-secondary">{t("perfil.phone")}</span>
