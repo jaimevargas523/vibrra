@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
 
     const saldoBono = data.saldoBono ?? 0;
     const bonoReclamado = data.bonoReclamado === true;
-    const bonoDisponible = saldoBono > 0 && registroCompleto && !bonoReclamado;
+    const bonoDisponible = registroCompleto && !bonoReclamado;
 
     const negociosSnap = await adminDb()
       .collection("Negocios")
