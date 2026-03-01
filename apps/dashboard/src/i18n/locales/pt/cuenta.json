@@ -4,6 +4,7 @@
     "title": "PERFIL",
     "nombre": "Nome",
     "email": "E-mail",
+    "phone": "Telefone",
     "tipo": "Anfitrião · {{count}} estabelecimento(s)"
   },
   "bancaria": {
@@ -11,24 +12,71 @@
     "principal": "PRINCIPAL",
     "sinCuenta": "Sem conta cadastrada",
     "agregar": "+ Adicionar conta bancária ou Nequi",
-    "nota": "O VIBRRA deposita diretamente na conta selecionada como principal. Os saques são processados em 1-3 dias úteis."
+    "editar": "Editar conta",
+    "eliminar": "Excluir conta",
+    "nota": "O VIBRRA deposita diretamente na conta selecionada como principal. Os saques são processados em 1-3 dias úteis.",
+    "modalTitleAdd": "Adicionar conta bancária",
+    "modalTitleEdit": "Editar conta bancária",
+    "banco": "Banco",
+    "seleccionarBanco": "Selecione um banco",
+    "tipoCuenta": "Tipo de conta",
+    "seleccionarTipo": "Selecione o tipo",
+    "numeroCuenta": "Número da conta",
+    "numeroCuentaPlaceholder": "Ex: 1234567890",
+    "titular": "Titular da conta",
+    "titularPlaceholder": "Nome completo do titular",
+    "guardar": "Salvar conta",
+    "confirmarEliminarTitle": "Excluir conta bancária",
+    "confirmarEliminarDesc": "Tem certeza de que deseja excluir esta conta bancária? Você precisará cadastrar uma nova para receber saques.",
+    "confirmarEliminarBtn": "Sim, excluir",
+    "cancelar": "Cancelar",
+    "bancos": {
+      "bancolombia": "Bancolombia",
+      "bogota": "Banco de Bogotá",
+      "davivienda": "Davivienda",
+      "nequi": "Nequi",
+      "daviplata": "Daviplata",
+      "bbva": "BBVA",
+      "scotiabank": "Scotiabank",
+      "avvillas": "AV Villas",
+      "otroBanco": "Outro banco"
+    },
+    "tipos": {
+      "ahorros": "Conta poupança",
+      "corriente": "Conta corrente",
+      "digital": "Carteira digital"
+    }
   },
   "tributaria": {
     "title": "DADOS TRIBUTÁRIOS · RUT",
     "tipoPersona": "Tipo de pessoa",
+    "seleccionarTipo": "Selecione o tipo",
+    "natural": "Pessoa física",
+    "juridica": "Pessoa jurídica",
     "nit": "NIT / CPF",
+    "nitPlaceholder": "Ex: 1234567890-1",
     "regimen": "Regime tributário",
+    "seleccionarRegimen": "Selecione o regime",
+    "regimenSimple": "Regime simples",
+    "regimenOrdinario": "Regime ordinário",
+    "regimenNoIva": "Não responsável pelo IVA",
     "iva": "Responsável pelo IVA",
+    "ivaSi": "Sim",
+    "ivaNo": "Não",
     "retencion": "Retenção aplicada",
     "retencionVal": "3.5% sobre cada saque · Art. 392 ET",
     "ica": "ICA municipal",
     "icaVal": "Aplicado no saque",
-    "noConfigurado": "Não configurado"
+    "noConfigurado": "Não configurado",
+    "guardar": "Salvar dados tributários",
+    "editar": "Editar"
   },
   "seguridad": {
     "title": "SEGURANÇA",
     "cambiarPw": "Alterar senha",
     "cambiarPwDesc": "Atualize sua senha de acesso",
+    "cambiarPwEnviado": "E-mail enviado",
+    "cambiarPwEnviadoDesc": "Verifique sua caixa de entrada em {{email}}",
     "cerrarSesion": "Sair"
   }
 }

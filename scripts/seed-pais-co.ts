@@ -119,6 +119,35 @@ const paisCO: PaisConfig = {
       version: "1.0",
     },
   },
+
+  bancos: [
+    { key: "bancolombia", nombre: "Bancolombia" },
+    { key: "bogota", nombre: "Banco de Bogotá" },
+    { key: "davivienda", nombre: "Davivienda" },
+    { key: "nequi", nombre: "Nequi" },
+    { key: "daviplata", nombre: "Daviplata" },
+    { key: "bbva", nombre: "BBVA" },
+    { key: "scotiabank", nombre: "Scotiabank" },
+    { key: "avvillas", nombre: "AV Villas" },
+    { key: "otroBanco", nombre: "Otro banco" },
+  ],
+
+  tiposCuenta: [
+    { key: "ahorros", nombre: "Cuenta de ahorros" },
+    { key: "corriente", nombre: "Cuenta corriente" },
+    { key: "digital", nombre: "Billetera digital" },
+  ],
+
+  tiposPersona: [
+    { key: "natural", nombre: "Persona natural" },
+    { key: "juridica", nombre: "Persona jurídica" },
+  ],
+
+  regimenesTributarios: [
+    { key: "simple", nombre: "Régimen simple" },
+    { key: "ordinario", nombre: "Régimen ordinario" },
+    { key: "no_iva", nombre: "No responsable de IVA" },
+  ],
 };
 
 async function main() {

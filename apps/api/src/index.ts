@@ -18,13 +18,16 @@ const app = express();
 // Security headers
 app.use(helmet());
 
-// CORS -- allow dashboard dev server and common local ports
+// CORS -- allow dashboard dev server, common local ports, and production
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
       "http://localhost:3000",
       "http://localhost:4173",
+      "https://vibrra.live",
+      "https://www.vibrra.live",
+      "https://vibrra-6cd01.web.app",
     ],
     credentials: true,
   }),

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import clsx from "clsx";
 import { Smartphone } from "lucide-react";
@@ -6,11 +6,23 @@ import { Sidebar } from "@/components/shell/Sidebar";
 import { Topbar } from "@/components/shell/Topbar";
 import { PageSkeleton } from "@/components/ui/Skeleton";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useEstablecimientos } from "@/hooks/api/useEstablecimientos";
+import { useEstablishmentStore } from "@/stores/establishment.store";
 
 export default function DashboardLayout() {
   const isMobile = useMediaQuery("(max-width: 899px)");
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Sync establishments from API to Zustand store (used by sidebar selector)
+  const { data: establecimientos } = useEstablecimientos();
+  const setEstablishments = useEstablishmentStore((s) => s.setEstablishments);
+
+  useEffect(() => {
+    if (establecimientos) {
+      setEstablishments(establecimientos);
+    }
+  }, [establecimientos, setEstablishments]);
 
   const isRecargarCliente = location.pathname === "/anfitrion/recargar-cliente";
 

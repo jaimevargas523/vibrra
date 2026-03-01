@@ -7,7 +7,7 @@ export interface Establishment {
   city: string;
   type: string;
   isActive: boolean;
-  imageUrl?: string;
+  imageUrl?: string | null;
 }
 
 interface EstablishmentState {

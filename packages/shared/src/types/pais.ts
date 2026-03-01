@@ -78,6 +78,26 @@ export interface LegalConfig {
   politicaDatos: LegalDocConfig;
 }
 
+export interface BancoConfig {
+  key: string;      // "bancolombia"
+  nombre: string;   // "Bancolombia"
+}
+
+export interface TipoCuentaConfig {
+  key: string;      // "ahorros"
+  nombre: string;   // "Cuenta de ahorros"
+}
+
+export interface TipoPersonaConfig {
+  key: string;      // "natural"
+  nombre: string;   // "Persona natural"
+}
+
+export interface RegimenTributarioConfig {
+  key: string;      // "simple"
+  nombre: string;   // "Régimen simple"
+}
+
 /** Full country configuration stored in Firestore Paises/{code}. */
 export interface PaisConfig {
   code: string;        // "CO"
@@ -91,4 +111,9 @@ export interface PaisConfig {
   recargaAnfitrion: RecargaAnfitrionConfig;
   documentosEstablecimiento: DocumentoRequerido[];
   legal: LegalConfig;
+
+  bancos: BancoConfig[];
+  tiposCuenta: TipoCuentaConfig[];
+  tiposPersona: TipoPersonaConfig[];
+  regimenesTributarios: RegimenTributarioConfig[];
 }

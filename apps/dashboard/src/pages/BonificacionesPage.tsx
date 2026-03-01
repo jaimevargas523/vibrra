@@ -8,27 +8,23 @@ import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 import { useBonificaciones } from "@/hooks/api/useBonificaciones";
+import { usePais } from "@/hooks/api/usePais";
 import { formatShortDate } from "@/lib/format";
 import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
-
-/* ── Recharge bonus table data ───────────────────────────────── */
-
-const bonoTable = [
-  { recarga: 30000, bono: 1500, recibes: 31500, popular: false },
-  { recarga: 50000, bono: 4000, recibes: 54000, popular: false },
-  { recarga: 100000, bono: 12000, recibes: 112000, popular: true },
-  { recarga: 200000, bono: 30000, recibes: 230000, popular: false },
-];
 
 export default function BonificacionesPage() {
   const { t } = useTranslation("bonificaciones");
   const { data, isLoading } = useBonificaciones();
+  const { data: pais } = usePais();
   const fmt = useCurrencyFormatter();
 
   const totalDisponible = data?.totalDisponible ?? 0;
   const totalReclamado = data?.totalReclamado ?? 0;
   const totalBono = totalDisponible + totalReclamado;
   const usedPercent = totalBono > 0 ? (totalReclamado / totalBono) * 100 : 0;
+
+  const bonoActivacion = pais?.suscripcion?.bonoActivacion ?? 0;
+  const planes = pais?.recargaAnfitrion?.planes ?? [];
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -37,11 +33,10 @@ export default function BonificacionesPage() {
         <span className="text-xl shrink-0 mt-0.5">{"\uD83D\uDCA1"}</span>
         <div>
           <p className="text-sm font-bold text-gold">
-            Los bonos no son dinero real
+            {t("banner.titulo")}
           </p>
           <p className="text-xs text-text-secondary mt-1 leading-relaxed">
-            Los bonos son saldo promocional que puedes usar para cubrir pujas en sesiones.
-            No son retirables ni transferibles. Se consumen automaticamente antes del saldo real.
+            {t("banner.desc")}
           </p>
         </div>
       </div>
@@ -51,25 +46,25 @@ export default function BonificacionesPage() {
         <div className="flex items-start justify-between">
           <div>
             <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
-              BONO DE BIENVENIDA
+              {t("bienvenida.label")}
             </span>
             <p className="text-[30px] font-bold text-gold-light mt-1 leading-tight">
-              $30.000
+              {fmt(bonoActivacion)}
             </p>
           </div>
-          <Badge variant="gold">ACTIVO</Badge>
+          <Badge variant="gold">{t("bienvenida.activo")}</Badge>
         </div>
 
         <div className="border-t border-gold/15 mt-4 pt-4">
           <div className="flex items-center gap-6">
             <div>
-              <p className="text-xs text-text-muted">Disponible</p>
+              <p className="text-xs text-text-muted">{t("bienvenida.disponible")}</p>
               <p className="font-mono font-semibold text-gold">
                 {fmt(totalDisponible)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-text-muted">Usado</p>
+              <p className="text-xs text-text-muted">{t("bienvenida.usado")}</p>
               <p className="font-mono font-semibold text-text-primary">
                 {fmt(totalReclamado)}
               </p>
@@ -85,18 +80,17 @@ export default function BonificacionesPage() {
           </div>
 
           <p className="text-[10px] text-text-muted mt-3">
-            No retirable &middot; solo consumible
+            {t("bienvenida.nota")}
           </p>
           <p className="text-[10px] text-text-muted">
-            Vence: 30 dias despues del registro
+            {t("bienvenida.vence")}
           </p>
         </div>
 
         {/* Tip */}
         <div className="bg-gold/5 border border-gold/10 rounded-lg p-3 mt-4">
           <p className="text-xs text-text-secondary leading-relaxed">
-            {"\uD83D\uDCA1"} Usalo para cubrir tus propias pujas durante pruebas iniciales
-            o para incentivar a los primeros usuarios de tu establecimiento.
+            {"\uD83D\uDCA1"} {t("bienvenida.consejo")}
           </p>
         </div>
       </div>
@@ -105,13 +99,13 @@ export default function BonificacionesPage() {
       <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
-            BONOS POR RECARGA &middot; MODELO A
+            {t("tabla.title")}
           </span>
           <Link
             to="/anfitrion/recargar"
             className="text-xs text-gold hover:text-gold-light transition-colors font-medium"
           >
-            Recargar &rarr;
+            {t("tabla.recargar")}
           </Link>
         </div>
 
@@ -119,37 +113,37 @@ export default function BonificacionesPage() {
           <thead>
             <tr className="bg-card-dark">
               <th className="px-4 py-3 text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold text-left">
-                RECARGA
+                {t("tabla.cabecera.recarga")}
               </th>
               <th className="px-4 py-3 text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold text-left">
-                BONO
+                {t("tabla.cabecera.bono")}
               </th>
               <th className="px-4 py-3 text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold text-left">
-                RECIBES
+                {t("tabla.cabecera.recibes")}
               </th>
             </tr>
           </thead>
           <tbody>
-            {bonoTable.map((row) => (
+            {planes.map((plan) => (
               <tr
-                key={row.recarga}
+                key={plan.amount}
                 className={clsx(
                   "border-t border-border hover:bg-surface-hover transition-colors",
-                  row.popular && "bg-gold/5 border-gold/20"
+                  plan.recommended && "bg-gold/5 border-gold/20"
                 )}
               >
                 <td className="px-4 py-3 font-mono font-medium text-text-primary">
-                  {fmt(row.recarga)}
+                  {fmt(plan.amount)}
                 </td>
                 <td className="px-4 py-3 font-mono text-success">
-                  +{fmt(row.bono)}
+                  +{fmt(plan.bonus)}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-semibold text-gold">
-                      {fmt(row.recibes)}
+                      {fmt(plan.total)}
                     </span>
-                    {row.popular && (
+                    {plan.recommended && (
                       <span className="text-gold">{"\u2605"}</span>
                     )}
                   </div>
@@ -159,7 +153,7 @@ export default function BonificacionesPage() {
           </tbody>
         </table>
         <p className="px-4 py-3 text-[10px] text-text-muted border-t border-border">
-          {"\u2605"} Mas popular. Los bonos no son retirables.
+          {"\u2605"} {t("tabla.popular")}. {t("tabla.nota")}
         </p>
       </div>
 
@@ -167,7 +161,7 @@ export default function BonificacionesPage() {
       <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="p-4 border-b border-border">
           <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
-            HISTORIAL DE BONOS
+            {t("historial.title")}
           </span>
         </div>
 
@@ -201,7 +195,7 @@ export default function BonificacionesPage() {
           </div>
         ) : (
           <div className="px-4 py-8 text-center text-sm text-text-muted">
-            Sin bonos registrados aun
+            {t("historial.empty")}
           </div>
         )}
       </div>
@@ -210,7 +204,7 @@ export default function BonificacionesPage() {
       <Link to="/anfitrion/recargar" className="block">
         <Button className="w-full" size="lg">
           <Gift className="w-5 h-5" />
-          Recargar y ganar bono
+          {t("cta")}
         </Button>
       </Link>
     </div>

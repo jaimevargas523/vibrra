@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adminDb } from "../config/firebase-admin.js";
+import { adminDb, adminAuth } from "../config/firebase-admin.js";
 
 const router = Router();
 
@@ -9,11 +9,15 @@ router.get("/", async (req, res) => {
     const uid = req.uid!;
     const snap = await adminDb().collection("Anfitriones").doc(uid).get();
 
+    // Get email from Firebase Auth as fallback
+    const authUser = await adminAuth().getUser(uid);
+    const authEmail = authUser.email ?? "";
+
     if (!snap.exists) {
       res.json({
         id: uid,
-        email: "",
-        displayName: "Anfitrion",
+        email: authEmail,
+        displayName: authUser.displayName || "Anfitrion",
         photoURL: null,
         phone: null,
         role: "anfitrion",
@@ -44,21 +48,39 @@ router.get("/", async (req, res) => {
     // Bonus is available only when all conditions are met
     const bonoDisponible = saldoBono > 0 && registroCompleto && !bonoReclamado;
 
+    // Count establishments owned by this host
+    const negociosSnap = await adminDb()
+      .collection("Negocios")
+      .where("anfitrionId", "==", uid)
+      .count()
+      .get();
+    const establishmentCount = negociosSnap.data().count;
+
     // Map Firestore fields to the HostProfile shape the dashboard expects
     res.json({
       id: uid,
-      email: data.email ?? "",
-      displayName: data.nombres || data.email || "Anfitrion",
+      email: data.email || authEmail,
+      displayName: data.nombres || data.email || authEmail || "Anfitrion",
       photoURL: data.verificacion?.selfieUrl ?? data.foto_selfie_cedula ?? null,
       phone: data.celular ?? null,
       role: data.tipo ?? "anfitrion",
       plan: data.plan ?? "basico",
       pais: data.pais ?? "CO",
       createdAt: data.creadoEn?.toDate?.()?.toISOString?.() ?? data.created_at ?? null,
-      establishmentCount: 0,
+      establishmentCount,
       saldoBono,
       registroCompleto,
       bonoDisponible,
+      // Bank account
+      banco: data.banco ?? null,
+      tipoCuenta: data.tipoCuenta ?? data.tipo_cuenta ?? null,
+      numeroCuenta: data.numeroCuenta ?? data.numero_cuenta ?? null,
+      titularCuenta: data.titularCuenta ?? data.titular_cuenta ?? null,
+      // Tax info
+      tipoPersona: data.tipoPersona ?? data.tipo_persona ?? null,
+      nit: data.nit ?? null,
+      regimen: data.regimen ?? null,
+      responsableIva: data.responsableIva ?? data.responsable_iva ?? null,
     });
   } catch (err) {
     console.error("GET /perfil error:", err);

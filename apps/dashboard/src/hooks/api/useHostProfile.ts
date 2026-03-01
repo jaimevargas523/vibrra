@@ -15,6 +15,16 @@ export interface HostProfile {
   saldoBono: number;
   registroCompleto: boolean;
   bonoDisponible: boolean;
+  // Bank account
+  banco: string | null;
+  tipoCuenta: string | null;
+  numeroCuenta: string | null;
+  titularCuenta: string | null;
+  // Tax info
+  tipoPersona: string | null;
+  nit: string | null;
+  regimen: string | null;
+  responsableIva: boolean | null;
 }
 
 export function useHostProfile() {

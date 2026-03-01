@@ -25,6 +25,10 @@ interface PaisConfig {
     terminos: { url: string; version: string };
     politicaDatos: { url: string; version: string };
   };
+  bancos: { key: string; nombre: string }[];
+  tiposCuenta: { key: string; nombre: string }[];
+  tiposPersona: { key: string; nombre: string }[];
+  regimenesTributarios: { key: string; nombre: string }[];
 }
 
 const router = Router();

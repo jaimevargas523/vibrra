@@ -4,6 +4,7 @@
     "title": "PROFILE",
     "nombre": "Name",
     "email": "Email address",
+    "phone": "Phone",
     "tipo": "Host · {{count}} venue(s)"
   },
   "bancaria": {
@@ -11,24 +12,71 @@
     "principal": "PRIMARY",
     "sinCuenta": "No account registered",
     "agregar": "+ Add bank account or Nequi",
-    "nota": "VIBRRA deposits directly to the account selected as primary. Withdrawals are processed in 1-3 business days."
+    "editar": "Edit account",
+    "eliminar": "Delete account",
+    "nota": "VIBRRA deposits directly to the account selected as primary. Withdrawals are processed in 1-3 business days.",
+    "modalTitleAdd": "Add bank account",
+    "modalTitleEdit": "Edit bank account",
+    "banco": "Bank",
+    "seleccionarBanco": "Select a bank",
+    "tipoCuenta": "Account type",
+    "seleccionarTipo": "Select type",
+    "numeroCuenta": "Account number",
+    "numeroCuentaPlaceholder": "E.g.: 1234567890",
+    "titular": "Account holder",
+    "titularPlaceholder": "Full name of the account holder",
+    "guardar": "Save account",
+    "confirmarEliminarTitle": "Delete bank account",
+    "confirmarEliminarDesc": "Are you sure you want to delete this bank account? You will need to register a new one to receive withdrawals.",
+    "confirmarEliminarBtn": "Yes, delete",
+    "cancelar": "Cancel",
+    "bancos": {
+      "bancolombia": "Bancolombia",
+      "bogota": "Banco de Bogotá",
+      "davivienda": "Davivienda",
+      "nequi": "Nequi",
+      "daviplata": "Daviplata",
+      "bbva": "BBVA",
+      "scotiabank": "Scotiabank",
+      "avvillas": "AV Villas",
+      "otroBanco": "Other bank"
+    },
+    "tipos": {
+      "ahorros": "Savings account",
+      "corriente": "Checking account",
+      "digital": "Digital wallet"
+    }
   },
   "tributaria": {
     "title": "TAX INFORMATION · RUT",
     "tipoPersona": "Person type",
+    "seleccionarTipo": "Select type",
+    "natural": "Individual",
+    "juridica": "Legal entity",
     "nit": "NIT / ID Number",
+    "nitPlaceholder": "E.g.: 1234567890-1",
     "regimen": "Tax regime",
+    "seleccionarRegimen": "Select regime",
+    "regimenSimple": "Simple regime",
+    "regimenOrdinario": "Ordinary regime",
+    "regimenNoIva": "Non-VAT liable",
     "iva": "VAT liable",
+    "ivaSi": "Yes",
+    "ivaNo": "No",
     "retencion": "Withholding applied",
     "retencionVal": "3.5% on each withdrawal · Art. 392 ET",
     "ica": "Municipal ICA",
     "icaVal": "Applied on withdrawal",
-    "noConfigurado": "Not configured"
+    "noConfigurado": "Not configured",
+    "guardar": "Save tax info",
+    "editar": "Edit"
   },
   "seguridad": {
     "title": "SECURITY",
     "cambiarPw": "Change password",
     "cambiarPwDesc": "Update your access password",
+    "cambiarPwEnviado": "Email sent",
+    "cambiarPwEnviadoDesc": "Check your inbox at {{email}}",
     "cerrarSesion": "Log out"
   }
 }
