@@ -6,8 +6,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@vibrra/shared";
 import styles from "@/styles/access.module.css";
 
-const DASHBOARD_URL =
-  process.env.NEXT_PUBLIC_DASHBOARD_URL ?? "http://localhost:5173";
+const DASHBOARD_URL = "";
 
 type ClientTab = "email" | "phone";
 
@@ -28,10 +27,7 @@ export function AccessClient() {
     try {
       const cred = await signInWithEmailAndPassword(auth, hostEmail, hostPassword);
       const idToken = await cred.user.getIdToken();
-      window.open(`${DASHBOARD_URL}/login#token=${encodeURIComponent(idToken)}`, "_blank");
-      setHostLoading(false);
-      setHostEmail("");
-      setHostPassword("");
+      window.location.href = `/login#token=${encodeURIComponent(idToken)}`;
     } catch {
       setHostError(t("loginError"));
       setHostLoading(false);
