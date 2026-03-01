@@ -81,3 +81,8 @@
 @media (max-width: 1100px) {
   .mapTeaser { padding: 80px 32px; }
 }
+
+@media (max-width: 768px) {
+  .mapTeaser { padding: 60px 20px; }
+  .mapDots { height: 200px; }
+}

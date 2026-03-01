@@ -30,9 +30,8 @@ export function Steps() {
       </RevealSection>
 
       <div
-        className="grid gap-[3px] rounded-2xl overflow-hidden max-[720px]:grid-cols-1"
+        className="grid grid-cols-3 gap-[3px] rounded-2xl overflow-hidden max-[720px]:grid-cols-1"
         style={{
-          gridTemplateColumns: "repeat(3, 1fr)",
           background: "var(--line)",
         }}
       >
