@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   async rewrites() {
     return [
+      { source: "/login", destination: `${DASHBOARD_HOST}/login` },
       { source: "/anfitrion/:path*", destination: `${DASHBOARD_HOST}/anfitrion/:path*` },
       { source: "/assets/:path*", destination: `${DASHBOARD_HOST}/assets/:path*` },
     ];
