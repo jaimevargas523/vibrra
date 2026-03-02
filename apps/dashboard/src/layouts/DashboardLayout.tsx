@@ -8,11 +8,14 @@ import { PageSkeleton } from "@/components/ui/Skeleton";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEstablecimientos } from "@/hooks/api/useEstablecimientos";
 import { useEstablishmentStore } from "@/stores/establishment.store";
+import { useHostProfile } from "@/hooks/api/useHostProfile";
 
 export default function DashboardLayout() {
   const isMobile = useMediaQuery("(max-width: 899px)");
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { data: profile } = useHostProfile();
 
   // Sync establishments from API to Zustand store (used by sidebar selector)
   const { data: establecimientos } = useEstablecimientos();
@@ -38,7 +41,7 @@ export default function DashboardLayout() {
           !isMobile && "ml-[280px]",
         )}
       >
-        <Topbar />
+        <Topbar balance={profile?.bonoArranqueSaldo ?? 0} />
 
         <main className="flex-1 overflow-y-auto p-6">
           <Suspense fallback={<PageSkeleton />}>

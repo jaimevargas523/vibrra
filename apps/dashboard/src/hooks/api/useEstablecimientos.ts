@@ -4,6 +4,7 @@ import { apiGet } from "@/lib/api-client";
 export interface EstablecimientoListItem {
   id: string;
   name: string;
+  slug: string;
   address: string;
   city: string;
   type: string;

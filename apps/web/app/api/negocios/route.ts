@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
       return {
         id: doc.id,
         name: d.nombre ?? "",
+        slug: d.slug ?? doc.id,
         address: d.direccion ?? "",
         city: d.ciudad ?? "",
         type: d.icono ?? "bar",

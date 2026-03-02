@@ -37,7 +37,6 @@ export default function QrsPage() {
 
   const estData: EstQr[] =
     establecimientos?.map((est) => {
-      const slug = est.name.toLowerCase().replace(/\s+/g, "-");
       const matchingQrs = qrData?.filter((q) => q.establishmentId === est.id);
       const totalScans = matchingQrs?.reduce((sum, q) => sum + q.scans, 0);
       return {
@@ -46,7 +45,7 @@ export default function QrsPage() {
         emoji: est.type === "bar" ? "\uD83C\uDF7A" : "\uD83C\uDFB5",
         city: est.city,
         isLive: false,
-        slug,
+        slug: est.slug ?? est.id,
         scans: totalScans ?? est.totalSesiones * 15,
         liveUsers: 0,
         registrationRate: 0,
@@ -150,16 +149,16 @@ export default function QrsPage() {
                   </span>
                   <div
                     className={clsx(
-                      "p-2 rounded-xl border-2",
-                      live ? "border-green bg-white" : "border-border bg-white"
+                      "p-3 rounded-xl border-2",
+                      live ? "border-green bg-[#0A0A0A]" : "border-gold/30 bg-[#0A0A0A]"
                     )}
                   >
                     <QRCodeSVG
                       id={`qr-${est.slug}`}
                       value={url}
                       size={130}
-                      bgColor="#FFFFFF"
-                      fgColor="#0A0A0A"
+                      bgColor="#0A0A0A"
+                      fgColor="#D4A843"
                       level="M"
                     />
                   </div>
