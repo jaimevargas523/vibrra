@@ -5,7 +5,6 @@ import {
   CalendarDays,
   QrCode,
   ArrowLeftRight,
-  Wallet,
   Gift,
   Building2,
   BarChart3,
@@ -58,7 +57,6 @@ const NAV_SECTIONS: NavSection[] = [
         labelKey: "sidebar.items.movimientos",
         to: "/anfitrion/movimientos",
       },
-      { icon: Wallet, labelKey: "sidebar.items.recargar", to: "/anfitrion/recargar" },
       {
         icon: Gift,
         labelKey: "sidebar.items.bonificaciones",
