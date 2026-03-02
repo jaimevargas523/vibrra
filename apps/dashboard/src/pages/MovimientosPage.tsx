@@ -74,21 +74,22 @@ export default function MovimientosPage() {
     categoria: categoriaFilter,
   });
 
-  const res = resumen ?? {
-    recaudoMes: 0,
-    comisionesMes: 0,
-    participacionMes: 0,
-    gananciaDigital: 0,
-    gananciaNeta: 0,
-    suscripcionMonto: 15000,
-    deudaBruta: 0,
-    efectivoAEntregar: 0,
-    efectivoAQuedarse: 0,
-    bonoArranqueSaldo: 0,
-    bonoArranqueUsado: 0,
-    liquidacionEstado: "pendiente" as const,
-    liquidacionDeuda: 0,
-    liquidacionFecha: null,
+  // Defensive: access each field individually to handle old API responses
+  const res = {
+    recaudoMes: resumen?.recaudoMes ?? 0,
+    comisionesMes: resumen?.comisionesMes ?? 0,
+    participacionMes: resumen?.participacionMes ?? 0,
+    gananciaDigital: resumen?.gananciaDigital ?? 0,
+    gananciaNeta: resumen?.gananciaNeta ?? 0,
+    suscripcionMonto: resumen?.suscripcionMonto ?? 15000,
+    deudaBruta: resumen?.deudaBruta ?? 0,
+    efectivoAEntregar: resumen?.efectivoAEntregar ?? 0,
+    efectivoAQuedarse: resumen?.efectivoAQuedarse ?? 0,
+    bonoArranqueSaldo: resumen?.bonoArranqueSaldo ?? 0,
+    bonoArranqueUsado: resumen?.bonoArranqueUsado ?? 0,
+    liquidacionEstado: resumen?.liquidacionEstado ?? ("pendiente" as const),
+    liquidacionDeuda: resumen?.liquidacionDeuda ?? 0,
+    liquidacionFecha: resumen?.liquidacionFecha ?? null,
   };
 
   const items: Movimiento[] = data?.items ?? [];
