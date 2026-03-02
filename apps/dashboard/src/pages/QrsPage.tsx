@@ -136,112 +136,99 @@ export default function QrsPage() {
               </div>
 
               {/* Body */}
-              <div className="p-4 flex gap-6 flex-col sm:flex-row">
-                {/* Left: QR */}
-                <div className="space-y-3 flex flex-col items-center shrink-0">
-                  <span
-                    className={clsx(
-                      "text-[9px] uppercase tracking-[1.5px] font-semibold",
-                      live ? "text-green" : "text-text-muted"
-                    )}
-                  >
-                    {t("qrLabel")}
+              <div className="p-5 flex flex-col items-center">
+                {/* QR */}
+                <span
+                  className={clsx(
+                    "text-[9px] uppercase tracking-[1.5px] font-semibold mb-3",
+                    live ? "text-green" : "text-text-muted"
+                  )}
+                >
+                  {t("qrLabel")}
+                </span>
+                <div
+                  className={clsx(
+                    "p-3 rounded-xl border-2",
+                    live ? "border-green bg-[#0A0A0A]" : "border-gold/30 bg-[#0A0A0A]"
+                  )}
+                >
+                  <QRCodeSVG
+                    id={`qr-${est.slug}`}
+                    value={url}
+                    size={160}
+                    bgColor="#0A0A0A"
+                    fgColor="#D4A843"
+                    level="M"
+                  />
+                </div>
+
+                {/* Shortlink — justo debajo del QR */}
+                <button
+                  type="button"
+                  onClick={() => handleCopy(est.slug, est.id)}
+                  className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 hover:bg-gold/20 transition-colors group"
+                >
+                  <LinkIcon className="w-3.5 h-3.5 text-gold" />
+                  <span className="font-mono text-sm text-gold font-medium">
+                    vibrra.live/s/{est.slug}
                   </span>
-                  <div
-                    className={clsx(
-                      "p-3 rounded-xl border-2",
-                      live ? "border-green bg-[#0A0A0A]" : "border-gold/30 bg-[#0A0A0A]"
-                    )}
-                  >
-                    <QRCodeSVG
-                      id={`qr-${est.slug}`}
-                      value={url}
-                      size={130}
-                      bgColor="#0A0A0A"
-                      fgColor="#D4A843"
-                      level="M"
-                    />
+                  <Copy className="w-3.5 h-3.5 text-gold/50 group-hover:text-gold transition-colors" />
+                </button>
+                <p className="text-[10px] text-text-muted mt-1">
+                  {copiedId === est.id ? t("copiado") : t("copiarLink")}
+                </p>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-6 mt-5 w-full">
+                  <div className="text-center">
+                    <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
+                      {t("stats.escaneos")}
+                    </p>
+                    <p className="text-lg font-bold text-text-primary mt-0.5">
+                      {est.scans.toLocaleString()}
+                    </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleCopy(est.slug, est.id)}
+                  <div className="text-center">
+                    <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
+                      {t("stats.enVivo")}
+                    </p>
+                    <p
+                      className={clsx(
+                        "text-lg font-bold mt-0.5",
+                        live ? "text-green" : "text-text-muted"
+                      )}
                     >
-                      <Copy className="w-3.5 h-3.5" />
-                      {copiedId === est.id ? t("copiado") : t("copiarLink")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDownload(est.slug)}
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      {t("descargarPng")}
-                    </Button>
+                      {live ? est.liveUsers : 0}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
+                      {t("stats.registro")} %
+                    </p>
+                    <p className="text-lg font-bold text-text-primary mt-0.5">
+                      {est.registrationRate}%
+                    </p>
                   </div>
                 </div>
 
-                {/* Right: Stats + shortlink */}
-                <div className="flex-1 space-y-4">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                        {t("stats.escaneos")}
-                      </p>
-                      <p className="text-lg font-bold text-text-primary mt-0.5">
-                        {est.scans.toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                        {t("stats.enVivo")}
-                      </p>
-                      <p
-                        className={clsx(
-                          "text-lg font-bold mt-0.5",
-                          live ? "text-green" : "text-text-muted"
-                        )}
-                      >
-                        {live ? est.liveUsers : 0}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                        {t("stats.registro")} %
-                      </p>
-                      <p className="text-lg font-bold text-text-primary mt-0.5">
-                        {est.registrationRate}%
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Shortlink */}
-                  <div
-                    className={clsx(
-                      "rounded-lg p-3",
-                      live ? "bg-info/10" : "bg-card-dark"
-                    )}
+                {/* Actions */}
+                <div className="flex gap-3 mt-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCopy(est.slug, est.id)}
                   >
-                    <div className="flex items-center gap-2">
-                      <LinkIcon
-                        className={clsx(
-                          "w-4 h-4 shrink-0",
-                          live ? "text-info" : "text-text-muted"
-                        )}
-                      />
-                      <span className="font-mono text-sm text-text-secondary truncate">
-                        vibrra.live/s/{est.slug}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(est.slug, est.id)}
-                        className="ml-auto shrink-0 p-1 rounded text-text-muted hover:text-text-primary transition-colors"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
+                    <Copy className="w-3.5 h-3.5" />
+                    {t("copiarLink")}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDownload(est.slug)}
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    {t("descargarPng")}
+                  </Button>
                 </div>
               </div>
             </div>

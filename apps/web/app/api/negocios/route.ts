@@ -16,10 +16,15 @@ export async function GET(req: NextRequest) {
 
     const negocios = snap.docs.map((doc) => {
       const d = doc.data();
+      const fallbackSlug = (d.nombre ?? "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || doc.id;
       return {
         id: doc.id,
         name: d.nombre ?? "",
-        slug: d.slug ?? doc.id,
+        slug: d.slug || fallbackSlug,
         address: d.direccion ?? "",
         city: d.ciudad ?? "",
         type: d.icono ?? "bar",
