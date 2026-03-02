@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Gift, Zap } from "lucide-react";
+import { Banknote, Zap } from "lucide-react";
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
@@ -17,13 +17,16 @@ export default function BonificacionesPage() {
   const fmt = useCurrencyFormatter();
 
   const saldo = resumen?.bonoArranqueSaldo ?? 0;
-  const usado = (resumen?.bonoArranqueUsado ?? 0);
+  const usado = resumen?.bonoArranqueUsado ?? 0;
   const agotado = saldo <= 0;
   const usedPercent = BONO_TOTAL > 0 ? Math.min(100, (usado / BONO_TOTAL) * 100) : 0;
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
-      <PageHeader title={t("title")} subtitle={t("subtitle")} />
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle", { total: fmt(BONO_TOTAL) })}
+      />
 
       {/* ── Info banner ───────────────────────────────── */}
       <div className="bg-gold/5 border border-gold/20 rounded-xl p-4 flex items-start gap-3">
@@ -64,7 +67,7 @@ export default function BonificacionesPage() {
             </div>
             <div>
               <p className="text-xs text-text-muted">{t("card.usado")}</p>
-              <p className="font-mono font-semibold text-text-primary">
+              <p className="font-mono font-semibold text-success">
                 {fmt(usado)}
               </p>
             </div>
@@ -105,7 +108,7 @@ export default function BonificacionesPage() {
       {/* ── CTA ───────────────────────────────────────── */}
       <Link to="/anfitrion/recargar-cliente" className="block">
         <Button className="w-full" size="lg">
-          <Gift className="w-5 h-5" />
+          <Banknote className="w-5 h-5" />
           {t("cta")}
         </Button>
       </Link>

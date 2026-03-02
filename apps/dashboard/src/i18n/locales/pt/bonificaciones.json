@@ -1,24 +1,24 @@
 {
   "title": "Bonus inicial",
-  "subtitle": "Seu credito inicial para comecar a recarregar clientes",
+  "subtitle": "{{total}} em dinheiro real para voce comecar a ganhar desde o primeiro dia",
   "banner": {
-    "titulo": "Consumido automaticamente",
-    "desc": "O bonus inicial cobre suas primeiras recargas de clientes. Nao precisa resgatar — e descontado automaticamente quando voce recarrega um cliente."
+    "titulo": "Converta seu bonus em dinheiro",
+    "desc": "Quando voce recarrega um cliente, ele te paga em dinheiro e o bonus cobre o saldo digital. Voce fica com o dinheiro. E seu, nao e um emprestimo."
   },
   "card": {
     "label": "BONUS INICIAL",
-    "disponible": "Disponivel",
-    "usado": "Consumido",
+    "disponible": "Para converter",
+    "usado": "Convertido em dinheiro",
     "total": "de {{total}} iniciais",
-    "agotado": "ESGOTADO",
+    "agotado": "CONVERTIDO",
     "activo": "ATIVO"
   },
   "como": {
     "title": "COMO FUNCIONA",
-    "paso1": "Voce recarrega um cliente normalmente",
-    "paso2": "Se voce tem bonus disponivel, e descontado automaticamente",
-    "paso3": "Voce ganha a comissao de 10% sobre cada recarga",
-    "paso4": "Quando o bonus acaba, tudo sai do seu credito VIBRRA"
+    "paso1": "Um cliente pede recarga e te paga em dinheiro",
+    "paso2": "Voce recarrega o cliente no app — o bonus cobre o saldo digital",
+    "paso3": "O dinheiro que o cliente te pagou e seu, voce fica com ele",
+    "paso4": "Alem disso, voce ganha 10% de comissao em cada recarga"
   },
-  "cta": "Ir para recarregar clientes"
+  "cta": "Converter bonus em dinheiro"
 }

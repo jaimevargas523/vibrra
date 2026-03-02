@@ -1,24 +1,24 @@
 {
   "title": "Bono de arranque",
-  "subtitle": "Tu credito inicial para empezar a recargar clientes",
+  "subtitle": "{{total}} en dinero real para que empieces a ganar desde el dia uno",
   "banner": {
-    "titulo": "Se consume automaticamente",
-    "desc": "El bono de arranque cubre tus primeras recargas a clientes. No necesitas reclamarlo — se descuenta automaticamente cuando recargas un cliente."
+    "titulo": "Convierte tu bono en efectivo",
+    "desc": "Cuando recargas un cliente, el te paga en efectivo y el bono cubre el saldo digital. Tu te quedas con el dinero en la mano. Es tuyo, no es un prestamo."
   },
   "card": {
     "label": "BONO DE ARRANQUE",
-    "disponible": "Disponible",
-    "usado": "Consumido",
+    "disponible": "Por convertir",
+    "usado": "Convertido en efectivo",
     "total": "de {{total}} iniciales",
-    "agotado": "AGOTADO",
+    "agotado": "CONVERTIDO",
     "activo": "ACTIVO"
   },
   "como": {
     "title": "COMO FUNCIONA",
-    "paso1": "Recargas un cliente normalmente",
-    "paso2": "Si tienes bono disponible, se descuenta automaticamente",
-    "paso3": "Tu ganas la comision del 10% sobre cada recarga",
-    "paso4": "Cuando el bono se agota, todo sale de tu credito VIBRRA"
+    "paso1": "Un cliente te pide recarga y te paga en efectivo",
+    "paso2": "Tu recargas al cliente en la app — el bono cubre el saldo digital",
+    "paso3": "El efectivo que el cliente te pago es tuyo, te lo quedas",
+    "paso4": "Ademas ganas el 10% de comision por cada recarga"
   },
-  "cta": "Ir a recargar clientes"
+  "cta": "Convertir bono en efectivo"
 }

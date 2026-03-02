@@ -1,24 +1,24 @@
 {
   "title": "Startup bonus",
-  "subtitle": "Your initial credit to start recharging clients",
+  "subtitle": "{{total}} in real money so you can start earning from day one",
   "banner": {
-    "titulo": "Consumed automatically",
-    "desc": "The startup bonus covers your first client recharges. No need to claim it — it's deducted automatically when you recharge a client."
+    "titulo": "Turn your bonus into cash",
+    "desc": "When you recharge a client, they pay you in cash and the bonus covers the digital balance. You keep the money. It's yours — it's not a loan."
   },
   "card": {
     "label": "STARTUP BONUS",
-    "disponible": "Available",
-    "usado": "Consumed",
+    "disponible": "To convert",
+    "usado": "Converted to cash",
     "total": "of {{total}} initial",
-    "agotado": "DEPLETED",
+    "agotado": "CONVERTED",
     "activo": "ACTIVE"
   },
   "como": {
     "title": "HOW IT WORKS",
-    "paso1": "You recharge a client normally",
-    "paso2": "If you have bonus available, it's deducted automatically",
-    "paso3": "You earn a 10% commission on each recharge",
-    "paso4": "When the bonus runs out, everything comes from your VIBRRA credit"
+    "paso1": "A client asks for a recharge and pays you in cash",
+    "paso2": "You recharge the client in the app — the bonus covers the digital balance",
+    "paso3": "The cash the client paid you is yours to keep",
+    "paso4": "Plus you earn a 10% commission on every recharge"
   },
-  "cta": "Go to recharge clients"
+  "cta": "Turn bonus into cash"
 }
