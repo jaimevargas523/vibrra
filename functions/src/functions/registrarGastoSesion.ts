@@ -1,14 +1,20 @@
 /**
  * Cloud Function: registrarGastoSesion
- * Se ejecuta cuando un cliente gasta en sesión (puja, nominación, conexión, etc.).
- * El anfitrión recibe el 70% del gasto como participación.
- * Performance critical — se llama en cada acción de sesión.
+ * Gasto del cliente en sesión. El anfitrión recibe
+ * el 70% como participación.
  */
 
-import {onCall, HttpsError} from "firebase-functions/v2/https";
-import {getFirestore, FieldValue} from "firebase-admin/firestore";
+import {
+  onCall, HttpsError,
+} from "firebase-functions/v2/https";
+import {
+  getFirestore,
+  FieldValue,
+} from "firebase-admin/firestore";
 import type {MovimientoDoc} from "../constants/negocio.js";
-import {calcularParticipacion} from "../helpers/negocio.js";
+import {
+  calcularParticipacion,
+} from "../helpers/negocio.js";
 
 interface RegistrarGastoData {
   anfitrionId: string;
@@ -18,23 +24,41 @@ interface RegistrarGastoData {
   concepto: string;
 }
 
+type MovDoc = Omit<MovimientoDoc, "timestamp"> & {
+  timestamp: FieldValue;
+};
+
 export const registrarGastoSesion = onCall(
   {maxInstances: 10, region: "us-central1"},
   async (request) => {
-    const {anfitrionId, clienteId, sesionId, monto, concepto} = request.data as RegistrarGastoData;
+    const {
+      anfitrionId, clienteId,
+      sesionId, monto, concepto,
+    } = request.data as RegistrarGastoData;
 
-    if (!anfitrionId || !clienteId || !sesionId || !monto || !concepto) {
-      throw new HttpsError("invalid-argument", "Faltan campos requeridos.");
+    if (
+      !anfitrionId || !clienteId ||
+      !sesionId || !monto || !concepto
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Faltan campos requeridos.",
+      );
     }
 
     if (monto <= 0) {
-      throw new HttpsError("invalid-argument", "El monto debe ser positivo.");
+      throw new HttpsError(
+        "invalid-argument",
+        "El monto debe ser positivo.",
+      );
     }
 
     const participacion = calcularParticipacion(monto);
     const db = getFirestore();
-    const anfRef = db.collection("Anfitriones").doc(anfitrionId);
-    const cliRef = db.collection("Usuarios").doc(clienteId);
+    const anfRef = db
+      .collection("Anfitriones").doc(anfitrionId);
+    const cliRef = db
+      .collection("Usuarios").doc(clienteId);
 
     let participacionAcumulada = 0;
 
@@ -45,34 +69,46 @@ export const registrarGastoSesion = onCall(
       ]);
 
       if (!anfSnap.exists) {
-        throw new HttpsError("not-found", "Anfitrión no encontrado.");
+        throw new HttpsError(
+          "not-found",
+          "Anfitrión no encontrado.",
+        );
       }
       if (!cliSnap.exists) {
-        throw new HttpsError("not-found", "Cliente no encontrado.");
+        throw new HttpsError(
+          "not-found",
+          "Cliente no encontrado.",
+        );
       }
 
-      const cli = cliSnap.data()!;
+      const cli = cliSnap.data() ?? {};
       if ((cli.saldo ?? 0) < monto) {
-        throw new HttpsError("failed-precondition", "Saldo insuficiente.");
+        throw new HttpsError(
+          "failed-precondition",
+          "Saldo insuficiente.",
+        );
       }
 
-      const anf = anfSnap.data()!;
-      const nuevaParticipacion = (anf.participacion_mes ?? 0) + participacion;
-      participacionAcumulada = nuevaParticipacion;
+      const anf = anfSnap.data() ?? {};
+      const nuevaPart =
+        (anf.participacion_mes ?? 0) + participacion;
+      participacionAcumulada = nuevaPart;
 
-      // Descontar saldo del cliente
       tx.update(cliRef, {
         saldo: (cli.saldo ?? 0) - monto,
         ultima_sesion_id: sesionId,
       });
 
-      // Acumular participación del anfitrión
       tx.update(anfRef, {
-        participacion_mes: nuevaParticipacion,
+        participacion_mes: nuevaPart,
       });
 
-      // Registrar movimiento
-      const mov: Omit<MovimientoDoc, "timestamp"> & { timestamp: FieldValue } = {
+      const cliTag = clienteId.slice(-4).toUpperCase();
+      const desc =
+        `${concepto} · ···${cliTag}` +
+        ` · sesión ${sesionId}`;
+
+      const mov: MovDoc = {
         anfitrion_id: anfitrionId,
         cliente_id: clienteId,
         sesion_id: sesionId,
@@ -83,12 +119,15 @@ export const registrarGastoSesion = onCall(
         participacion,
         recaudo_post: anf.recaudo_mes ?? 0,
         comisiones_post: anf.comisiones_mes ?? 0,
-        participacion_post: nuevaParticipacion,
-        descripcion: `${concepto} · ···${clienteId.slice(-4).toUpperCase()} · sesión ${sesionId}`,
+        participacion_post: nuevaPart,
+        descripcion: desc,
         timestamp: FieldValue.serverTimestamp(),
         creado_por: "cloud_function",
       };
-      tx.set(db.collection("Movimientos").doc(), mov);
+      tx.set(
+        db.collection("Movimientos").doc(),
+        mov,
+      );
     });
 
     return {ok: true, participacionAcumulada};

@@ -3,10 +3,10 @@
  * Fuente de verdad: prompt_modelo_negocio_vibrra.md
  */
 
-/** Comisión del anfitrión por cada recarga a cliente (10%) */
+/** Comisión del anfitrión por cada recarga (10%) */
 export const COMISION_RECARGA = 0.10;
 
-/** Participación del anfitrión en gasto de sesión de sus clientes (70%) */
+/** Participación del anfitrión en gasto de sesión (70%) */
 export const PARTICIPACION_SESION = 0.70;
 
 /** Suscripción mensual fija en COP */
@@ -18,52 +18,69 @@ export const BONO_ARRANQUE = 30_000;
 /** Costo extra del modo "generosa" en COP */
 export const COSTO_EXTRA_GENEROSA = 332;
 
+interface MontoInfo {
+  valor: number;
+  etiqueta: string;
+}
+
 /** Montos de recarga disponibles */
-export const MONTOS_RECARGA: Record<string, { valor: number; etiqueta: string }> = {
-  minimo:   { valor: 2_000,  etiqueta: "Mínimo" },
-  basico:   { valor: 5_000,  etiqueta: "Básico" },
-  estandar: { valor: 10_000, etiqueta: "Estándar" },
-  noche:    { valor: 20_000, etiqueta: "Noche" },
-  vip:      { valor: 50_000, etiqueta: "VIP" },
+export const MONTOS_RECARGA: Record<string, MontoInfo> = {
+  minimo: {valor: 2_000, etiqueta: "Mínimo"},
+  basico: {valor: 5_000, etiqueta: "Básico"},
+  estandar: {valor: 10_000, etiqueta: "Estándar"},
+  noche: {valor: 20_000, etiqueta: "Noche"},
+  vip: {valor: 50_000, etiqueta: "VIP"},
 };
+
+interface ModoInfo {
+  emoji: string;
+  label: string;
+}
 
 /** Modos de generosidad */
-export const MODOS_RECARGA: Record<string, { emoji: string; label: string }> = {
-  pesimista: { emoji: "😐", label: "Pesimista" },
-  moderada:  { emoji: "😊", label: "Moderada" },
-  generosa:  { emoji: "🤩", label: "Generosa" },
+export const MODOS_RECARGA: Record<string, ModoInfo> = {
+  pesimista: {emoji: "😐", label: "Pesimista"},
+  moderada: {emoji: "😊", label: "Moderada"},
+  generosa: {emoji: "🤩", label: "Generosa"},
 };
 
-/** Tabla de bonos para el cliente: monto × modo → { canciones, conexiones } */
-export const TABLA_BONOS_CLIENTE: Record<string, Record<string, { canciones: number; conexiones: number }>> = {
+interface BonosCliente {
+  canciones: number;
+  conexiones: number;
+}
+
+type TablaBonos = Record<string, Record<string, BonosCliente>>;
+
+/** Tabla de bonos: monto × modo → bonos */
+export const TABLA_BONOS_CLIENTE: TablaBonos = {
   minimo: {
-    pesimista: { canciones: 1, conexiones: 0 },
-    moderada:  { canciones: 1, conexiones: 1 },
-    generosa:  { canciones: 2, conexiones: 1 },
+    pesimista: {canciones: 1, conexiones: 0},
+    moderada: {canciones: 1, conexiones: 1},
+    generosa: {canciones: 2, conexiones: 1},
   },
   basico: {
-    pesimista: { canciones: 2, conexiones: 0 },
-    moderada:  { canciones: 2, conexiones: 1 },
-    generosa:  { canciones: 4, conexiones: 1 },
+    pesimista: {canciones: 2, conexiones: 0},
+    moderada: {canciones: 2, conexiones: 1},
+    generosa: {canciones: 4, conexiones: 1},
   },
   estandar: {
-    pesimista: { canciones: 2, conexiones: 0 },
-    moderada:  { canciones: 3, conexiones: 1 },
-    generosa:  { canciones: 5, conexiones: 1 },
+    pesimista: {canciones: 2, conexiones: 0},
+    moderada: {canciones: 3, conexiones: 1},
+    generosa: {canciones: 5, conexiones: 1},
   },
   noche: {
-    pesimista: { canciones: 3, conexiones: 0 },
-    moderada:  { canciones: 4, conexiones: 1 },
-    generosa:  { canciones: 6, conexiones: 2 },
+    pesimista: {canciones: 3, conexiones: 0},
+    moderada: {canciones: 4, conexiones: 1},
+    generosa: {canciones: 6, conexiones: 2},
   },
   vip: {
-    pesimista: { canciones: 5, conexiones: 1 },
-    moderada:  { canciones: 8, conexiones: 2 },
-    generosa:  { canciones: 10, conexiones: 3 },
+    pesimista: {canciones: 5, conexiones: 1},
+    moderada: {canciones: 8, conexiones: 2},
+    generosa: {canciones: 10, conexiones: 3},
   },
 };
 
-// ── Tipos de movimiento ──────────────────────────────────────
+// ── Tipos de movimiento ─────────────────────────────────
 
 export type TipoMovimiento =
   | "RECARGA_CLIENTE"
@@ -87,17 +104,19 @@ export type CategoriaMovimiento =
   | "INFORMATIVO";
 
 /** Mapeo tipo → categoría */
-export const TIPO_A_CATEGORIA: Record<TipoMovimiento, CategoriaMovimiento> = {
-  RECARGA_CLIENTE:          "RECAUDO",
-  RECARGA_CLIENTE_BONO:     "RECAUDO_BONO",
-  COMISION_RECARGA:         "INGRESO",
-  PARTICIPACION_SESION:     "INGRESO",
-  LIQUIDACION_COBRO:        "LIQUIDACION",
-  LIQUIDACION_SUSCRIPCION:  "LIQUIDACION",
-  LIQUIDACION_DEUDA:        "LIQUIDACION",
-  LIQUIDACION_MORA:         "INFORMATIVO",
-  BONO_ARRANQUE:            "BONO",
-  AJUSTE_ADMIN:             "AJUSTE",
+export const TIPO_A_CATEGORIA: Record<
+  TipoMovimiento, CategoriaMovimiento
+> = {
+  RECARGA_CLIENTE: "RECAUDO",
+  RECARGA_CLIENTE_BONO: "RECAUDO_BONO",
+  COMISION_RECARGA: "INGRESO",
+  PARTICIPACION_SESION: "INGRESO",
+  LIQUIDACION_COBRO: "LIQUIDACION",
+  LIQUIDACION_SUSCRIPCION: "LIQUIDACION",
+  LIQUIDACION_DEUDA: "LIQUIDACION",
+  LIQUIDACION_MORA: "INFORMATIVO",
+  BONO_ARRANQUE: "BONO",
+  AJUSTE_ADMIN: "AJUSTE",
 };
 
 /** Documento de movimiento en Firestore */
@@ -134,8 +153,12 @@ export interface AnfitrionDoc {
   liquidacion_deuda: number;
   nombre_bar: string;
   ciudad: string;
-  fecha_registro: FirebaseFirestore.FieldValue | FirebaseFirestore.Timestamp;
-  ultimo_acceso: FirebaseFirestore.FieldValue | FirebaseFirestore.Timestamp;
+  fecha_registro:
+    | FirebaseFirestore.FieldValue
+    | FirebaseFirestore.Timestamp;
+  ultimo_acceso:
+    | FirebaseFirestore.FieldValue
+    | FirebaseFirestore.Timestamp;
 }
 
 /** Documento del cliente en Firestore */
@@ -145,5 +168,7 @@ export interface ClienteDoc {
   bonos_canciones: number;
   bonos_conexiones: number;
   ultima_sesion_id: string | null;
-  fecha_registro: FirebaseFirestore.FieldValue | FirebaseFirestore.Timestamp;
+  fecha_registro:
+    | FirebaseFirestore.FieldValue
+    | FirebaseFirestore.Timestamp;
 }
