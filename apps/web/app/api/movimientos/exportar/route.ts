@@ -14,25 +14,45 @@ export async function GET(req: NextRequest) {
   const uid = auth;
 
   try {
-    const snap = await adminDb()
-      .collection("Movimientos")
-      .where("anfitrion_id", "==", uid)
-      .orderBy("timestamp", "desc")
-      .get();
+    let snap: FirebaseFirestore.QuerySnapshot;
+    try {
+      snap = await adminDb()
+        .collection("Movimientos")
+        .where("anfitrion_id", "==", uid)
+        .orderBy("timestamp", "desc")
+        .get();
+    } catch {
+      snap = await adminDb()
+        .collection("Movimientos")
+        .where("anfitrion_uid", "==", uid)
+        .orderBy("fecha", "desc")
+        .get();
+    }
+    if (snap.empty) {
+      try {
+        snap = await adminDb()
+          .collection("Movimientos")
+          .where("anfitrion_uid", "==", uid)
+          .orderBy("fecha", "desc")
+          .get();
+      } catch {
+        // no old docs
+      }
+    }
 
     const headers =
       "id,tipo,categoria,descripcion,monto,comision,participacion,recaudo_post,comisiones_post,participacion_post,timestamp";
 
     const rows = snap.docs.map((doc) => {
       const d = doc.data();
-      const desc = String(d.descripcion ?? "").replace(/"/g, '""');
-      const ts = d.timestamp?.toDate?.()?.toISOString?.() ?? d.timestamp ?? "";
+      const desc = String(d.descripcion ?? d.subtitulo ?? d.titulo ?? "").replace(/"/g, '""');
+      const ts = d.timestamp?.toDate?.()?.toISOString?.() ?? d.timestamp ?? d.fecha ?? "";
       return [
         doc.id,
         d.tipo,
-        d.categoria,
+        d.categoria ?? "BONO",
         `"${desc}"`,
-        d.monto ?? 0,
+        d.monto ?? d.bruto ?? 0,
         d.comision ?? 0,
         d.participacion ?? 0,
         d.recaudo_post ?? 0,

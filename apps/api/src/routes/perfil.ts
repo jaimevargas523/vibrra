@@ -22,11 +22,15 @@ router.get("/", async (req, res) => {
         phone: null,
         role: "anfitrion",
         plan: "basico",
+        pais: "CO",
         createdAt: null,
         establishmentCount: 0,
-        saldoBono: 0,
         registroCompleto: false,
-        bonoDisponible: false,
+        recaudoMes: 0,
+        comisionesMes: 0,
+        participacionMes: 0,
+        bonoArranqueSaldo: 0,
+        liquidacionEstado: "pendiente",
       });
       return;
     }
@@ -60,6 +64,13 @@ router.get("/", async (req, res) => {
       .get();
     const establishmentCount = negociosSnap.data().count;
 
+    // Credit model fields (new → old fallback)
+    const bonoArranqueSaldo = data.bono_arranque_saldo ?? saldoBono;
+    const recaudoMes = data.recaudo_mes ?? 0;
+    const comisionesMes = data.comisiones_mes ?? 0;
+    const participacionMes = data.participacion_mes ?? 0;
+    const liquidacionEstado = data.liquidacion_estado ?? "pendiente";
+
     // Map Firestore fields to the HostProfile shape the dashboard expects
     res.json({
       id: uid,
@@ -72,9 +83,13 @@ router.get("/", async (req, res) => {
       pais: data.pais ?? "CO",
       createdAt: data.creadoEn?.toDate?.()?.toISOString?.() ?? data.created_at ?? null,
       establishmentCount,
-      saldoBono,
       registroCompleto,
-      bonoDisponible,
+      // Credit model
+      recaudoMes,
+      comisionesMes,
+      participacionMes,
+      bonoArranqueSaldo,
+      liquidacionEstado,
       // Bank account
       banco: data.banco ?? null,
       tipoCuenta: data.tipoCuenta ?? data.tipo_cuenta ?? null,

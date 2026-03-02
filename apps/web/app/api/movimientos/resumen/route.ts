@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     const participacionMes = data.participacion_mes ?? 0;
     const suscripcionMonto = data.suscripcion_monto ?? SUSCRIPCION_MONTO;
     const liquidacionDeuda = data.liquidacion_deuda ?? 0;
-    const bonoArranqueSaldo = data.bono_arranque_saldo ?? 0;
+    const bonoArranqueSaldo = data.bono_arranque_saldo ?? data.saldoBono ?? 0;
     const bonoArranqueUsado = data.bono_arranque_usado ?? 0;
 
     // Valores derivados (calcular en tiempo real, nunca guardar)

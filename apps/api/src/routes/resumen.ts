@@ -18,7 +18,7 @@ router.get("/kpis", async (req, res) => {
       .where("anfitrionId", "==", uid)
       .get();
 
-    const totalRecaudado = userData.saldoReal ?? 0;
+    const totalRecaudado = userData.recaudo_mes ?? userData.saldoReal ?? 0;
     const totalSesiones = negociosSnap.docs.reduce(
       (sum, d) => sum + (d.data().totalSesiones ?? 0), 0
     );

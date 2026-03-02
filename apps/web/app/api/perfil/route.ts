@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
       recaudoMes: data.recaudo_mes ?? 0,
       comisionesMes: data.comisiones_mes ?? 0,
       participacionMes: data.participacion_mes ?? 0,
-      bonoArranqueSaldo: data.bono_arranque_saldo ?? 0,
+      bonoArranqueSaldo: data.bono_arranque_saldo ?? data.saldoBono ?? 0,
       liquidacionEstado: data.liquidacion_estado ?? "pendiente",
       banco: data.banco ?? null,
       tipoCuenta: data.tipoCuenta ?? data.tipo_cuenta ?? null,
