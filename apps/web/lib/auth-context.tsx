@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { auth } from "@vibrra/shared";
+import { auth } from "@/lib/firebase";
 
 interface AuthState {
   user: User | null;

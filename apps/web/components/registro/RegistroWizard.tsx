@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "@vibrra/shared";
+import { auth, db, storage } from "@/lib/firebase";
 import { useTranslations } from "next-intl";
 
 import type { RegistrationFormData, CountryConfig } from "@/lib/registration/types";

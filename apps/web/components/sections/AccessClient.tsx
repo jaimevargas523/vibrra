@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@vibrra/shared";
+import { auth } from "@/lib/firebase";
 import styles from "@/styles/access.module.css";
 
 type ClientTab = "email" | "phone";
