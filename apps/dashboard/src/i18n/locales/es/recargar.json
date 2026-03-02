@@ -1,27 +1,49 @@
 {
-  "title": "Recargar",
-  "saldo": {
-    "label": "SALDO ACTUAL",
-    "sub": "Recarga para empezar a operar"
+  "title": "Recargar cliente",
+  "topbar": {
+    "comision": "Comision: {{monto}}"
+  },
+  "estadoMes": {
+    "recaudoMes": "Recaudo mes",
+    "comisionAcumulada": "Comision acumulada",
+    "bonoDisponible": "Bono disponible"
   },
   "montos": {
-    "title": "SELECCIONA UN MONTO",
-    "bono": "Bono +{{percent}}%",
-    "recibes": "Recibes {{amount}}",
-    "recomendado": "RECOMENDADO"
+    "title": "Monto a recargar",
+    "step": "1"
+  },
+  "modos": {
+    "title": "Que tan generoso?",
+    "step": "2",
+    "extraGenerosa": "+{{monto}} extra modo Generosa"
+  },
+  "tablaBonos": {
+    "title": "Tabla de bonificacion",
+    "canciones": "canciones",
+    "conexiones": "conexiones"
   },
   "resumen": {
-    "pagas": "Pagas",
-    "bono": "Bono acreditado",
-    "total": "Total en saldo"
+    "saldoCliente": "Saldo que recibe el cliente",
+    "cancionesGratis": "Canciones gratis",
+    "conexionesGratis": "Conexiones gratis",
+    "extraGenerosa": "Extra modo Generosa",
+    "comisionRecarga": "Tu comision por esta recarga",
+    "comisionAcumulada": "Total comision acumulada"
   },
-  "metodo": {
-    "title": "MÉTODO DE PAGO",
-    "wompiTitle": "Wompi · Bancolombia",
-    "wompiDesc": "Nequi · PSE · Botón Bancolombia · Tarjeta débito/crédito · 2.49% + $900",
-    "badge": "ÚNICO MÉTODO"
+  "btn": {
+    "escanear": "Escanear QR del cliente",
+    "disabled": "Selecciona monto y modo"
   },
-  "disclaimer": "Los bonos de recarga no son retirables. Las comisiones de Wompi (~2.49% + $900/tx) se aplican sobre el monto pagado. El bono se acredita inmediatamente a tu saldo.",
-  "btnPagar": "Pagar con Wompi",
-  "btnDisabled": "Selecciona un plan para continuar"
+  "exito": {
+    "title": "Recarga exitosa",
+    "clienteRecibio": "Cliente {{cliente}} recibio {{monto}}",
+    "tuComision": "Tu comision",
+    "comisionAcumulada": "Comision acumulada",
+    "recaudoMes": "Recaudo del mes",
+    "nuevaRecarga": "Nueva recarga"
+  },
+  "error": {
+    "title": "Error",
+    "reintentar": "Reintentar"
+  }
 }

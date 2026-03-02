@@ -1,4 +1,5 @@
 import { CheckCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/Button";
 import type { RecargaResultado } from "@/hooks/useRecargaCliente";
 
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export function ModalExito({ open, resultado, onRecargarOtro, onCerrar, fmt }: Props) {
+  const { t } = useTranslation("recargar");
+
   if (!open || !resultado) return null;
 
   return (
@@ -29,52 +32,46 @@ export function ModalExito({ open, resultado, onRecargarOtro, onCerrar, fmt }: P
           </div>
 
           <div className="text-center">
-            <h3 className="text-lg font-bold text-text-primary">Recarga exitosa</h3>
-            <p className="text-sm text-text-muted mt-1">{resultado.clienteNombre}</p>
+            <h3 className="text-lg font-bold text-text-primary">{t("exito.title")}</h3>
+            <p className="text-sm text-text-muted mt-1">
+              {t("exito.clienteRecibio", {
+                cliente: resultado.clienteNombre,
+                monto: fmt(resultado.montoAcreditado),
+              })}
+            </p>
           </div>
 
           {/* Details */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm bg-surface-elevated rounded-lg px-3 py-2.5">
-              <span className="text-text-secondary">{"\uD83D\uDCB0"} Saldo acreditado</span>
-              <span className="font-mono font-bold text-text-primary">
-                {fmt(resultado.montoAcreditado)}
+              <span className="text-text-secondary">{t("exito.tuComision")}</span>
+              <span className="font-mono font-bold text-green">
+                + {fmt(resultado.comisionEsta)}
               </span>
             </div>
 
             <div className="flex items-center justify-between text-sm bg-surface-elevated rounded-lg px-3 py-2.5">
-              <span className="text-text-secondary">{"\uD83C\uDFB5"} Canciones gratis</span>
-              <span className="font-mono font-bold text-blue-400">
-                x{resultado.bonos.canciones}
+              <span className="text-text-secondary">{t("exito.comisionAcumulada")}</span>
+              <span className="font-mono font-bold text-green">
+                {fmt(resultado.comisionAcumulada)}
               </span>
             </div>
 
-            {resultado.bonos.conexiones > 0 && (
-              <div className="flex items-center justify-between text-sm bg-surface-elevated rounded-lg px-3 py-2.5">
-                <span className="text-text-secondary">{"\uD83D\uDD0C"} Conexiones gratis</span>
-                <span className="font-mono font-bold text-success">
-                  x{resultado.bonos.conexiones}
-                </span>
-              </div>
-            )}
-
-            <div className="border-t border-border pt-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-text-muted">Tu nuevo saldo</span>
-                <span className="font-mono font-bold text-gold">
-                  {fmt(resultado.nuevoSaldoAnfitrion)}
-                </span>
-              </div>
+            <div className="flex items-center justify-between text-sm bg-surface-elevated rounded-lg px-3 py-2.5">
+              <span className="text-text-secondary">{t("exito.recaudoMes")}</span>
+              <span className="font-mono font-bold text-text-primary">
+                {fmt(resultado.recaudoMes)}
+              </span>
             </div>
           </div>
 
           {/* Actions */}
           <div className="space-y-2">
             <Button className="w-full" onClick={onRecargarOtro}>
-              Recargar otro cliente
+              {t("exito.nuevaRecarga")}
             </Button>
             <Button variant="ghost" className="w-full" onClick={onCerrar}>
-              Cerrar
+              {t("btn.cerrar", { defaultValue: "Cerrar" })}
             </Button>
           </div>
         </div>

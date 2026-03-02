@@ -9,10 +9,9 @@
     "step3": "Comparte el QR con tus clientes"
   },
   "bonus": {
-    "title": "Tienes un bono de {{amount}} disponible",
-    "subtitle": "Úsalo para cubrir pujas en tus primeras sesiones",
-    "claim": "Reclamar bono",
-    "claiming": "Reclamando..."
+    "title": "Bono de arranque: {{amount}} restante",
+    "subtitle": "Se consume automaticamente al recargar clientes",
+    "totalOriginal": "de {{total}} iniciales"
   },
   "sessionBanner": {
     "active": "SESIÓN ACTIVA",
@@ -25,23 +24,29 @@
     "users": "usuarios conectados"
   },
   "kpi": {
-    "saldo": "Saldo Disponible",
-    "saldoSub": "Disponible para retirar",
-    "generado": "Generado este mes",
+    "recaudo": "Recaudo del mes",
+    "recaudoSub": "Efectivo cobrado a clientes",
+    "comision": "Comision acumulada",
+    "comisionSub": "10% de cada recarga",
+    "participacion": "Participacion sesion",
+    "participacionSub": "70% del gasto de clientes",
+    "gananciaNeta": "Ganancia neta estimada",
+    "gananciaNetaSub": "Comisiones + participacion - suscripcion",
     "sesiones": "Sesiones del mes",
     "canciones": "Canciones del mes",
     "esteMes": "Este mes",
     "sinDatosMes": "Sin datos del mes anterior",
     "vsMesAnterior": "+{{percent}}% vs mes anterior",
-    "usuarios": "Usuarios únicos"
+    "usuarios": "Usuarios unicos"
   },
   "saldo": {
-    "title": "SALDO CONSOLIDADO",
-    "disponible": "Disponible para retirar",
-    "saldoBono": "Saldo bono",
-    "ventanaAbierta": "Ventana de retiro abierta",
-    "proximoCobro": "Próximo cobro",
-    "solicitar": "Solicitar retiro"
+    "title": "ESTADO DEL MES",
+    "recaudo": "Recaudo del mes",
+    "comision": "Comision acumulada",
+    "participacion": "Participacion sesion",
+    "gananciaNeta": "Ganancia neta",
+    "liquidacionEn": "Liquidacion en {{dias}} dias",
+    "proximoCobro": "Proximo cobro"
   },
   "chart": {
     "title": "INGRESOS ÚLTIMOS 7 DÍAS",

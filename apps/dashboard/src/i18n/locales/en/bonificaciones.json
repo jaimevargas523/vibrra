@@ -1,40 +1,24 @@
 {
-  "title": "Bonuses",
+  "title": "Startup bonus",
+  "subtitle": "Your initial credit to start recharging clients",
   "banner": {
-    "titulo": "Turn your bonus into real money",
-    "desc": "When a customer wants to nominate a song, you can top up with your bonus and collect the cash. That's how you turn credit into real income."
+    "titulo": "Consumed automatically",
+    "desc": "The startup bonus covers your first client recharges. No need to claim it — it's deducted automatically when you recharge a client."
   },
-  "bienvenida": {
-    "label": "WELCOME BONUS",
-    "monto": "$30,000",
-    "activo": "ACTIVE",
-    "agotado": "DEPLETED",
-    "vencido": "EXPIRED",
+  "card": {
+    "label": "STARTUP BONUS",
     "disponible": "Available",
-    "usado": "Used",
-    "nota": "Non-withdrawable · consumable only",
-    "vence": "Expires: 30 days after registration",
-    "consejo": "Use it to cover your own bids and try the platform at no cost",
-    "reclamar": "Claim bonus",
-    "reclamando": "Claiming...",
-    "reclamado": "CLAIMED",
-    "reclamarExito": "Bonus claimed successfully!",
-    "completaRegistro": "Complete your registration to claim the bonus"
+    "usado": "Consumed",
+    "total": "of {{total}} initial",
+    "agotado": "DEPLETED",
+    "activo": "ACTIVE"
   },
-  "tabla": {
-    "title": "TOP-UP BONUSES · MODEL A",
-    "recargar": "Top up →",
-    "cabecera": {
-      "recarga": "TOP-UP",
-      "bono": "BONUS",
-      "recibes": "YOU RECEIVE"
-    },
-    "popular": "Most popular",
-    "nota": "Bonuses are non-withdrawable."
+  "como": {
+    "title": "HOW IT WORKS",
+    "paso1": "You recharge a client normally",
+    "paso2": "If you have bonus available, it's deducted automatically",
+    "paso3": "You earn a 10% commission on each recharge",
+    "paso4": "When the bonus runs out, everything comes from your VIBRRA credit"
   },
-  "historial": {
-    "title": "BONUS HISTORY",
-    "empty": "Top-up bonuses will appear here after your first top-up"
-  },
-  "cta": "Top up and earn bonus"
+  "cta": "Go to recharge clients"
 }

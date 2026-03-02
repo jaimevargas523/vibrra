@@ -24,9 +24,12 @@ export async function GET(req: NextRequest) {
         plan: "basico",
         createdAt: null,
         establishmentCount: 0,
-        saldoBono: 0,
         registroCompleto: false,
-        bonoDisponible: false,
+        recaudoMes: 0,
+        comisionesMes: 0,
+        participacionMes: 0,
+        bonoArranqueSaldo: 0,
+        liquidacionEstado: "pendiente",
       });
     }
 
@@ -51,17 +54,12 @@ export async function GET(req: NextRequest) {
       data.numero_cuenta
     );
 
-    const saldoBono = data.saldoBono ?? 0;
-    const bonoReclamado = data.bonoReclamado === true;
-
     const negociosSnap = await adminDb()
       .collection("Negocios")
       .where("anfitrionId", "==", uid)
       .count()
       .get();
     const establishmentCount = negociosSnap.data().count;
-
-    const bonoDisponible = registroCompleto && establishmentCount > 0 && !bonoReclamado;
 
     return NextResponse.json({
       id: uid,
@@ -76,9 +74,12 @@ export async function GET(req: NextRequest) {
       createdAt:
         data.creadoEn?.toDate?.()?.toISOString?.() ?? data.created_at ?? null,
       establishmentCount,
-      saldoBono,
       registroCompleto,
-      bonoDisponible,
+      recaudoMes: data.recaudo_mes ?? 0,
+      comisionesMes: data.comisiones_mes ?? 0,
+      participacionMes: data.participacion_mes ?? 0,
+      bonoArranqueSaldo: data.bono_arranque_saldo ?? 0,
+      liquidacionEstado: data.liquidacion_estado ?? "pendiente",
       banco: data.banco ?? null,
       tipoCuenta: data.tipoCuenta ?? data.tipo_cuenta ?? null,
       numeroCuenta: data.numeroCuenta ?? data.numero_cuenta ?? null,

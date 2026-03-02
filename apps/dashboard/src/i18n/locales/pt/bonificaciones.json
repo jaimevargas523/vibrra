@@ -1,40 +1,24 @@
 {
-  "title": "Bonificações",
+  "title": "Bonus inicial",
+  "subtitle": "Seu credito inicial para comecar a recarregar clientes",
   "banner": {
-    "titulo": "Converta seu bônus em dinheiro real",
-    "desc": "Quando um cliente quer indicar uma música, você pode recarregar com seu bônus e recolher o dinheiro. Assim você converte crédito em receita real."
+    "titulo": "Consumido automaticamente",
+    "desc": "O bonus inicial cobre suas primeiras recargas de clientes. Nao precisa resgatar — e descontado automaticamente quando voce recarrega um cliente."
   },
-  "bienvenida": {
-    "label": "BÔNUS DE BOAS-VINDAS",
-    "monto": "$30.000",
-    "activo": "ATIVO",
+  "card": {
+    "label": "BONUS INICIAL",
+    "disponible": "Disponivel",
+    "usado": "Consumido",
+    "total": "de {{total}} iniciais",
     "agotado": "ESGOTADO",
-    "vencido": "VENCIDO",
-    "disponible": "Disponível",
-    "usado": "Usado",
-    "nota": "Não sacável · apenas consumível",
-    "vence": "Vence: 30 dias após o cadastro",
-    "consejo": "Use para cobrir seus próprios lances e testar a plataforma sem custo",
-    "reclamar": "Resgatar bônus",
-    "reclamando": "Resgatando...",
-    "reclamado": "RESGATADO",
-    "reclamarExito": "Bônus resgatado com sucesso!",
-    "completaRegistro": "Complete seu cadastro para resgatar o bônus"
+    "activo": "ATIVO"
   },
-  "tabla": {
-    "title": "BÔNUS POR RECARGA · MODELO A",
-    "recargar": "Recarregar →",
-    "cabecera": {
-      "recarga": "RECARGA",
-      "bono": "BÔNUS",
-      "recibes": "VOCÊ RECEBE"
-    },
-    "popular": "Mais popular",
-    "nota": "Os bônus não são sacáveis."
+  "como": {
+    "title": "COMO FUNCIONA",
+    "paso1": "Voce recarrega um cliente normalmente",
+    "paso2": "Se voce tem bonus disponivel, e descontado automaticamente",
+    "paso3": "Voce ganha a comissao de 10% sobre cada recarga",
+    "paso4": "Quando o bonus acaba, tudo sai do seu credito VIBRRA"
   },
-  "historial": {
-    "title": "HISTÓRICO DE BÔNUS",
-    "empty": "Os bônus de recarga aparecerão aqui após sua primeira recarga"
-  },
-  "cta": "Recarregar e ganhar bônus"
+  "cta": "Ir para recarregar clientes"
 }

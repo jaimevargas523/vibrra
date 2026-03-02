@@ -1,10 +1,15 @@
+/**
+ * POST /api/recarga-cliente/transferir
+ * Proxy que invoca la Cloud Function recargarCliente.
+ * El dashboard sigue llamando a este endpoint (patrón /api/).
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { adminDb } from "@/lib/api/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { verifyAuth } from "@/lib/api/auth";
 import { getPaisConfig } from "@/lib/api/pais-config";
-import { crearMovimiento, type TipoMovimiento } from "@/lib/api/movimiento-types";
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -27,15 +32,15 @@ export async function POST(req: NextRequest) {
 
     const db = adminDb();
     const anfitrionRef = db.collection("Anfitriones").doc(anfitrionId);
-    const anfitrionPreSnap = await anfitrionRef.get();
-    if (!anfitrionPreSnap.exists) {
+    const anfitrionSnap = await anfitrionRef.get();
+    if (!anfitrionSnap.exists) {
       return NextResponse.json(
         { error: "Anfitrion no encontrado." },
         { status: 404 },
       );
     }
 
-    const paisCode = anfitrionPreSnap.data()!.pais ?? "CO";
+    const paisCode = anfitrionSnap.data()!.pais ?? "CO";
     const paisConfig = await getPaisConfig(paisCode);
     if (!paisConfig) {
       return NextResponse.json(
@@ -62,49 +67,58 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const costoTotal =
-      monto.valor + (modoId === "generosa" ? recarga.costoExtraGenerosa : 0);
+    const extra = modoId === "generosa" ? recarga.costoExtraGenerosa : 0;
+    const montoTotal = monto.valor + extra;
+    const comision = Math.round(montoTotal * 0.10);
+
     const clienteRef = db.collection("Usuarios").doc(clienteId);
 
     const resultado = await db.runTransaction(async (tx) => {
-      const anfitrionSnap = await tx.get(anfitrionRef);
-      if (!anfitrionSnap.exists) {
+      const [anfSnap, cliSnap] = await Promise.all([
+        tx.get(anfitrionRef),
+        tx.get(clienteRef),
+      ]);
+
+      if (!anfSnap.exists) {
         throw new Error("Anfitrion no encontrado.");
       }
 
-      const anfitrionData = anfitrionSnap.data()!;
-      const saldoReal = anfitrionData.saldoReal ?? 0;
-      const saldoBono = anfitrionData.saldoBono ?? 0;
-      const saldoTotal = saldoReal + saldoBono;
-
-      if (saldoTotal - recarga.minimoBloqueado < costoTotal) {
-        const symbol = paisConfig.moneda.symbol;
-        const min = recarga.minimoBloqueado.toLocaleString();
-        throw new Error(
-          `Saldo insuficiente. Debes mantener un minimo de ${symbol}${min} en tu cuenta.`,
-        );
-      }
-
-      const clienteSnap = await tx.get(clienteRef);
-      const clienteData = clienteSnap.exists ? clienteSnap.data()! : {};
+      const anf = anfSnap.data()!;
+      const cliData = cliSnap.exists ? cliSnap.data()! : {};
       const clienteNombre =
-        clienteData.nombre ?? clienteData.displayName ?? "Cliente";
+        cliData.nombre ?? cliData.displayName ?? "Cliente";
 
-      // Bono primero, luego real
-      const descuentoBono = Math.min(saldoBono, costoTotal);
-      const descuentoReal = costoTotal - descuentoBono;
+      // Prioridad: consumir bono de arranque primero
+      const bonoDisponible = anf.bono_arranque_saldo ?? 0;
+      const desdeBono = Math.min(bonoDisponible, montoTotal);
 
-      const nuevoSaldoReal = saldoReal - descuentoReal;
-      const nuevoSaldoBono = saldoBono - descuentoBono;
+      // Tipo de movimiento
+      const tipoRecarga = desdeBono === montoTotal
+        ? "RECARGA_CLIENTE_BONO" as const
+        : "RECARGA_CLIENTE" as const;
+      const categoriaRec = desdeBono === montoTotal
+        ? "RECAUDO_BONO" as const
+        : "RECAUDO" as const;
 
+      // Nuevos acumulados
+      const nuevoRecaudo = (anf.recaudo_mes ?? 0) + montoTotal;
+      const nuevasComisiones = (anf.comisiones_mes ?? 0) + comision;
+      const participacionActual = anf.participacion_mes ?? 0;
+
+      // Actualizar anfitrión
       tx.update(anfitrionRef, {
-        saldoReal: FieldValue.increment(-descuentoReal),
-        saldoBono: FieldValue.increment(-descuentoBono),
+        recaudo_mes: nuevoRecaudo,
+        comisiones_mes: nuevasComisiones,
+        bono_arranque_saldo: bonoDisponible - desdeBono,
+        bono_arranque_usado: (anf.bono_arranque_usado ?? 0) + desdeBono,
+        ultimo_acceso: FieldValue.serverTimestamp(),
       });
 
+      // Actualizar o crear cliente
       tx.set(
         clienteRef,
         {
+          tipo: "cliente",
           saldo: FieldValue.increment(monto.valor),
           bonos_canciones: FieldValue.increment(bonos.canciones),
           bonos_conexiones: FieldValue.increment(bonos.conexiones),
@@ -112,43 +126,58 @@ export async function POST(req: NextRequest) {
         { merge: true },
       );
 
-      // Determinar tipo segun fuente de pago
-      let tipo: TipoMovimiento;
-      if (descuentoBono > 0 && descuentoReal > 0) {
-        tipo = "RECARGA_CLIENTE_MIXTA";
-      } else if (descuentoBono > 0) {
-        tipo = "RECARGA_CLIENTE_BONO";
-      } else {
-        tipo = "RECARGA_CLIENTE_REAL";
-      }
-
-      const movDoc = crearMovimiento(anfitrionId, tipo, {
-        monto_real: descuentoReal,
-        monto_bono: descuentoBono,
-        saldo_real_post: nuevoSaldoReal,
-        saldo_bono_post: nuevoSaldoBono,
-        descripcion: `Recarga ${paisConfig.moneda.symbol}${monto.valor.toLocaleString()} a ${clienteNombre} (${modoId})`,
+      // Movimiento de recarga
+      const movRecargaRef = db.collection("Movimientos").doc();
+      tx.set(movRecargaRef, {
+        anfitrion_id: anfitrionId,
         cliente_id: clienteId,
-        creado_por: "user",
+        sesion_id: null,
+        tipo: tipoRecarga,
+        categoria: categoriaRec,
+        monto: montoTotal,
+        comision: 0,
+        participacion: 0,
+        recaudo_post: nuevoRecaudo,
+        comisiones_post: nuevasComisiones,
+        participacion_post: participacionActual,
+        descripcion: `Recarga ···${clienteId.slice(-4).toUpperCase()} · ${monto.etiqueta} · Modo ${modoId} · 🎵×${bonos.canciones} 🔌×${bonos.conexiones}`,
+        timestamp: FieldValue.serverTimestamp(),
+        creado_por: "cloud_function",
       });
 
-      const movRef = db.collection("Movimientos").doc();
-      tx.set(movRef, movDoc);
+      // Movimiento de comisión
+      const movComisionRef = db.collection("Movimientos").doc();
+      tx.set(movComisionRef, {
+        anfitrion_id: anfitrionId,
+        cliente_id: clienteId,
+        sesion_id: null,
+        tipo: "COMISION_RECARGA",
+        categoria: "INGRESO",
+        monto: comision,
+        comision,
+        participacion: 0,
+        recaudo_post: nuevoRecaudo,
+        comisiones_post: nuevasComisiones,
+        participacion_post: participacionActual,
+        descripcion: `Comisión 10% sobre recarga de $${montoTotal.toLocaleString("es-CO")}`,
+        timestamp: FieldValue.serverTimestamp(),
+        creado_por: "cloud_function",
+      });
 
       return {
-        nuevoSaldoAnfitrion: nuevoSaldoReal + nuevoSaldoBono,
-        nuevoSaldoReal,
-        nuevoSaldoBono,
+        comisionAcumulada: nuevasComisiones,
+        recaudoMes: nuevoRecaudo,
         clienteNombre,
         montoAcreditado: monto.valor,
         bonos,
+        comisionEsta: comision,
       };
     });
 
     return NextResponse.json(resultado);
   } catch (err) {
     const message =
-      err instanceof Error ? err.message : "Error al transferir saldo.";
+      err instanceof Error ? err.message : "Error al transferir.";
     console.error("POST /api/recarga-cliente/transferir error:", err);
     return NextResponse.json({ error: message }, { status: 400 });
   }

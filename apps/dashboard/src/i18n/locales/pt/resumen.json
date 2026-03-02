@@ -9,10 +9,9 @@
     "step3": "Compartilhe o QR com seus clientes"
   },
   "bonus": {
-    "title": "Você tem um bônus de {{amount}} disponível",
-    "subtitle": "Use-o para cobrir lances nas suas primeiras sessões",
-    "claim": "Resgatar bônus",
-    "claiming": "Resgatando..."
+    "title": "Bonus inicial: {{amount}} restante",
+    "subtitle": "Consumido automaticamente ao recarregar clientes",
+    "totalOriginal": "de {{total}} iniciais"
   },
   "sessionBanner": {
     "active": "SESSÃO ATIVA",
@@ -25,23 +24,29 @@
     "users": "usuários conectados"
   },
   "kpi": {
-    "saldo": "Saldo Disponível",
-    "saldoSub": "Disponível para saque",
-    "generado": "Gerado este mês",
-    "sesiones": "Sessões do mês",
-    "canciones": "Músicas do mês",
-    "esteMes": "Este mês",
-    "sinDatosMes": "Sem dados do mês anterior",
-    "vsMesAnterior": "+{{percent}}% vs mês anterior",
-    "usuarios": "Usuários únicos"
+    "recaudo": "Arrecadacao do mes",
+    "recaudoSub": "Dinheiro cobrado dos clientes",
+    "comision": "Comissao acumulada",
+    "comisionSub": "10% de cada recarga",
+    "participacion": "Participacao em sessao",
+    "participacionSub": "70% do gasto dos clientes",
+    "gananciaNeta": "Ganho liquido estimado",
+    "gananciaNetaSub": "Comissoes + participacao - assinatura",
+    "sesiones": "Sessoes do mes",
+    "canciones": "Musicas do mes",
+    "esteMes": "Este mes",
+    "sinDatosMes": "Sem dados do mes anterior",
+    "vsMesAnterior": "+{{percent}}% vs mes anterior",
+    "usuarios": "Usuarios unicos"
   },
   "saldo": {
-    "title": "SALDO CONSOLIDADO",
-    "disponible": "Disponível para saque",
-    "saldoBono": "Saldo bônus",
-    "ventanaAbierta": "Janela de saque aberta",
-    "proximoCobro": "Próxima cobrança",
-    "solicitar": "Solicitar saque"
+    "title": "STATUS DO MES",
+    "recaudo": "Arrecadacao do mes",
+    "comision": "Comissao acumulada",
+    "participacion": "Participacao em sessao",
+    "gananciaNeta": "Ganho liquido",
+    "liquidacionEn": "Liquidacao em {{dias}} dias",
+    "proximoCobro": "Proxima cobranca"
   },
   "chart": {
     "title": "RECEITA ÚLTIMOS 7 DIAS",

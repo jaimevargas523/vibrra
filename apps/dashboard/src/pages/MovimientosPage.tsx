@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Wallet, Download } from "lucide-react";
+import { Wallet, Download, BarChart3 } from "lucide-react";
 import clsx from "clsx";
 
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -16,8 +16,8 @@ import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   TIPOS_MOVIMIENTO,
-  CATEGORIAS,
-  esEgreso,
+  FILTROS_MOVIMIENTO,
+  esIngreso,
   type TipoMovimiento,
   type CategoriaMovimiento,
 } from "@/types/movimiento";
@@ -29,12 +29,11 @@ function TipoIcon({ tipo }: { tipo: string }) {
   if (!meta) return <span className="text-base">{"\u2022"}</span>;
 
   const bgClass: Record<string, string> = {
-    success: "bg-success/10",
-    error: "bg-error/10",
-    warning: "bg-warning/10",
-    info: "bg-info/10",
+    green: "bg-green/10",
+    blue: "bg-blue/10",
     gold: "bg-gold/10",
-    purple: "bg-purple/10",
+    red: "bg-error/10",
+    muted: "bg-surface",
   };
 
   return (
@@ -49,14 +48,11 @@ function TipoIcon({ tipo }: { tipo: string }) {
   );
 }
 
-const CATEGORIA_LABELS: Record<string, string> = {
-  "": "Todos",
-  INGRESO_REAL: "Ingresos reales",
-  INGRESO_BONO: "Ingresos bono",
-  EGRESO_REAL: "Egresos reales",
-  EGRESO_BONO: "Egresos bono",
-  EGRESO_MIXTO: "Egresos mixtos",
-};
+function calcularDiasParaCierre(): number {
+  const today = new Date();
+  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  return Math.ceil((nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
 
 /* ── Page ─────────────────────────────────────────────────────── */
 
@@ -64,63 +60,47 @@ export default function MovimientosPage() {
   const { t } = useTranslation("movimientos");
   const fmt = useCurrencyFormatter();
   const [page, setPage] = useState(1);
-  const [catFilter, setCatFilter] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<"movimientos" | "liquidacion">("movimientos");
+  const [filtroActivo, setFiltroActivo] = useState("todos");
 
   const { data: resumen, isLoading: resumenLoading } = useMovimientosResumen();
+
+  // Build categoria filter for the API
+  const filtro = FILTROS_MOVIMIENTO.find((f) => f.id === filtroActivo);
+  const categoriaFilter = filtro?.categorias?.[0]; // Send first categoria for API filter
+
   const { data, isLoading } = useMovimientos({
     page,
-    categoria: catFilter || undefined,
+    categoria: categoriaFilter,
   });
 
   const res = resumen ?? {
-    saldoReal: 0,
-    saldoBono: 0,
-    saldoTotal: 0,
-    totalIngresosReal: 0,
-    totalIngresosBono: 0,
-    totalEgresosReal: 0,
-    totalEgresosBono: 0,
-    totalRetiros: 0,
-    totalComisiones: 0,
-    pendientePago: 0,
-    ultimoRetiro: null,
+    recaudoMes: 0,
+    comisionesMes: 0,
+    participacionMes: 0,
+    gananciaDigital: 0,
+    gananciaNeta: 0,
+    suscripcionMonto: 15000,
+    deudaBruta: 0,
+    efectivoAEntregar: 0,
+    efectivoAQuedarse: 0,
+    bonoArranqueSaldo: 0,
+    bonoArranqueUsado: 0,
+    liquidacionEstado: "pendiente" as const,
+    liquidacionDeuda: 0,
+    liquidacionFecha: null,
   };
+
   const items: Movimiento[] = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
-
-  const summaryCards = [
-    {
-      label: t("resumen.saldoReal"),
-      value: fmt(res.saldoReal),
-      sub: t("resumen.disponibleRetiro"),
-      color: "text-gold",
-    },
-    {
-      label: t("resumen.saldoBono"),
-      value: fmt(res.saldoBono),
-      sub: t("resumen.creditoInterno"),
-      color: "text-purple",
-    },
-    {
-      label: t("resumen.ingresos"),
-      value: fmt(res.totalIngresosReal + res.totalIngresosBono),
-      sub: `${t("resumen.real")} ${fmt(res.totalIngresosReal)} + ${t("resumen.bono")} ${fmt(res.totalIngresosBono)}`,
-      color: "text-success",
-    },
-    {
-      label: t("resumen.egresos"),
-      value: fmt(res.totalEgresosReal + res.totalEgresosBono),
-      sub: `${t("resumen.real")} ${fmt(res.totalEgresosReal)} + ${t("resumen.bono")} ${fmt(res.totalEgresosBono)}`,
-      color: "text-error",
-    },
-  ];
+  const diasParaCierre = calcularDiasParaCierre();
 
   async function handleExportCsv() {
     const token = useAuthStore.getState().token;
-    const res = await fetch("/api/movimientos/exportar", {
+    const resp = await fetch("/api/movimientos/exportar", {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
-    const blob = await res.blob();
+    const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -154,7 +134,7 @@ export default function MovimientosPage() {
       key: "timestamp",
       header: t("table.fecha"),
       render: (m) => {
-        const d = new Date(m.timestamp);
+        const d = m.timestamp ? new Date(m.timestamp) : new Date();
         return (
           <div>
             <p className="text-sm text-text-secondary">{formatShortDate(d)}</p>
@@ -164,44 +144,29 @@ export default function MovimientosPage() {
       },
     },
     {
-      key: "monto_real",
-      header: t("table.real"),
+      key: "monto",
+      header: t("table.monto"),
       align: "right",
       render: (m) => {
-        if (m.monto_real === 0) return <span className="text-xs text-text-disabled">&mdash;</span>;
-        const neg = esEgreso(m.categoria as CategoriaMovimiento);
+        const income = esIngreso(m.categoria as CategoriaMovimiento);
         return (
-          <span className={clsx("font-mono text-sm font-semibold", neg ? "text-error" : "text-success")}>
-            {neg ? "-" : "+"}{fmt(m.monto_real)}
+          <span className={clsx("font-mono text-sm font-semibold", income ? "text-green" : "text-text-primary")}>
+            {income ? "+" : ""}{fmt(m.monto)}
           </span>
         );
       },
     },
     {
-      key: "monto_bono",
-      header: t("table.bono"),
-      align: "right",
-      render: (m) => {
-        if (m.monto_bono === 0) return <span className="text-xs text-text-disabled">&mdash;</span>;
-        const neg = esEgreso(m.categoria as CategoriaMovimiento);
-        return (
-          <span className={clsx("font-mono text-sm font-semibold", neg ? "text-purple" : "text-gold")}>
-            {neg ? "-" : "+"}{fmt(m.monto_bono)}
-          </span>
-        );
-      },
-    },
-    {
-      key: "saldo_real_post",
-      header: t("table.saldo"),
+      key: "recaudo_post",
+      header: t("table.acumulados"),
       align: "right",
       render: (m) => (
         <div className="text-right">
-          <p className="font-mono text-sm text-text-primary">
-            {fmt(m.saldo_real_post)}
+          <p className="font-mono text-xs text-text-muted">
+            R: {fmt(m.recaudo_post)}
           </p>
-          <p className="font-mono text-[10px] text-text-muted">
-            +{fmt(m.saldo_bono_post)} {t("table.bono").toLowerCase()}
+          <p className="font-mono text-xs text-text-muted">
+            C: {fmt(m.comisiones_post)}
           </p>
         </div>
       ),
@@ -212,80 +177,192 @@ export default function MovimientosPage() {
     <div className="space-y-6">
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
-      {/* Sticky filter bar */}
-      <div className="sticky top-0 z-10 bg-bg -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 border-b border-border flex items-center gap-3 flex-wrap">
-        <select
-          value={catFilter}
-          onChange={(e) => {
-            setCatFilter(e.target.value);
-            setPage(1);
-          }}
-          className="bg-card-dark border border-border rounded-lg px-3 py-2 text-sm text-text-primary focus:border-gold outline-none"
-        >
-          {Object.entries(CATEGORIA_LABELS).map(([val, label]) => (
-            <option key={val} value={val}>
-              {t(`categorias.${val || "todos"}`, { defaultValue: label })}
-            </option>
-          ))}
-        </select>
-
-        <div className="flex-1" />
-
-        <Button variant="secondary" size="sm" onClick={handleExportCsv}>
-          <Download className="w-4 h-4" />
-          {t("filters.exportar")}
-        </Button>
-      </div>
-
-      {/* Summary cards */}
+      {/* ── Card resumen del mes ─────────────────────── */}
       {resumenLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} variant="card" className="h-24" />
-          ))}
-        </div>
+        <Skeleton variant="card" className="h-48" />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {summaryCards.map((card) => (
-            <div
-              key={card.label}
-              className="bg-surface rounded-xl border border-border p-4"
-            >
-              <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                {card.label}
-              </span>
-              <p className={clsx("text-xl font-mono font-bold mt-2", card.color)}>
-                {card.value}
-              </p>
-              <p className="text-[10px] text-text-muted mt-1">{card.sub}</p>
-            </div>
-          ))}
+        <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("resumenMes.recaudoMes")}</span>
+            <span className="font-mono text-text-secondary">{fmt(res.recaudoMes)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("resumenMes.comisionesMes")}</span>
+            <span className="font-mono text-green">+ {fmt(res.comisionesMes)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("resumenMes.participacionMes")}</span>
+            <span className="font-mono text-green">+ {fmt(res.participacionMes)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("resumenMes.suscripcion")}</span>
+            <span className="font-mono text-error">&minus; {fmt(res.suscripcionMonto)}</span>
+          </div>
+          <hr className="border-border" />
+          <div className="flex justify-between text-base font-bold">
+            <span className="text-text-primary">{t("resumenMes.teQuedas")}</span>
+            <span className={clsx("font-mono", res.gananciaNeta >= 0 ? "text-gold" : "text-error")}>
+              {fmt(res.gananciaNeta)}
+            </span>
+          </div>
+          <p className="text-xs text-text-muted text-center">
+            {t("resumenMes.liquidacionEn", { dias: diasParaCierre })}
+          </p>
         </div>
       )}
 
-      {/* Section label */}
-      <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold block">
-        {t("table.titulo")}
-      </span>
+      {/* ── TabBar ──────────────────────────────────────── */}
+      <div className="flex border-b border-border">
+        <button
+          type="button"
+          onClick={() => setActiveTab("movimientos")}
+          className={clsx(
+            "flex-1 py-3 text-sm font-semibold text-center transition-colors",
+            activeTab === "movimientos"
+              ? "text-gold border-b-2 border-gold"
+              : "text-text-muted hover:text-text-secondary",
+          )}
+        >
+          {t("tabs.movimientos")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("liquidacion")}
+          className={clsx(
+            "flex-1 py-3 text-sm font-semibold text-center transition-colors",
+            activeTab === "liquidacion"
+              ? "text-gold border-b-2 border-gold"
+              : "text-text-muted hover:text-text-secondary",
+          )}
+        >
+          {t("tabs.liquidacion")}
+        </button>
+      </div>
 
-      {/* Table */}
-      <DataTable<Movimiento>
-        columns={columns}
-        data={items}
-        loading={isLoading}
-        pagination={{
-          page,
-          total: totalPages,
-          onPageChange: setPage,
-        }}
-        emptyState={
-          <EmptyState
-            icon={<Wallet className="w-12 h-12" />}
-            title={t("empty.title")}
-            description={t("empty.desc")}
+      {activeTab === "movimientos" ? (
+        <>
+          {/* ── Chips de filtro ──────────────────────────── */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {FILTROS_MOVIMIENTO.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => { setFiltroActivo(f.id); setPage(1); }}
+                className={clsx(
+                  "px-3 py-1.5 rounded-full text-xs font-semibold transition-colors",
+                  filtroActivo === f.id
+                    ? "bg-gold text-[#0A0A0A]"
+                    : "bg-surface border border-border text-text-muted hover:text-text-secondary",
+                )}
+              >
+                {t(`filters.${f.id}`)}
+              </button>
+            ))}
+
+            <div className="flex-1" />
+
+            <Button variant="secondary" size="sm" onClick={handleExportCsv}>
+              <Download className="w-4 h-4" />
+              {t("filters.exportar")}
+            </Button>
+          </div>
+
+          {/* ── Tabla ──────────────────────────────────── */}
+          <DataTable<Movimiento>
+            columns={columns}
+            data={items}
+            loading={isLoading}
+            pagination={{
+              page,
+              total: totalPages,
+              onPageChange: setPage,
+            }}
+            emptyState={
+              <EmptyState
+                icon={<Wallet className="w-12 h-12" />}
+                title={t("empty.title")}
+                description={t("empty.desc")}
+              />
+            }
           />
-        }
-      />
+
+          {/* ── FAB ────────────────────────────────────── */}
+          <div className="fixed bottom-6 right-6 z-20">
+            <button
+              type="button"
+              onClick={() => setActiveTab("liquidacion")}
+              className="flex items-center gap-2 px-4 py-3 rounded-full bg-gold text-[#0A0A0A] font-semibold text-sm shadow-lg hover:bg-gold-light transition-colors"
+            >
+              <BarChart3 className="w-4 h-4" />
+              {t("fab")}
+            </button>
+          </div>
+        </>
+      ) : (
+        /* ── Tab Liquidación ──────────────────────────── */
+        <div className="space-y-4">
+          <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
+            <h3 className="text-sm font-bold text-text-primary">{t("liquidacion.title")}</h3>
+
+            <div className="flex justify-between text-sm">
+              <span className="text-text-muted">{t("liquidacion.recaudo")}</span>
+              <span className="font-mono text-text-secondary">{fmt(res.recaudoMes)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-text-muted">{t("liquidacion.suscripcion")}</span>
+              <span className="font-mono text-text-secondary">+ {fmt(res.suscripcionMonto)}</span>
+            </div>
+            {res.liquidacionDeuda > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-text-muted">{t("liquidacion.deudaAnterior")}</span>
+                <span className="font-mono text-text-secondary">+ {fmt(res.liquidacionDeuda)}</span>
+              </div>
+            )}
+            <hr className="border-border" />
+            <div className="flex justify-between text-sm font-semibold">
+              <span className="text-text-muted">{t("liquidacion.deudaBruta")}</span>
+              <span className="font-mono text-text-primary">{fmt(res.deudaBruta)}</span>
+            </div>
+
+            <div className="flex justify-between text-sm">
+              <span className="text-text-muted">{t("liquidacion.comisiones")}</span>
+              <span className="font-mono text-green">&minus; {fmt(res.comisionesMes)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-text-muted">{t("liquidacion.participacion")}</span>
+              <span className="font-mono text-green">&minus; {fmt(res.participacionMes)}</span>
+            </div>
+            <hr className="border-border" />
+            <div className="flex justify-between text-sm">
+              <span className="text-text-muted">{t("liquidacion.efectivoEntregas")}</span>
+              <span className="font-mono text-text-primary">{fmt(res.efectivoAEntregar)}</span>
+            </div>
+
+            <div className="bg-gold/10 border border-gold/30 rounded-lg p-3 mt-2">
+              <div className="flex justify-between text-base font-bold">
+                <span className="text-gold">{t("liquidacion.teQuedasMes")}</span>
+                <span className="font-mono text-gold">{fmt(res.efectivoAQuedarse)}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between text-xs text-text-muted mt-2">
+              <span>
+                {t("liquidacion.estado")}: {t(`liquidacion.${res.liquidacionEstado}`)}
+              </span>
+              {res.liquidacionFecha && (
+                <span>
+                  {t("liquidacion.cierreEl", {
+                    fecha: new Date(res.liquidacionFecha).toLocaleDateString(undefined, {
+                      day: "numeric",
+                      month: "long",
+                    }),
+                  })}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

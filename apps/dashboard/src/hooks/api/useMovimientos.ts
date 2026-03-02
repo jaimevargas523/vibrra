@@ -2,24 +2,24 @@ import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api-client";
 import type { TipoMovimiento, CategoriaMovimiento } from "@/types/movimiento";
 
+/**
+ * Movimiento individual del modelo de crédito.
+ * Monto único (no real/bono separados).
+ */
 export interface Movimiento {
   id: string;
   anfitrion_id: string;
-  tipo: TipoMovimiento;
-  categoria: CategoriaMovimiento;
-  monto_real: number;
-  monto_bono: number;
-  monto_total: number;
-  saldo_real_post: number;
-  saldo_bono_post: number;
-  descripcion: string;
-  referencia_id: string | null;
   cliente_id: string | null;
   sesion_id: string | null;
-  cancion_id: string | null;
-  fee_wompi: number;
-  retencion: number;
-  ica: number;
+  tipo: TipoMovimiento;
+  categoria: CategoriaMovimiento;
+  monto: number;
+  comision: number;
+  participacion: number;
+  recaudo_post: number;
+  comisiones_post: number;
+  participacion_post: number;
+  descripcion: string;
   timestamp: string;
   creado_por: string;
 }

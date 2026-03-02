@@ -1,27 +1,49 @@
 {
-  "title": "Top Up",
-  "saldo": {
-    "label": "CURRENT BALANCE",
-    "sub": "Top up to start operating"
+  "title": "Recharge client",
+  "topbar": {
+    "comision": "Commission: {{monto}}"
+  },
+  "estadoMes": {
+    "recaudoMes": "Monthly collection",
+    "comisionAcumulada": "Accumulated commission",
+    "bonoDisponible": "Bonus available"
   },
   "montos": {
-    "title": "SELECT AN AMOUNT",
-    "bono": "Bonus +{{percent}}%",
-    "recibes": "You receive {{amount}}",
-    "recomendado": "RECOMMENDED"
+    "title": "Amount to recharge",
+    "step": "1"
+  },
+  "modos": {
+    "title": "How generous?",
+    "step": "2",
+    "extraGenerosa": "+{{monto}} extra Generous mode"
+  },
+  "tablaBonos": {
+    "title": "Bonus table",
+    "canciones": "songs",
+    "conexiones": "connections"
   },
   "resumen": {
-    "pagas": "You pay",
-    "bono": "Bonus credited",
-    "total": "Total in balance"
+    "saldoCliente": "Balance client receives",
+    "cancionesGratis": "Free songs",
+    "conexionesGratis": "Free connections",
+    "extraGenerosa": "Generous mode extra",
+    "comisionRecarga": "Your commission for this recharge",
+    "comisionAcumulada": "Total accumulated commission"
   },
-  "metodo": {
-    "title": "PAYMENT METHOD",
-    "wompiTitle": "Wompi · Bancolombia",
-    "wompiDesc": "Nequi · PSE · Bancolombia Button · Debit/credit card · 2.49% + $900",
-    "badge": "ONLY METHOD"
+  "btn": {
+    "escanear": "Scan client QR",
+    "disabled": "Select amount and mode"
   },
-  "disclaimer": "Top-up bonuses are non-withdrawable. Wompi fees (~2.49% + $900/tx) apply to the amount paid. The bonus is credited to your balance immediately.",
-  "btnPagar": "Pay with Wompi",
-  "btnDisabled": "Select a plan to continue"
+  "exito": {
+    "title": "Recharge successful",
+    "clienteRecibio": "Client {{cliente}} received {{monto}}",
+    "tuComision": "Your commission",
+    "comisionAcumulada": "Accumulated commission",
+    "recaudoMes": "Monthly collection",
+    "nuevaRecarga": "New recharge"
+  },
+  "error": {
+    "title": "Error",
+    "reintentar": "Retry"
+  }
 }

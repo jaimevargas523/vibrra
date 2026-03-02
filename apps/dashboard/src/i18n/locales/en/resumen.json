@@ -9,10 +9,9 @@
     "step3": "Share the QR with your customers"
   },
   "bonus": {
-    "title": "You have a bonus of {{amount}} available",
-    "subtitle": "Use it to cover bids in your first sessions",
-    "claim": "Claim bonus",
-    "claiming": "Claiming..."
+    "title": "Startup bonus: {{amount}} remaining",
+    "subtitle": "Automatically consumed when recharging clients",
+    "totalOriginal": "of {{total}} initial"
   },
   "sessionBanner": {
     "active": "ACTIVE SESSION",
@@ -25,9 +24,14 @@
     "users": "connected users"
   },
   "kpi": {
-    "saldo": "Available Balance",
-    "saldoSub": "Available for withdrawal",
-    "generado": "Generated this month",
+    "recaudo": "Monthly collection",
+    "recaudoSub": "Cash collected from clients",
+    "comision": "Accumulated commission",
+    "comisionSub": "10% on each recharge",
+    "participacion": "Session participation",
+    "participacionSub": "70% of client spending",
+    "gananciaNeta": "Estimated net earnings",
+    "gananciaNetaSub": "Commissions + participation - subscription",
     "sesiones": "Sessions this month",
     "canciones": "Songs this month",
     "esteMes": "This month",
@@ -36,12 +40,13 @@
     "usuarios": "Unique users"
   },
   "saldo": {
-    "title": "CONSOLIDATED BALANCE",
-    "disponible": "Available for withdrawal",
-    "saldoBono": "Bonus balance",
-    "ventanaAbierta": "Withdrawal window open",
-    "proximoCobro": "Next billing",
-    "solicitar": "Request withdrawal"
+    "title": "MONTHLY STATUS",
+    "recaudo": "Monthly collection",
+    "comision": "Accumulated commission",
+    "participacion": "Session participation",
+    "gananciaNeta": "Net earnings",
+    "liquidacionEn": "Settlement in {{dias}} days",
+    "proximoCobro": "Next billing"
   },
   "chart": {
     "title": "REVENUE LAST 7 DAYS",

@@ -1,40 +1,24 @@
 {
-  "title": "Bonificaciones",
+  "title": "Bono de arranque",
+  "subtitle": "Tu credito inicial para empezar a recargar clientes",
   "banner": {
-    "titulo": "Convierte tu bono en dinero real",
-    "desc": "Cuando un cliente desea nominar una canción, puedes recargar con tu bono y recoger el efectivo. Así conviertes crédito en ingresos reales."
+    "titulo": "Se consume automaticamente",
+    "desc": "El bono de arranque cubre tus primeras recargas a clientes. No necesitas reclamarlo — se descuenta automaticamente cuando recargas un cliente."
   },
-  "bienvenida": {
-    "label": "BONO DE BIENVENIDA",
-    "monto": "$30.000",
-    "activo": "ACTIVO",
-    "agotado": "AGOTADO",
-    "vencido": "VENCIDO",
+  "card": {
+    "label": "BONO DE ARRANQUE",
     "disponible": "Disponible",
-    "usado": "Usado",
-    "nota": "No retirable · solo consumible",
-    "vence": "Vence: 30 días después del registro",
-    "consejo": "Úsalo para cubrir tus propias pujas y probar la plataforma sin costo",
-    "reclamar": "Reclamar bono",
-    "reclamando": "Reclamando...",
-    "reclamado": "RECLAMADO",
-    "reclamarExito": "¡Bono reclamado exitosamente!",
-    "completaRegistro": "Completa tu registro para reclamar el bono"
+    "usado": "Consumido",
+    "total": "de {{total}} iniciales",
+    "agotado": "AGOTADO",
+    "activo": "ACTIVO"
   },
-  "tabla": {
-    "title": "BONOS POR RECARGA · MODELO A",
-    "recargar": "Recargar →",
-    "cabecera": {
-      "recarga": "RECARGA",
-      "bono": "BONO",
-      "recibes": "RECIBES"
-    },
-    "popular": "Más popular",
-    "nota": "Los bonos no son retirables."
+  "como": {
+    "title": "COMO FUNCIONA",
+    "paso1": "Recargas un cliente normalmente",
+    "paso2": "Si tienes bono disponible, se descuenta automaticamente",
+    "paso3": "Tu ganas la comision del 10% sobre cada recarga",
+    "paso4": "Cuando el bono se agota, todo sale de tu credito VIBRRA"
   },
-  "historial": {
-    "title": "HISTORIAL DE BONOS",
-    "empty": "Los bonos de recarga aparecerán aquí tras tu primera recarga"
-  },
-  "cta": "Recargar y ganar bono"
+  "cta": "Ir a recargar clientes"
 }

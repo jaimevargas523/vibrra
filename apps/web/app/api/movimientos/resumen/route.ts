@@ -1,7 +1,15 @@
+/**
+ * GET /api/movimientos/resumen
+ * Retorna el estado financiero del mes en curso del anfitrión.
+ * Lee de Anfitriones/{uid} (fuente canónica) y calcula valores derivados.
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { adminDb } from "@/lib/api/firebase-admin";
 import { verifyAuth } from "@/lib/api/auth";
+
+const SUSCRIPCION_MONTO = 15_000;
 
 export async function GET(req: NextRequest) {
   const auth = await verifyAuth(req);
@@ -10,81 +18,60 @@ export async function GET(req: NextRequest) {
 
   try {
     const db = adminDb();
+    const snap = await db.collection("Anfitriones").doc(uid).get();
+    const data = snap.exists ? snap.data()! : {};
 
-    // Saldos actuales (fuente canonica)
-    const anfitrionSnap = await db.collection("Anfitriones").doc(uid).get();
-    const anfitrionData = anfitrionSnap.exists ? anfitrionSnap.data()! : {};
-    const saldoReal = anfitrionData.saldoReal ?? 0;
-    const saldoBono = anfitrionData.saldoBono ?? 0;
+    const recaudoMes = data.recaudo_mes ?? 0;
+    const comisionesMes = data.comisiones_mes ?? 0;
+    const participacionMes = data.participacion_mes ?? 0;
+    const suscripcionMonto = data.suscripcion_monto ?? SUSCRIPCION_MONTO;
+    const liquidacionDeuda = data.liquidacion_deuda ?? 0;
+    const bonoArranqueSaldo = data.bono_arranque_saldo ?? 0;
+    const bonoArranqueUsado = data.bono_arranque_usado ?? 0;
 
-    // Agregar totales desde Movimientos
-    const movsSnap = await db
-      .collection("Movimientos")
-      .where("anfitrion_id", "==", uid)
-      .get();
+    // Valores derivados (calcular en tiempo real, nunca guardar)
+    const gananciaDigital = comisionesMes + participacionMes;
+    const gananciaNeta = gananciaDigital - suscripcionMonto - liquidacionDeuda;
+    const deudaBruta = recaudoMes + suscripcionMonto + liquidacionDeuda;
+    const efectivoAEntregar = Math.max(0, deudaBruta - gananciaDigital);
+    const efectivoAQuedarse = recaudoMes - efectivoAEntregar;
 
-    let totalIngresosReal = 0;
-    let totalIngresosBono = 0;
-    let totalEgresosReal = 0;
-    let totalEgresosBono = 0;
-    let totalRetiros = 0;
-    let totalComisiones = 0;
-    let ultimoRetiro: { amount: number; date: string } | null = null;
-
-    for (const doc of movsSnap.docs) {
-      const d = doc.data();
-      const cat = d.categoria as string;
-
-      if (cat === "INGRESO_REAL") totalIngresosReal += d.monto_real ?? 0;
-      if (cat === "INGRESO_BONO") totalIngresosBono += d.monto_bono ?? 0;
-
-      if (cat === "EGRESO_REAL" || cat === "EGRESO_MIXTO")
-        totalEgresosReal += d.monto_real ?? 0;
-      if (cat === "EGRESO_BONO" || cat === "EGRESO_MIXTO")
-        totalEgresosBono += d.monto_bono ?? 0;
-
-      if (d.tipo === "RETIRO_SOLICITADO") {
-        totalRetiros += d.monto_real ?? 0;
-        if (!ultimoRetiro || d.timestamp > ultimoRetiro.date) {
-          ultimoRetiro = { amount: d.monto_real ?? 0, date: d.timestamp };
-        }
-      }
-
-      if (
-        ["COMISION_PLATAFORMA", "FEE_WOMPI_RETIRO", "RETENCION_FUENTE", "ICA_COBRO"].includes(
-          d.tipo,
-        )
-      ) {
-        totalComisiones += d.monto_real ?? 0;
-      }
-    }
+    // Fecha de liquidación
+    const liquidacionFecha = data.liquidacion_fecha?.toDate?.()?.toISOString?.() ?? null;
 
     return NextResponse.json({
-      saldoReal,
-      saldoBono,
-      saldoTotal: saldoReal + saldoBono,
-      totalIngresosReal,
-      totalIngresosBono,
-      totalEgresosReal,
-      totalEgresosBono,
-      totalRetiros,
-      totalComisiones,
-      pendientePago: 0,
-      ultimoRetiro,
+      recaudoMes,
+      comisionesMes,
+      participacionMes,
+      gananciaDigital,
+      gananciaNeta,
+      suscripcionMonto,
+      deudaBruta,
+      efectivoAEntregar,
+      efectivoAQuedarse,
+      bonoArranqueSaldo,
+      bonoArranqueUsado,
+      liquidacionEstado: data.liquidacion_estado ?? "pendiente",
+      liquidacionDeuda,
+      liquidacionFecha,
     });
-  } catch {
+  } catch (err) {
+    console.error("GET /api/movimientos/resumen error:", err);
     return NextResponse.json({
-      saldoReal: 0,
-      saldoBono: 0,
-      saldoTotal: 0,
-      totalIngresosReal: 0,
-      totalIngresosBono: 0,
-      totalEgresosReal: 0,
-      totalEgresosBono: 0,
-      totalRetiros: 0,
-      totalComisiones: 0,
-      pendientePago: 0,
-      ultimoRetiro: null,
+      recaudoMes: 0,
+      comisionesMes: 0,
+      participacionMes: 0,
+      gananciaDigital: 0,
+      gananciaNeta: 0,
+      suscripcionMonto: SUSCRIPCION_MONTO,
+      deudaBruta: 0,
+      efectivoAEntregar: 0,
+      efectivoAQuedarse: 0,
+      bonoArranqueSaldo: 0,
+      bonoArranqueUsado: 0,
+      liquidacionEstado: "pendiente",
+      liquidacionDeuda: 0,
+      liquidacionFecha: null,
     });
   }
 }

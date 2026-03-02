@@ -21,19 +21,25 @@ export interface Bonos {
 
 export type RecargaStatus = "idle" | "scanning" | "processing" | "success" | "error";
 
+/**
+ * Resultado de una recarga exitosa.
+ * Modelo de crédito: muestra comisión ganada, no saldo.
+ */
 export interface RecargaResultado {
-  nuevoSaldoAnfitrion: number;
+  comisionAcumulada: number;
+  recaudoMes: number;
   clienteNombre: string;
   montoAcreditado: number;
   bonos: Bonos;
+  comisionEsta: number;
 }
 
 /**
- * Hook que encapsula todo el estado y la logica de la pantalla
- * de recarga del anfitrion. Recibe la config de recarga del pais.
+ * Hook que encapsula el estado y la lógica de la pantalla de recarga.
+ * Modelo de crédito: NO valida saldo — crédito ilimitado.
+ * Las tarjetas de monto siempre están habilitadas.
  */
 export function useRecargaCliente(
-  saldoTotal: number,
   recarga?: PaisConfig["recarga"],
 ) {
   const [montoSeleccionado, setMontoSeleccionado] = useState<Monto | null>(null);
@@ -42,37 +48,39 @@ export function useRecargaCliente(
   const [resultado, setResultado] = useState<RecargaResultado | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const minimoBloqueado = recarga?.minimoBloqueado ?? 0;
   const costoExtraGenerosa = recarga?.costoExtraGenerosa ?? 0;
   const tablaBonos = recarga?.tablaBonos ?? {};
   const montos = recarga?.montos ?? [];
   const modos = recarga?.modos ?? [];
 
-  /** Saldo disponible para recargas (total - minimo bloqueado). */
-  const saldoDisponible = useMemo(
-    () => Math.max(0, saldoTotal - minimoBloqueado),
-    [saldoTotal, minimoBloqueado],
-  );
-
-  /** Bonos actuales segun monto y modo seleccionados. */
+  /** Bonos actuales según monto y modo seleccionados. */
   const bonosActuales = useMemo<Bonos | null>(() => {
     if (!montoSeleccionado || !modoSeleccionado) return null;
     return tablaBonos[montoSeleccionado.id]?.[modoSeleccionado.id] ?? null;
   }, [montoSeleccionado, modoSeleccionado, tablaBonos]);
 
-  /** Costo total que se descuenta al anfitrion. */
-  const costoTotal = useMemo(() => {
-    if (!montoSeleccionado) return 0;
-    return montoSeleccionado.valor + (modoSeleccionado?.id === "generosa" ? costoExtraGenerosa : 0);
-  }, [montoSeleccionado, modoSeleccionado, costoExtraGenerosa]);
+  /** Extra del modo generosa */
+  const extra = useMemo(
+    () => (modoSeleccionado?.id === "generosa" ? costoExtraGenerosa : 0),
+    [modoSeleccionado, costoExtraGenerosa],
+  );
 
-  /** Puede escanear si tiene monto, modo seleccionados y saldo suficiente. */
+  /** Monto total de la recarga (monto + extra generosa) */
+  const montoTotal = useMemo(() => {
+    if (!montoSeleccionado) return 0;
+    return montoSeleccionado.valor + extra;
+  }, [montoSeleccionado, extra]);
+
+  /** Comisión que gana el anfitrión por esta recarga (10%) */
+  const comisionEsta = useMemo(
+    () => Math.round(montoTotal * 0.10),
+    [montoTotal],
+  );
+
+  /** Puede escanear si tiene monto y modo seleccionados. Sin validar saldo. */
   const puedeEscanear = useMemo(
-    () =>
-      montoSeleccionado !== null &&
-      modoSeleccionado !== null &&
-      costoTotal <= saldoDisponible,
-    [montoSeleccionado, modoSeleccionado, costoTotal, saldoDisponible],
+    () => montoSeleccionado !== null && modoSeleccionado !== null,
+    [montoSeleccionado, modoSeleccionado],
   );
 
   const seleccionarMonto = useCallback((monto: Monto) => {
@@ -95,7 +103,7 @@ export function useRecargaCliente(
   }, []);
 
   /**
-   * Se llama cuando el escaner decodifica el QR del cliente.
+   * Se llama cuando el escáner decodifica el QR del cliente.
    * Llama al backend y maneja el resultado.
    */
   const onQrDecodificado = useCallback(
@@ -139,9 +147,10 @@ export function useRecargaCliente(
     resultado,
     errorMsg,
     // Derived
-    saldoDisponible,
     bonosActuales,
-    costoTotal,
+    extra,
+    montoTotal,
+    comisionEsta,
     puedeEscanear,
     // Handlers
     seleccionarMonto,
@@ -153,7 +162,6 @@ export function useRecargaCliente(
     // Config re-exports
     montos,
     modos,
-    minimoBloqueado,
     costoExtraGenerosa,
     tablaBonos,
   };

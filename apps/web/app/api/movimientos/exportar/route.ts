@@ -1,3 +1,8 @@
+/**
+ * GET /api/movimientos/exportar
+ * Exporta todos los movimientos del anfitrión como CSV.
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { adminDb } from "@/lib/api/firebase-admin";
@@ -16,22 +21,24 @@ export async function GET(req: NextRequest) {
       .get();
 
     const headers =
-      "id,tipo,categoria,descripcion,monto_real,monto_bono,monto_total,saldo_real_post,saldo_bono_post,timestamp";
+      "id,tipo,categoria,descripcion,monto,comision,participacion,recaudo_post,comisiones_post,participacion_post,timestamp";
 
     const rows = snap.docs.map((doc) => {
       const d = doc.data();
       const desc = String(d.descripcion ?? "").replace(/"/g, '""');
+      const ts = d.timestamp?.toDate?.()?.toISOString?.() ?? d.timestamp ?? "";
       return [
         doc.id,
         d.tipo,
         d.categoria,
         `"${desc}"`,
-        d.monto_real ?? 0,
-        d.monto_bono ?? 0,
-        d.monto_total ?? 0,
-        d.saldo_real_post ?? 0,
-        d.saldo_bono_post ?? 0,
-        d.timestamp,
+        d.monto ?? 0,
+        d.comision ?? 0,
+        d.participacion ?? 0,
+        d.recaudo_post ?? 0,
+        d.comisiones_post ?? 0,
+        d.participacion_post ?? 0,
+        ts,
       ].join(",");
     });
 
@@ -44,7 +51,7 @@ export async function GET(req: NextRequest) {
     });
   } catch {
     return new NextResponse(
-      "id,tipo,categoria,descripcion,monto_real,monto_bono,monto_total,saldo_real_post,saldo_bono_post,timestamp\n",
+      "id,tipo,categoria,descripcion,monto,comision,participacion,recaudo_post,comisiones_post,participacion_post,timestamp\n",
       { headers: { "Content-Type": "text/csv" } },
     );
   }

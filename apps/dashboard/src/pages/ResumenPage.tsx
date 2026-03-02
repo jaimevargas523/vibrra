@@ -24,9 +24,9 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import clsx from "clsx";
 
 import { KpiCard } from "@/components/ui/KpiCard";
-import { SaldoBox } from "@/components/ui/SaldoBox";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { StatusDot } from "@/components/ui/StatusDot";
@@ -131,6 +131,14 @@ function MensajeBanner({ mensaje, onDismiss }: { mensaje: Mensaje; onDismiss: ()
   );
 }
 
+/* ── Helper: days until next month ───────────────────────────── */
+
+function calcularDiasParaCierre(): number {
+  const today = new Date();
+  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  return Math.ceil((nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 /* ── Page ─────────────────────────────────────────────────────── */
 
 export default function ResumenPage() {
@@ -140,7 +148,6 @@ export default function ResumenPage() {
   const { data: kpis, isLoading: kpisLoading } = useResumenKpis();
   const { data: chartData, isLoading: chartLoading } = useResumenChart("7d");
   const { data: sesiones, isLoading: sesionesLoading } = useResumenSesiones();
-  const { data: establecimientos } = useEstablecimientos();
   const { data: movResumen } = useMovimientosResumen();
 
   const authUser = useAuthStore((s) => s.user);
@@ -155,24 +162,19 @@ export default function ResumenPage() {
   const recentSesiones = sesiones ?? [];
   const chart = chartData?.data ?? [];
 
-  // Calculate next billing cutoff date (1 month cycles from registration)
-  const proximoCobro = (() => {
-    if (!profile?.createdAt) return "---";
-    const created = new Date(profile.createdAt);
-    const today = new Date();
-    const cutoff = new Date(today.getFullYear(), today.getMonth(), created.getDate());
-    if (cutoff <= today) cutoff.setMonth(cutoff.getMonth() + 1);
-    return cutoff.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
-  })();
+  // Credit model data
+  const recaudoMes = movResumen?.recaudoMes ?? 0;
+  const comisionesMes = movResumen?.comisionesMes ?? 0;
+  const participacionMes = movResumen?.participacionMes ?? 0;
+  const gananciaNeta = movResumen?.gananciaNeta ?? 0;
+  const diasParaCierre = calcularDiasParaCierre();
 
   // Dynamic messages from Firestore
   const { data: mensajes } = useMensajes();
   const { marcarLeido, eliminar } = useMensajeActions();
 
-  // Build saldo establecimientos from real data
-  const saldoEstablecimientos = (establecimientos ?? [])
-    .filter((e) => e.isActive)
-    .map((e) => ({ name: e.name, saldo: e.totalRecaudado }));
+  // Bonus info
+  const bonoArranqueSaldo = movResumen?.bonoArranqueSaldo ?? 0;
 
   return (
     <div className="space-y-6">
@@ -200,6 +202,21 @@ export default function ResumenPage() {
           }
         />
       ))}
+
+      {/* ── Bonus banner ────────────────────────────────────── */}
+      {bonoArranqueSaldo > 0 && (
+        <div className="bg-gold/5 border border-gold/20 rounded-xl p-4 flex items-start gap-3">
+          <Gift className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-bold text-gold">
+              {t("bonus.title", { amount: fmt(bonoArranqueSaldo) })}
+            </p>
+            <p className="text-xs text-text-secondary mt-0.5">
+              {t("bonus.subtitle")}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ── Session banner ────────────────────────────────── */}
       {isLive ? (
@@ -269,21 +286,18 @@ export default function ResumenPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard
-            label={t("kpi.saldo")}
-            value={fmt(kpis?.totalRecaudado ?? 0)}
-            sublabel={t("kpi.saldoSub")}
+            label={t("kpi.recaudo")}
+            value={fmt(recaudoMes)}
+            sublabel={t("kpi.recaudoSub")}
             icon={<Wallet />}
             accentColor="text-gold"
           />
           <KpiCard
-            label={t("kpi.generado")}
-            value={fmt(kpis?.totalRecaudado ?? 0)}
-            sublabel={kpis?.comparacionMesAnterior?.recaudado
-              ? t("kpi.vsMesAnterior", { percent: kpis.comparacionMesAnterior.recaudado })
-              : t("kpi.sinDatosMes")}
+            label={t("kpi.comision")}
+            value={fmt(comisionesMes)}
+            sublabel={t("kpi.comisionSub")}
             icon={<TrendingUp />}
-            trend={kpis?.comparacionMesAnterior?.recaudado && kpis.comparacionMesAnterior.recaudado > 0 ? "up" : undefined}
-            accentColor="text-success"
+            accentColor="text-green"
           />
           <KpiCard
             label={t("kpi.sesiones")}
@@ -305,15 +319,37 @@ export default function ResumenPage() {
         </div>
       )}
 
-      {/* ── Two columns: Saldo + Chart ────────────────────── */}
+      {/* ── Two columns: Estado del mes + Chart ─────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SaldoBox
-          saldoReal={movResumen?.saldoReal ?? profile?.saldoBono ?? 0}
-          saldoBono={movResumen?.saldoBono ?? profile?.saldoBono ?? 0}
-          establecimientos={saldoEstablecimientos}
-          ventanaAbierta={false}
-          proximaVentana={proximoCobro}
-        />
+        {/* Estado del mes (replaces SaldoBox) */}
+        <div className="bg-surface rounded-xl border border-border p-5 space-y-3">
+          <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
+            {t("saldo.title")}
+          </span>
+
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("saldo.recaudo")}</span>
+            <span className="font-mono text-text-secondary">{fmt(recaudoMes)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("saldo.comision")}</span>
+            <span className="font-mono text-green">+ {fmt(comisionesMes)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t("saldo.participacion")}</span>
+            <span className="font-mono text-green">+ {fmt(participacionMes)}</span>
+          </div>
+          <hr className="border-border" />
+          <div className="flex justify-between text-base font-bold">
+            <span className="text-text-primary">{t("saldo.gananciaNeta")}</span>
+            <span className={clsx("font-mono", gananciaNeta >= 0 ? "text-gold" : "text-error")}>
+              {fmt(gananciaNeta)}
+            </span>
+          </div>
+          <p className="text-xs text-text-muted text-center">
+            {t("saldo.liquidacionEn", { dias: diasParaCierre })}
+          </p>
+        </div>
 
         <div className="bg-surface rounded-xl border border-border p-5">
           <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">

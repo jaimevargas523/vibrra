@@ -12,9 +12,13 @@ export interface HostProfile {
   pais: string;
   createdAt: string;
   establishmentCount: number;
-  saldoBono: number;
   registroCompleto: boolean;
-  bonoDisponible: boolean;
+  // Credit model fields
+  recaudoMes: number;
+  comisionesMes: number;
+  participacionMes: number;
+  bonoArranqueSaldo: number;
+  liquidacionEstado: string;
   // Bank account
   banco: string | null;
   tipoCuenta: string | null;
