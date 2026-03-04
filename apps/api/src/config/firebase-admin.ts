@@ -6,6 +6,7 @@ import {
 } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
+import { getDatabase } from "firebase-admin/database";
 import { env } from "./env.js";
 
 let app: App | undefined;
@@ -44,3 +45,9 @@ export function adminDb() {
 export function adminAuth() {
   return getAuth(getApp());
 }
+
+/** Realtime Database instance. */
+export function adminRtdb() {
+  return getDatabase(getApp());
+}
+

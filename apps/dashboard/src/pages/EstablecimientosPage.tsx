@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ModalVincularExtension } from "@/components/establecimiento/ModalVincularExtension";
 
 import { useEstablecimientos, type EstablecimientoListItem } from "@/hooks/api/useEstablecimientos";
 import { useSessionStore } from "@/stores/session.store";
@@ -43,6 +44,7 @@ export default function EstablecimientosPage() {
   const isLive = useSessionStore((s) => s.isLive);
   const [showModal, setShowModal] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(emojiOptions[0]);
+  const [syncEst, setSyncEst] = useState<{ id: string; name: string } | null>(null);
 
   const estData = establecimientos ?? [];
 
@@ -145,7 +147,8 @@ export default function EstablecimientosPage() {
                   </Link>
                   <button
                     type="button"
-                    className="flex items-center justify-center gap-1.5 py-3 text-xs text-text-secondary border-l border-border hover:bg-surface-hover hover:text-text-primary transition-colors"
+                    onClick={() => setSyncEst({ id: est.id, name: est.name })}
+                    className="flex items-center justify-center gap-1.5 py-3 text-xs text-text-secondary border-l border-border hover:bg-surface-hover hover:text-text-primary transition-colors cursor-pointer"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Sync</span>
@@ -156,6 +159,14 @@ export default function EstablecimientosPage() {
           })}
         </div>
       )}
+
+      {/* ── Vincular extension modal ──────────────────── */}
+      <ModalVincularExtension
+        open={syncEst !== null}
+        onClose={() => setSyncEst(null)}
+        establecimientoId={syncEst?.id ?? ""}
+        establecimientoName={syncEst?.name ?? ""}
+      />
 
       {/* ── Add establishment modal ───────────────────── */}
       <Modal

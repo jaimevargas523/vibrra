@@ -200,19 +200,18 @@ export function TabConfiguracion({ establecimiento: est }: Props) {
 
         <div>
           <label className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold block mb-1.5">
-            SLUG (URL)
+            SLUG
           </label>
-          <div className="flex items-center">
-            <span className="text-sm text-text-muted bg-card-dark border border-r-0 border-border rounded-l-lg px-3 py-3 shrink-0">
-              vibrra.live/s/
-            </span>
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              className={clsx(inputClass, "rounded-l-none")}
-            />
-          </div>
+          <input
+            type="text"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="ej: bar-el-parche"
+            className={inputClass}
+          />
+          <p className="text-[10px] text-text-muted mt-1">
+            URL del negocio: vibrra.live/s/{est.id}
+          </p>
         </div>
       </section>
 

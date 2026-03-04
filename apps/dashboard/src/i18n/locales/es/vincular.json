@@ -1,0 +1,19 @@
+{
+  "title": "Vincular extensión",
+  "subtitle": "Escanea el QR de la extensión Chrome para sincronizar tu establecimiento",
+  "seleccionarEst": "Selecciona el establecimiento",
+  "escanear": "Escanear QR de la extensión",
+  "oIngresarCodigo": "CÓDIGO DE LA EXTENSIÓN",
+  "placeholder": "Pega el código de la extensión aquí",
+  "vincular": "Vincular",
+  "procesando": "Vinculando extensión...",
+  "exito": "Extensión vinculada",
+  "exitoDesc": "La extensión Chrome está conectada con {{nombre}}",
+  "instruccion": "Apunta la cámara al QR de la extensión Chrome",
+  "reintentar": "Reintentar",
+  "compartirPantalla": "Compartir pantalla (desktop)",
+  "errorCamara": "No se pudo acceder a la cámara. Verifica los permisos del navegador.",
+  "errorToken": "Token inválido o expirado. Genera un nuevo QR en la extensión.",
+  "errorGenerico": "Error al vincular. Intenta de nuevo.",
+  "volverEscanear": "Escanear otro QR"
+}

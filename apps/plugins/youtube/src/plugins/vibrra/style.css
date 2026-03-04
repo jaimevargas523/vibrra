@@ -1,0 +1,125 @@
+/**
+ * style.css
+ * Estilos del overlay que VIBRRA inyecta en la interfaz de YouTube Music.
+ * Muestra una notificación toast cuando una canción de la cola de VIBRRA
+ * comienza a reproducirse.
+ */
+
+/* ─── Toast de notificación VIBRRA ────────────────────────────────────── */
+
+#vibrra-toast {
+  position: fixed;
+  bottom: 80px;   /* encima de los controles de YT Music */
+  right: 20px;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: #1A1A1A;
+  border: 1px solid #D4A017;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 260px;
+  max-width: 340px;
+
+  color: #F5F5F5;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,229,102,0.1);
+
+  /* Animación de entrada */
+  animation: vibrra-slide-in 0.35s ease forwards;
+  pointer-events: none; /* No interfiere con el mouse del usuario */
+}
+
+/* Salida: se agrega la clase .hide antes de remover el elemento */
+#vibrra-toast.hide {
+  animation: vibrra-slide-out 0.3s ease forwards;
+}
+
+@keyframes vibrra-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes vibrra-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+
+/* ─── Icono de onda (VIBRRA brand) ────────────────────────────────────── */
+
+.vibrra-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  animation: vibrra-bounce 0.6s ease;
+}
+
+@keyframes vibrra-bounce {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ─── Texto del toast ─────────────────────────────────────────────────── */
+
+.vibrra-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.vibrra-toast-label {
+  font-size: 10px;
+  color: #D4A017;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+}
+
+.vibrra-toast-song {
+  font-size: 13px;
+  font-weight: 600;
+  color: #F5F5F5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vibrra-toast-amount {
+  font-size: 11px;
+  color: #FFE566;
+}
+
+/* ─── Indicador "buscando" (spinner) ─────────────────────────────────── */
+
+.vibrra-searching {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid rgba(255,229,102,0.2);
+  border-top-color: #FFE566;
+  border-radius: 50%;
+  animation: vibrra-spin 0.7s linear infinite;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+@keyframes vibrra-spin {
+  to { transform: rotate(360deg); }
+}

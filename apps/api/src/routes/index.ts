@@ -16,6 +16,7 @@ import mensajesRouter from "./mensajes.js";
 import recargaClienteRouter from "./recarga-cliente.js";
 import miPaisRouter from "./mi-pais.js";
 import debugRouter from "./debug.js";
+import extensionRouter from "./extension.js";
 
 const api = Router();
 
@@ -35,5 +36,6 @@ api.use("/resumen", resumenRouter);
 api.use("/mensajes", mensajesRouter);
 api.use("/recarga-cliente", recargaClienteRouter);
 api.use("/mi-pais", miPaisRouter);
+api.use("/extension", extensionRouter);
 
 export default api;

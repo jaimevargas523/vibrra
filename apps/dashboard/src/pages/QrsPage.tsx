@@ -20,7 +20,6 @@ interface EstQr {
   emoji: string;
   city: string;
   isLive: boolean;
-  slug: string;
   scans: number;
   liveUsers: number;
   registrationRate: number;
@@ -45,21 +44,20 @@ export default function QrsPage() {
         emoji: est.type === "bar" ? "\uD83C\uDF7A" : "\uD83C\uDFB5",
         city: est.city,
         isLive: false,
-        slug: est.slug ?? est.id,
         scans: totalScans ?? est.totalSesiones * 15,
         liveUsers: 0,
         registrationRate: 0,
       };
     }) ?? [];
 
-  const handleCopy = (slug: string, id: string) => {
-    navigator.clipboard.writeText(`https://vibrra.live/s/${slug}`).catch(() => {});
+  const handleCopy = (id: string) => {
+    navigator.clipboard.writeText(`https://vibrra.live/s/${id}`).catch(() => {});
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleDownload = (slug: string) => {
-    const svg = document.getElementById(`qr-${slug}`);
+  const handleDownload = (id: string, name: string) => {
+    const svg = document.getElementById(`qr-${id}`);
     if (!svg) return;
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement("canvas");
@@ -70,7 +68,7 @@ export default function QrsPage() {
     img.onload = () => {
       ctx?.drawImage(img, 0, 0, 520, 520);
       const link = document.createElement("a");
-      link.download = `qr-${slug}.png`;
+      link.download = `qr-${name}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
     };
@@ -109,7 +107,7 @@ export default function QrsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {estData.map((est) => {
-          const url = `https://vibrra.live/s/${est.slug}`;
+          const url = `https://vibrra.live/s/${est.id}`;
           const live = est.isLive || (isLive && est.id === estData[0]?.id);
 
           return (
@@ -153,7 +151,7 @@ export default function QrsPage() {
                   )}
                 >
                   <QRCodeSVG
-                    id={`qr-${est.slug}`}
+                    id={`qr-${est.id}`}
                     value={url}
                     size={160}
                     bgColor="#0A0A0A"
@@ -165,12 +163,12 @@ export default function QrsPage() {
                 {/* Shortlink — justo debajo del QR */}
                 <button
                   type="button"
-                  onClick={() => handleCopy(est.slug, est.id)}
+                  onClick={() => handleCopy(est.id)}
                   className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20 hover:bg-gold/20 transition-colors group"
                 >
                   <LinkIcon className="w-3.5 h-3.5 text-gold" />
                   <span className="font-mono text-sm text-gold font-medium">
-                    vibrra.live/s/{est.slug}
+                    vibrra.live/s/{est.id}
                   </span>
                   <Copy className="w-3.5 h-3.5 text-gold/50 group-hover:text-gold transition-colors" />
                 </button>
@@ -216,7 +214,7 @@ export default function QrsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleCopy(est.slug, est.id)}
+                    onClick={() => handleCopy(est.id)}
                   >
                     <Copy className="w-3.5 h-3.5" />
                     {t("copiarLink")}
@@ -224,7 +222,7 @@ export default function QrsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDownload(est.slug)}
+                    onClick={() => handleDownload(est.id, est.name)}
                   >
                     <Download className="w-3.5 h-3.5" />
                     {t("descargarPng")}

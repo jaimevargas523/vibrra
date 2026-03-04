@@ -1,0 +1,19 @@
+{
+  "title": "Link extension",
+  "subtitle": "Scan the Chrome extension QR to sync your establishment",
+  "seleccionarEst": "Select establishment",
+  "escanear": "Scan extension QR",
+  "oIngresarCodigo": "EXTENSION CODE",
+  "placeholder": "Paste the extension code here",
+  "vincular": "Link",
+  "procesando": "Linking extension...",
+  "exito": "Extension linked",
+  "exitoDesc": "Chrome extension is connected to {{nombre}}",
+  "instruccion": "Point the camera at the Chrome extension QR",
+  "reintentar": "Retry",
+  "errorCamara": "Could not access camera. Check browser permissions.",
+  "errorToken": "Invalid or expired token. Generate a new QR in the extension.",
+  "errorGenerico": "Error linking. Try again.",
+  "compartirPantalla": "Share screen (desktop)",
+  "volverEscanear": "Scan another QR"
+}

@@ -18,7 +18,8 @@
       "analiticas": "Análises",
       "miCuenta": "Minha Conta",
       "documentos": "Documentos",
-      "recargarCliente": "Recarregar cliente"
+      "recargarCliente": "Recarregar cliente",
+      "vincularExtension": "Vincular extensão"
     },
     "logout": "Sair"
   },

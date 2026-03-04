@@ -76,8 +76,7 @@ export default function EnVivoPage() {
   const liveUsers = connectedUsers || activeSession?.connectedUsers || 0;
   const liveRecaudado = totalRecaudado || activeSession?.totalRecaudado || 0;
   const queue = storeQueue;
-  const slug = selectedEst?.name?.toLowerCase().replace(/\s+/g, "-") ?? "";
-  const shareUrl = `vibrra.live/s/${slug}`;
+  const shareUrl = `vibrra.live/s/${selectedEst?.id ?? ""}`;
 
   const playingItem = queue.find((q) => q.status === "playing");
   const pendingItems = queue.filter((q) => q.status === "pending");

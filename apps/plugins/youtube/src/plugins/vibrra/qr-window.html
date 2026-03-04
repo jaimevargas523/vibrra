@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<!--
+  qr-window.html
+  Ventana flotante del plugin VIBRRA para Pear Desktop.
+  Muestra formulario de login y, tras autenticarse, el QR permanente del negocio
+  para que los clientes del bar lo escaneen y pidan canciones.
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VIBRRA — Panel del Host</title>
+  <style>
+    /* ─── Variables de diseño VIBRRA ─────────────────────────────── */
+    :root {
+      --gold-primary: #FFE566;
+      --gold-dark:    #D4A017;
+      --gold-deeper:  #A97010;
+      --bg-dark:      #0D0D0D;
+      --bg-card:      #1A1A1A;
+      --text-light:   #F5F5F5;
+      --text-muted:   #888888;
+      --border:       #2A2A2A;
+      --green:        #4CAF50;
+      --red:          #E53935;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      /* Draggable region para mover la ventana */
+      -webkit-app-region: drag;
+    }
+
+    /* Los controles interactivos NO deben ser draggable */
+    input, button, a, canvas, #qr-canvas {
+      -webkit-app-region: no-drag;
+    }
+
+    /* ─── Contenedor principal ────────────────────────────────────── */
+    .panel {
+      width: 320px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+
+    /* ─── Logo VIBRRA ─────────────────────────────────────────────── */
+    .logo {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* ─── Formulario de login ─────────────────────────────────────── */
+    #login-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field-label {
+      text-align: left;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-light);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--gold-dark);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+      color: #000;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 4px;
+    }
+
+    .btn-primary:hover   { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ─── Error message ───────────────────────────────────────────── */
+    #error-msg {
+      display: none;
+      background: rgba(229, 57, 53, 0.15);
+      border: 1px solid var(--red);
+      color: var(--red);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    /* ─── Panel del QR ────────────────────────────────────────────── */
+    #qr-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(76, 175, 80, 0.15);
+      border: 1px solid var(--green);
+      color: var(--green);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* Canvas del QR */
+    #qr-canvas {
+      border-radius: 12px;
+      border: 3px solid var(--gold-primary);
+      padding: 8px;
+      background: #fff;
+    }
+
+    .qr-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Canción en reproducción */
+    #now-playing {
+      display: none;
+      width: 100%;
+      background: rgba(255, 229, 102, 0.08);
+      border: 1px solid rgba(255, 229, 102, 0.3);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .np-label {
+      font-size: 10px;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .np-song {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .np-amount {
+      font-size: 11px;
+      color: var(--gold-primary);
+      margin-top: 2px;
+    }
+
+    /* Botón cerrar sesión */
+    .btn-logout {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    /* ─── Loading state ───────────────────────────────────────────── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,229,102,0.2);
+      border-top-color: var(--gold-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <!-- Logo -->
+  <div class="logo">VIBRRA</div>
+  <div class="subtitle">Panel del Host • Pear Desktop</div>
+
+  <!-- ── Sección Login ── -->
+  <div id="login-section">
+    <div>
+      <div class="field-label">Correo electrónico</div>
+      <input type="email" id="email-input" placeholder="host@bar.com" autocomplete="email" />
+    </div>
+    <div>
+      <div class="field-label">Contraseña</div>
+      <input type="password" id="password-input" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <div id="error-msg"></div>
+    <button class="btn-primary" id="login-btn" onclick="handleLogin()">
+      Iniciar sesión
+    </button>
+  </div>
+
+  <!-- ── Sección QR (visible tras login) ── -->
+  <div id="qr-section">
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      Escuchando cola de canciones
+    </div>
+
+    <!-- Canvas donde se renderiza el QR (via qrcode.js) -->
+    <canvas id="qr-canvas" width="200" height="200"></canvas>
+
+    <div class="qr-hint">
+      Los clientes escanean este código<br />para pedir y pujar canciones
+    </div>
+
+    <!-- Canción en reproducción (aparece cuando hay una activa) -->
+    <div id="now-playing">
+      <div class="np-label">🎵 Reproduciendo ahora</div>
+      <div class="np-song" id="np-song-text">—</div>
+      <div class="np-amount" id="np-amount-text"></div>
+    </div>
+
+    <button class="btn-logout" onclick="handleLogout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<!--
+  qrcode.js via CDN para generar el QR en canvas.
+  En producción, incluir localmente para evitar dependencia de red.
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+  // ─── IPC Bridge ──────────────────────────────────────────────────────────
+  // window.vibrraAPI es expuesto por el preload script del plugin.
+  const api = window.vibrraAPI;
+
+  // ─── Login ───────────────────────────────────────────────────────────────
+
+  /**
+   * Maneja el submit del formulario de login.
+   * Envía las credenciales al backend vía IPC y espera la respuesta.
+   */
+  async function handleLogin() {
+    const email    = document.getElementById('email-input').value.trim();
+    const password = document.getElementById('password-input').value;
+    const btn      = document.getElementById('login-btn');
+    const errorEl  = document.getElementById('error-msg');
+
+    if (!email || !password) {
+      showError('Ingresa correo y contraseña.');
+      return;
+    }
+
+    // Estado de carga
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div>';
+    errorEl.style.display = 'none';
+
+    try {
+      // IPC → backend: solicitar autenticación con Firebase
+      const result = await api.login(email, password);
+
+      if (result.success) {
+        showQrSection(result.negocioUid);
+      } else {
+        showError(result.error ?? 'Credenciales incorrectas.');
+      }
+    } catch (err) {
+      showError('Error de conexión. Verifica tu internet.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Iniciar sesión';
+    }
+  }
+
+  /**
+   * Cierra la sesión y regresa al formulario de login.
+   */
+  function handleLogout() {
+    api.logout();
+    document.getElementById('qr-section').style.display   = 'none';
+    document.getElementById('login-section').style.display = 'flex';
+    document.getElementById('email-input').value    = '';
+    document.getElementById('password-input').value = '';
+  }
+
+  // ─── QR ──────────────────────────────────────────────────────────────────
+
+  /**
+   * Renderiza el QR del negocio y muestra la sección correspondiente.
+   * @param {string} negocioUid - UID del negocio para construir la URL del QR.
+   */
+  function showQrSection(negocioUid) {
+    const loginSection = document.getElementById('login-section');
+    const qrSection    = document.getElementById('qr-section');
+
+    loginSection.style.display = 'none';
+    qrSection.style.display    = 'flex';
+
+    // URL permanente del negocio en VIBRRA (los clientes del bar la visitan)
+    const url = `https://vibrra.live/neg/${negocioUid}`;
+
+    // Generar QR en el canvas usando qrcode.js
+    const canvas = document.getElementById('qr-canvas');
+    new QRCode(canvas, {
+      text:          url,
+      width:         200,
+      height:        200,
+      colorDark:     '#000000',
+      colorLight:    '#ffffff',
+      correctLevel:  QRCode.CorrectLevel.M,
+    });
+  }
+
+  // ─── Escuchar eventos del backend ────────────────────────────────────────
+
+  /**
+   * Recibe la notificación de una canción aprobada para reproducción.
+   * Muestra la info en el panel del host.
+   */
+  api.onSongPlaying((song) => {
+    const nowPlaying = document.getElementById('now-playing');
+    const songText   = document.getElementById('np-song-text');
+    const amountText = document.getElementById('np-amount-text');
+
+    songText.textContent   = `${song.artista} — ${song.cancion}`;
+    amountText.textContent = `Puja ganadora: $${song.monto.toLocaleString('es-CO')} COP`;
+    nowPlaying.style.display = 'block';
+  });
+
+  /**
+   * Si ya hay sesión activa al abrir la ventana, mostrar directamente el QR.
+   */
+  api.getSession().then((session) => {
+    if (session?.negocioUid) {
+      showQrSection(session.negocioUid);
+    }
+  });
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent    = msg;
+    el.style.display  = 'block';
+  }
+
+  // Enter en los inputs dispara el login
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+
+</body>
+</html>

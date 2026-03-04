@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>VIBRRA</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- ── Vista: Login QR ───────────────────────────────────────────── -->
+  <div id="vista-login" class="vista oculto">
+    <img src="../icons/vibrra-logo.svg" alt="VIBRRA" class="logo" />
+    <p class="subtitulo">Escanea desde el dashboard para vincular tu cuenta</p>
+
+    <div class="qr-wrapper">
+      <canvas id="qr-canvas"></canvas>
+    </div>
+
+    <div id="qr-timer" class="qr-timer">Generando QR...</div>
+
+    <div id="ext-id-box" class="ext-id-box oculto">
+      <span class="ext-id-label">Código:</span>
+      <code id="ext-id-text" class="ext-id-text"></code>
+      <button id="ext-id-copy" class="btn-copy" title="Copiar código">⎘</button>
+    </div>
+
+    <button id="qr-refresh" class="btn btn-ghost btn-sm">↻ Generar nuevo QR</button>
+
+    <div id="login-estado" class="estado-msg oculto"></div>
+  </div>
+
+  <!-- ── Vista: Vinculado, sin sesión ─────────────────────────────── -->
+  <div id="vista-inicio" class="vista oculto">
+    <img src="../icons/vibrra-logo.svg" alt="VIBRRA" class="logo" />
+
+    <div class="est-info">
+      <span class="est-label">Est:</span>
+      <span id="est-nombre" class="est-nombre"></span>
+    </div>
+
+    <div id="reproductor-estado" class="reproductor-badge oculto">
+      <span id="reproductor-icono"></span>
+      <span id="reproductor-nombre"></span>
+    </div>
+
+    <div id="no-reproductor" class="alerta oculto">
+      Abre YouTube, Spotify o SoundCloud primero
+    </div>
+
+    <button id="btn-iniciar" class="btn btn-primary">VIBRRAR</button>
+    <button id="btn-logout"  class="btn btn-ghost">Cerrar cuenta</button>
+  </div>
+
+  <!-- ── Vista: Sesión activa ─────────────────────────────────────── -->
+  <div id="vista-sesion" class="vista oculto">
+    <img src="../icons/vibrra-logo.svg" alt="VIBRRA" class="logo" />
+
+    <div class="sesion-info">
+      <div class="sesion-badge">● EN VIVO</div>
+      <div id="sesion-reproductor" class="sesion-reproductor"></div>
+    </div>
+
+    <div class="cola-info">
+      <span class="label">Sonadas</span>
+      <span id="cola-count" class="cola-count">0</span>
+      <span class="label">canciones</span>
+    </div>
+
+    <button id="btn-cerrar" class="btn btn-danger">Cerrar sesión</button>
+  </div>
+
+  <script src="../lib/qr-code.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

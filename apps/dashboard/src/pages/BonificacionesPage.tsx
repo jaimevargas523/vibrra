@@ -52,7 +52,7 @@ export default function BonificacionesPage() {
               {fmt(saldo)}
             </p>
           </div>
-          <Badge variant={agotado ? "default" : "gold"}>
+          <Badge variant={agotado ? "neutral" : "gold"}>
             {agotado ? t("card.agotado") : t("card.activo")}
           </Badge>
         </div>

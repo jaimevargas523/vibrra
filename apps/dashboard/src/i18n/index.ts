@@ -16,6 +16,7 @@ import esEstablecimientos from "./locales/es/establecimientos.json";
 import esAnalytics from "./locales/es/analytics.json";
 import esCuenta from "./locales/es/cuenta.json";
 import esDocumentos from "./locales/es/documentos.json";
+import esVincular from "./locales/es/vincular.json";
 
 // EN namespaces
 import enCommon from "./locales/en/common.json";
@@ -31,6 +32,7 @@ import enEstablecimientos from "./locales/en/establecimientos.json";
 import enAnalytics from "./locales/en/analytics.json";
 import enCuenta from "./locales/en/cuenta.json";
 import enDocumentos from "./locales/en/documentos.json";
+import enVincular from "./locales/en/vincular.json";
 
 // PT namespaces
 import ptCommon from "./locales/pt/common.json";
@@ -46,6 +48,7 @@ import ptEstablecimientos from "./locales/pt/establecimientos.json";
 import ptAnalytics from "./locales/pt/analytics.json";
 import ptCuenta from "./locales/pt/cuenta.json";
 import ptDocumentos from "./locales/pt/documentos.json";
+import ptVincular from "./locales/pt/vincular.json";
 
 export const namespaces = [
   "common",
@@ -61,6 +64,7 @@ export const namespaces = [
   "analytics",
   "cuenta",
   "documentos",
+  "vincular",
 ] as const;
 
 const resources = {
@@ -78,6 +82,7 @@ const resources = {
     analytics: esAnalytics,
     cuenta: esCuenta,
     documentos: esDocumentos,
+    vincular: esVincular,
   },
   en: {
     common: enCommon,
@@ -93,6 +98,7 @@ const resources = {
     analytics: enAnalytics,
     cuenta: enCuenta,
     documentos: enDocumentos,
+    vincular: enVincular,
   },
   pt: {
     common: ptCommon,
@@ -108,6 +114,7 @@ const resources = {
     analytics: ptAnalytics,
     cuenta: ptCuenta,
     documentos: ptDocumentos,
+    vincular: ptVincular,
   },
 };
 
