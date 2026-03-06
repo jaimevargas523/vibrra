@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VIBRRA - Cliente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold-shine: #FFF3A3;
+      --gold:       #FFE566;
+      --gold-mid:   #D4A017;
+      --gold-dk:    #A97010;
+      --gold-deep:  #8A6000;
+      --ink:   #080808;
+      --deep:  #0C0C0C;
+      --panel: #111111;
+      --edge:  #1E1E1E;
+      --line:  rgba(212,160,23,.13);
+      --txt:   #F0EDE8;
+      --soft:  #9A9590;
+      --muted: #5A5A5A;
+      --live:    #2ECC71;
+      --danger:  #E74C3C;
+      --blue:    #3498DB;
+      --pink:    #E91E63;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'Montserrat', sans-serif;
+    }
+
+    html { font-size: 16px; }
+    body {
+      font-family: var(--font-body);
+      background: var(--ink);
+      color: var(--txt);
+      min-height: 100dvh;
+      max-width: 430px;
+      margin: 0 auto;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Shared ──────────────────────────────────────────── */
+    .vista { display: none; flex-direction: column; min-height: 100dvh; }
+    .vista.activa { display: flex; }
+
+    .topbar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px;
+      background: var(--deep);
+      border-bottom: 1px solid var(--edge);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-back {
+      background: none; border: none; color: var(--soft);
+      font-size: 20px; cursor: pointer; padding: 4px; line-height: 1;
+    }
+    .topbar-back:hover { color: var(--gold); }
+    .topbar-title { font-weight: 600; font-size: 15px; flex: 1; }
+    .topbar-logo { height: 22px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 12px 20px; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-weight: 600; font-size: 14px;
+      border: none; cursor: pointer; transition: all .2s;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-mid));
+      color: var(--ink);
+    }
+    .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,229,102,.3); }
+    .btn-gold:active { transform: scale(.97); }
+    .btn-ghost { background: transparent; border: 1px solid var(--edge); color: var(--soft); }
+    .btn-ghost:hover { border-color: var(--gold-mid); color: var(--gold); }
+    .btn-sm { padding: 8px 14px; font-size: 12px; }
+    .btn-full { width: 100%; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-pink { background: var(--pink); color: white; }
+    .btn-disabled { opacity: .4; pointer-events: none; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .badge-live { background: rgba(46,204,113,.15); color: var(--live); }
+    .badge-gold { background: rgba(255,229,102,.12); color: var(--gold); }
+    .badge-pink { background: rgba(233,30,99,.15); color: var(--pink); }
+    .badge-blue { background: rgba(52,152,219,.15); color: var(--blue); }
+
+    .card {
+      background: var(--panel); border: 1px solid var(--edge);
+      border-radius: var(--radius); padding: 16px;
+    }
+
+    .divider { height: 1px; background: var(--line); margin: 16px 0; }
+
+    @keyframes pulso { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    /* ─── Bottom Nav ──────────────────────────────────────── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px;
+      display: flex; justify-content: space-around;
+      background: var(--deep);
+      border-top: 1px solid var(--edge);
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      background: none; border: none; color: var(--muted);
+      font-size: 10px; font-family: var(--font-body); font-weight: 500;
+      cursor: pointer; padding: 4px 12px; transition: color .2s;
+    }
+    .nav-item .nav-icon { font-size: 20px; }
+    .nav-item.activo { color: var(--gold); }
+
+    /* ─── Modals ──────────────────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.7); z-index: 200;
+      animation: fadeIn .2s;
+    }
+    .modal-overlay.activo { display: flex; align-items: flex-end; justify-content: center; }
+    .modal-sheet {
+      width: 100%; max-width: 430px;
+      background: var(--panel);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+      animation: slideUp .3s ease;
+      max-height: 90dvh; overflow-y: auto;
+    }
+    .modal-handle { width: 36px; height: 4px; background: var(--edge); border-radius: 2px; margin: 0 auto 16px; }
+    .modal-titulo { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .modal-sub { color: var(--soft); font-size: 13px; margin-bottom: 20px; }
+
+    .modal-cancion-preview {
+      display: flex; gap: 12px; align-items: center;
+      background: var(--deep); border-radius: var(--radius-sm);
+      padding: 12px; margin-bottom: 20px;
+    }
+    .modal-cancion-thumb {
+      width: 48px; height: 48px; border-radius: 6px;
+      background: var(--edge); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: var(--muted);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       VISTA: BAR SIN SESION (vibrra.live/bar/{slug})
+       ═══════════════════════════════════════════════════════ */
+    .v-espera {
+      justify-content: center; align-items: center;
+      padding: 40px 24px; text-align: center;
+      background: radial-gradient(ellipse at 50% 30%, rgba(212,160,23,.05) 0%, var(--ink) 70%);
+    }
+    .espera-logo { height: 36px; margin-bottom: 40px; }
+    .espera-bar-foto {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 2px solid var(--edge); margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; color: var(--muted); background: var(--panel);
+    }
+    .espera-bar-nombre { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .espera-bar-tipo { color: var(--soft); font-size: 13px; margin-bottom: 32px; }
+    .espera-msg {
+      color: var(--muted); font-size: 14px; line-height: 1.6;
+      max-width: 280px; margin-bottom: 32px;
+    }
+    .espera-slug {
+      font-size: 11px; color: var(--muted);
+      background: var(--panel); border: 1px solid var(--edge);
+      border-radius: 20px; padding: 6px 14px;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PASO 1: BIENVENIDA
+       ═══════════════════════════════════════════════════════ */
+    .v-bienvenida {
+      align-items: center;
+      padding: 32px 24px; text-align: center;
+      background: radial-gradient(ellipse at 50% 20%, rgba(212,160,23,.08) 0%, var(--ink) 70%);
+      overflow-y: auto;
+    }
+    .bienvenida-logo { height: 36px; margin-bottom: 28px; }
+    .bienvenida-bar-foto {
+      width: 72px; height: 72px; border-radius: 50%;
+      border: 2px solid var(--gold-mid); margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; color: var(--ink);
+      background: linear-gradient(135deg, var(--gold-mid), var(--gold-dk));
+    }
+    .bienvenida-bar-nombre { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .bienvenida-bar-tipo { color: var(--soft); font-size: 13px; margin-bottom: 16px; }
+    .bienvenida-live { animation: pulso 2s ease-in-out infinite; margin-bottom: 20px; }
+
+    .bonos-card {
+      width: 100%; padding: 20px; text-align: left;
+      background: linear-gradient(135deg, rgba(46,204,113,.06), rgba(52,152,219,.06));
+      border: 1px solid rgba(46,204,113,.2);
+      border-radius: var(--radius); margin-bottom: 16px;
+    }
+    .bonos-card-titulo { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--txt); }
+    .bonos-actuales { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .bono-item {
+      font-size: 13px; color: var(--txt);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .bono-item strong { color: var(--gold); }
+
+    .registro-teaser {
+      padding-top: 14px; border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .registro-teaser-titulo {
+      font-size: 12px; font-weight: 600; color: var(--gold-mid);
+      margin-bottom: 10px;
+    }
+    .registro-teaser .bono-item {
+      font-size: 12px; color: var(--soft);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PASO 2: ALIAS
+       ═══════════════════════════════════════════════════════ */
+    .v-alias {
+      justify-content: center; align-items: center;
+      padding: 40px 24px; text-align: center;
+      background: radial-gradient(ellipse at 50% 40%, rgba(212,160,23,.06) 0%, var(--ink) 70%);
+    }
+    .alias-titulo {
+      font-family: var(--font-display); font-size: 22px; font-weight: 700;
+      margin-bottom: 8px; max-width: 300px;
+    }
+    .alias-sub { color: var(--soft); font-size: 13px; margin-bottom: 28px; max-width: 280px; line-height: 1.5; }
+    .alias-input {
+      width: 100%; max-width: 320px;
+      background: var(--panel); border: 2px solid var(--edge);
+      border-radius: var(--radius); padding: 16px;
+      font-family: var(--font-body); font-size: 18px; font-weight: 600;
+      color: var(--txt); text-align: center; outline: none;
+      transition: border-color .2s;
+    }
+    .alias-input::placeholder { color: var(--muted); font-weight: 400; font-size: 14px; }
+    .alias-input:focus { border-color: var(--gold-mid); }
+    .alias-counter { font-size: 11px; color: var(--muted); margin-top: 6px; margin-bottom: 24px; }
+    .alias-hint { font-size: 11px; color: var(--danger); margin-top: -16px; margin-bottom: 24px; }
+
+    /* ═══════════════════════════════════════════════════════
+       PASO 3: CONEXION
+       ═══════════════════════════════════════════════════════ */
+    .v-conexion {
+      justify-content: center; align-items: center;
+      padding: 40px 24px; text-align: center;
+      background: radial-gradient(ellipse at 50% 30%, rgba(212,160,23,.06) 0%, var(--ink) 70%);
+    }
+    .conexion-titulo {
+      font-family: var(--font-display); font-size: 20px; font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .conexion-card {
+      width: 100%; padding: 20px;
+      background: var(--panel); border: 1px solid var(--edge);
+      border-radius: var(--radius); margin-bottom: 16px; text-align: left;
+    }
+    .conexion-label { font-size: 11px; color: var(--soft); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .conexion-precio { font-family: var(--font-display); font-size: 28px; font-weight: 900; color: var(--gold); }
+    .conexion-incluye { font-size: 11px; color: var(--soft); margin-top: 6px; line-height: 1.5; }
+    .conexion-wallet {
+      display: flex; gap: 10px; margin-top: 12px; padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .conexion-wallet-item { font-size: 12px; color: var(--txt); display: flex; align-items: center; gap: 4px; }
+    .conexion-wallet-item strong { color: var(--gold); }
+
+    .conexion-sin-saldo {
+      width: 100%; padding: 16px;
+      background: rgba(231,76,60,.06); border: 1px solid rgba(231,76,60,.15);
+      border-radius: var(--radius-sm); text-align: center;
+      margin-bottom: 16px;
+    }
+    .conexion-sin-saldo p { font-size: 13px; color: var(--danger); font-weight: 600; }
+    .conexion-sin-saldo .hint { font-size: 12px; color: var(--soft); font-weight: 400; margin-top: 4px; }
+
+    .conexion-anon-note {
+      font-size: 11px; color: var(--muted); max-width: 280px; line-height: 1.5; margin-top: 12px;
+    }
+    .conexion-anon-note a { color: var(--gold-mid); text-decoration: underline; cursor: pointer; }
+
+    /* ═══════════════════════════════════════════════════════
+       VISTA: SESION (principal)
+       ═══════════════════════════════════════════════════════ */
+
+    /* Now Playing */
+    .now-playing {
+      background: linear-gradient(180deg, rgba(212,160,23,.1) 0%, var(--ink) 100%);
+      padding: 20px 16px 16px;
+    }
+    .np-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--gold-mid);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+    .np-dot { width: 6px; height: 6px; background: var(--live); border-radius: 50%; animation: pulso 1.5s ease-in-out infinite; }
+    .np-card { display: flex; gap: 14px; align-items: center; }
+    .np-thumb {
+      width: 64px; height: 64px; border-radius: var(--radius-sm);
+      background: var(--edge); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; color: var(--gold-mid); overflow: hidden;
+    }
+    .np-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .np-info { flex: 1; min-width: 0; }
+    .np-titulo { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .np-artista { font-size: 13px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+    .np-progress { width: 100%; height: 3px; background: var(--edge); border-radius: 2px; overflow: hidden; }
+    .np-progress-bar { height: 100%; width: 35%; background: linear-gradient(90deg, var(--gold-mid), var(--gold)); border-radius: 2px; }
+    .np-tiempo { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+    /* Mini wallet */
+    .mini-wallet {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px;
+      background: var(--deep); border-bottom: 1px solid var(--edge);
+      cursor: pointer;
+    }
+    .mini-wallet:hover { background: #0f0f0f; }
+    .mw-saldo { font-size: 14px; font-weight: 700; color: var(--gold); }
+    .mw-bonos { display: flex; gap: 6px; flex: 1; }
+    .mw-bono { font-size: 10px; color: var(--blue); background: rgba(52,152,219,.1); padding: 2px 8px; border-radius: 10px; }
+    .mw-arrow { color: var(--muted); font-size: 12px; }
+
+    /* Cola */
+    .cola-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 16px 8px;
+    }
+    .cola-header h3 { font-size: 14px; font-weight: 600; }
+    .cola-header .count { font-size: 12px; color: var(--muted); }
+
+    .cola-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-bottom: 1px solid var(--line);
+      transition: background .15s;
+    }
+    .cola-item:active { background: rgba(255,255,255,.03); }
+    .cola-item.mia { background: rgba(255,229,102,.04); border-left: 3px solid var(--gold-mid); }
+
+    .cola-pos {
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--gold-mid); flex-shrink: 0;
+    }
+    .cola-pos.top { color: var(--gold); }
+
+    .cola-thumb {
+      width: 44px; height: 44px; border-radius: 6px;
+      background: var(--edge); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--muted); overflow: hidden;
+    }
+    .cola-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .cola-info { flex: 1; min-width: 0; }
+    .cola-titulo { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cola-artista { font-size: 11px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cola-meta { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+
+    .cola-nominador { font-size: 10px; color: var(--muted); }
+
+    .cola-acciones { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 4px; }
+
+    /* Tu puja visible (solo la tuya) */
+    .cola-mi-puja { font-size: 12px; font-weight: 700; color: var(--gold); }
+
+    .cola-puja-btn {
+      font-size: 10px; font-weight: 600; color: var(--gold-mid);
+      background: rgba(255,229,102,.08); border: 1px solid rgba(255,229,102,.2);
+      border-radius: 12px; padding: 3px 10px; cursor: pointer; transition: all .2s;
+    }
+    .cola-puja-btn:hover { background: rgba(255,229,102,.15); border-color: var(--gold); }
+
+    .cola-veto-btn {
+      font-size: 10px; font-weight: 600; color: var(--danger);
+      background: rgba(231,76,60,.08); border: 1px solid rgba(231,76,60,.2);
+      border-radius: 12px; padding: 3px 10px; cursor: pointer; transition: all .2s;
+    }
+
+    .cola-dueto-badge {
+      font-size: 10px; background: rgba(233,30,99,.1);
+      color: var(--pink); padding: 2px 8px; border-radius: 10px;
+    }
+
+    .cola-tipo-badge {
+      font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: .3px;
+    }
+    .cola-tipo-badge.bono { background: rgba(52,152,219,.12); color: var(--blue); }
+    .cola-tipo-badge.anfitrion { background: rgba(255,255,255,.05); color: var(--muted); }
+
+    /* Action bar */
+    .action-bar {
+      position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+      width: calc(100% - 32px); max-width: 398px;
+      display: flex; gap: 8px;
+      padding: 10px;
+      background: var(--panel);
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      box-shadow: 0 -4px 24px rgba(0,0,0,.5);
+      z-index: 90;
+    }
+    .action-btn {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 10px 4px;
+      border-radius: var(--radius-sm);
+      background: var(--deep);
+      border: 1px solid var(--edge);
+      color: var(--soft);
+      font-family: var(--font-body); font-size: 10px; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+      text-transform: uppercase; letter-spacing: .3px;
+    }
+    .action-btn .action-icon { font-size: 20px; }
+    .action-btn:hover { border-color: var(--gold-mid); color: var(--gold); }
+    .action-btn.primary { background: linear-gradient(135deg, var(--gold), var(--gold-mid)); color: var(--ink); border-color: transparent; }
+
+    /* ═══════════════════════════════════════════════════════
+       VISTA: BUSCAR / NOMINAR
+       ═══════════════════════════════════════════════════════ */
+    .search-bar { display: flex; gap: 8px; padding: 12px 16px; background: var(--deep); }
+    .search-input {
+      flex: 1; background: var(--panel); border: 1px solid var(--edge);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      font-family: var(--font-body); font-size: 14px; color: var(--txt); outline: none;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus { border-color: var(--gold-mid); }
+
+    .search-filters { display: flex; gap: 8px; padding: 8px 16px; overflow-x: auto; }
+    .filter-chip {
+      flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+      border: 1px solid var(--edge); background: transparent;
+      color: var(--soft); font-size: 12px; font-weight: 500;
+      font-family: var(--font-body); cursor: pointer; transition: all .2s;
+    }
+    .filter-chip.activo { background: rgba(255,229,102,.1); border-color: var(--gold-mid); color: var(--gold); }
+
+    .resultado-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-bottom: 1px solid var(--line);
+      cursor: pointer; transition: background .15s;
+    }
+    .resultado-item:active { background: rgba(255,255,255,.03); }
+    .resultado-thumb { width: 48px; height: 48px; border-radius: 6px; background: var(--edge); flex-shrink: 0; overflow: hidden; }
+    .resultado-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .resultado-info { flex: 1; min-width: 0; }
+    .resultado-titulo { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .resultado-artista { font-size: 12px; color: var(--soft); }
+    .resultado-dur { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .resultado-add {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,229,102,.1); border: 1px solid rgba(255,229,102,.2);
+      color: var(--gold); font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: all .2s;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       VISTA: SALDO
+       ═══════════════════════════════════════════════════════ */
+    .saldo-hero {
+      background: linear-gradient(135deg, rgba(212,160,23,.12), rgba(212,160,23,.03));
+      padding: 32px 20px; text-align: center;
+    }
+    .saldo-eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold-mid); margin-bottom: 8px; }
+    .saldo-amount { font-family: var(--font-display); font-size: 44px; font-weight: 900; color: var(--gold); line-height: 1; }
+    .saldo-currency { font-size: 14px; color: var(--soft); margin-top: 4px; }
+    .saldo-anon-warn {
+      margin-top: 12px; font-size: 11px; color: var(--danger);
+      background: rgba(231,76,60,.08); padding: 8px 14px; border-radius: 8px;
+      display: inline-block;
+    }
+
+    .saldo-bonos { display: flex; gap: 10px; padding: 0 16px; margin-top: -8px; }
+    .bono-card {
+      flex: 1; background: var(--panel); border: 1px solid var(--edge);
+      border-radius: var(--radius-sm); padding: 14px; text-align: center;
+    }
+    .bono-card-icon { font-size: 22px; margin-bottom: 6px; }
+    .bono-card-valor { font-size: 20px; font-weight: 700; color: var(--blue); }
+    .bono-card-label { font-size: 10px; color: var(--soft); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+    .bono-card-expira { font-size: 9px; color: var(--muted); margin-top: 4px; }
+
+    .historial-titulo { font-size: 13px; font-weight: 600; padding: 16px 16px 8px; color: var(--soft); text-transform: uppercase; letter-spacing: .5px; }
+    .historial-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+    .historial-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .historial-icon.gasto { background: rgba(231,76,60,.1); color: var(--danger); }
+    .historial-icon.recarga { background: rgba(46,204,113,.1); color: var(--live); }
+    .historial-icon.bono { background: rgba(52,152,219,.1); color: var(--blue); }
+    .historial-icon.conexion { background: rgba(255,229,102,.1); color: var(--gold-mid); }
+    .historial-info { flex: 1; }
+    .historial-desc { font-size: 13px; font-weight: 500; }
+    .historial-fecha { font-size: 11px; color: var(--muted); }
+    .historial-monto { font-weight: 700; font-size: 14px; flex-shrink: 0; }
+    .historial-monto.negativo { color: var(--danger); }
+    .historial-monto.positivo { color: var(--live); }
+
+    /* ═══════════════════════════════════════════════════════
+       VISTA: PERFIL
+       ═══════════════════════════════════════════════════════ */
+    .perfil-header { text-align: center; padding: 32px 20px; }
+    .perfil-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-mid), var(--gold-dk));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 700; color: var(--ink); margin: 0 auto 12px;
+    }
+    .perfil-nombre { font-size: 18px; font-weight: 600; }
+    .perfil-alias { font-size: 13px; color: var(--gold-mid); }
+    .perfil-email { font-size: 12px; color: var(--soft); margin-top: 2px; }
+
+    .perfil-match-toggle {
+      margin: 0 16px 16px; padding: 14px;
+      background: var(--panel); border: 1px solid var(--edge);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .match-toggle-icon { font-size: 24px; }
+    .match-toggle-info { flex: 1; }
+    .match-toggle-label { font-size: 13px; font-weight: 600; }
+    .match-toggle-desc { font-size: 11px; color: var(--soft); }
+    .toggle-switch {
+      width: 44px; height: 24px; border-radius: 12px;
+      background: var(--edge); position: relative; cursor: pointer; transition: .2s;
+    }
+    .toggle-switch.on { background: var(--pink); }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: white; transition: .2s;
+    }
+    .toggle-switch.on::after { left: 22px; }
+
+    .perfil-generos {
+      margin: 0 16px 16px; padding: 14px;
+      background: var(--panel); border: 1px solid var(--edge);
+      border-radius: var(--radius-sm);
+    }
+    .generos-label { font-size: 11px; color: var(--soft); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .generos-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .genero-chip {
+      padding: 5px 12px; border-radius: 14px;
+      font-size: 11px; font-weight: 500;
+      border: 1px solid var(--edge); color: var(--soft);
+      cursor: pointer; transition: all .2s;
+    }
+    .genero-chip.activo { border-color: var(--gold-mid); color: var(--gold); background: rgba(255,229,102,.08); }
+
+    .perfil-menu { padding: 0 16px; }
+    .perfil-menu-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--line); cursor: pointer;
+    }
+    .perfil-menu-icon { font-size: 18px; width: 24px; text-align: center; color: var(--soft); }
+    .perfil-menu-label { flex: 1; font-size: 14px; }
+    .perfil-menu-arrow { color: var(--muted); font-size: 14px; }
+
+    /* ═══════════════════════════════════════════════════════
+       VISTA: MATCH (chat)
+       ═══════════════════════════════════════════════════════ */
+    .match-header {
+      text-align: center; padding: 24px 16px;
+      background: linear-gradient(180deg, rgba(233,30,99,.08), var(--ink));
+    }
+    .match-avatars { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .match-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: var(--ink);
+    }
+    .match-avatar.yo { background: linear-gradient(135deg, var(--gold-mid), var(--gold-dk)); }
+    .match-avatar.otro { background: linear-gradient(135deg, var(--pink), #c2185b); }
+    .match-heart { font-size: 20px; color: var(--pink); }
+    .match-cancion { font-size: 12px; color: var(--soft); margin-top: 4px; }
+    .match-cancion strong { color: var(--txt); }
+
+    .chat-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+    .chat-msg {
+      max-width: 75%; padding: 10px 14px;
+      border-radius: 14px; font-size: 13px; line-height: 1.4;
+    }
+    .chat-msg.yo { align-self: flex-end; background: rgba(255,229,102,.12); color: var(--txt); border-bottom-right-radius: 4px; }
+    .chat-msg.otro { align-self: flex-start; background: var(--panel); border: 1px solid var(--edge); border-bottom-left-radius: 4px; }
+    .chat-msg .chat-time { font-size: 9px; color: var(--muted); margin-top: 4px; }
+
+    .dueto-card {
+      margin: 12px 16px; padding: 16px;
+      background: linear-gradient(135deg, rgba(233,30,99,.1), rgba(233,30,99,.03));
+      border: 1px solid rgba(233,30,99,.2);
+      border-radius: var(--radius); text-align: center;
+    }
+    .dueto-titulo { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--pink); margin-bottom: 4px; }
+    .dueto-cancion { font-size: 13px; color: var(--txt); margin-bottom: 4px; }
+    .dueto-artista { font-size: 12px; color: var(--soft); margin-bottom: 12px; }
+    .dueto-timer { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+    .dueto-btns { display: flex; gap: 10px; justify-content: center; }
+
+    .chat-input-area {
+      display: flex; gap: 8px; padding: 12px 16px;
+      background: var(--deep); border-top: 1px solid var(--edge);
+    }
+    .chat-input {
+      flex: 1; background: var(--panel); border: 1px solid var(--edge);
+      border-radius: 20px; padding: 10px 16px;
+      font-family: var(--font-body); font-size: 13px; color: var(--txt); outline: none;
+    }
+    .chat-send {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--pink); border: none; color: white;
+      font-size: 16px; cursor: pointer;
+    }
+
+    /* ─── Puja options (modal) ────────────────────────────── */
+    .puja-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .puja-option {
+      background: var(--deep); border: 2px solid var(--edge);
+      border-radius: var(--radius-sm); padding: 14px; text-align: center;
+      cursor: pointer; transition: all .2s;
+    }
+    .puja-option:hover { border-color: var(--gold-mid); }
+    .puja-option.seleccionado { border-color: var(--gold); background: rgba(255,229,102,.05); }
+    .puja-option-valor { font-size: 20px; font-weight: 700; color: var(--gold); }
+    .puja-option-label { font-size: 11px; color: var(--soft); margin-top: 2px; }
+
+    .puja-custom { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
+    .puja-custom label { font-size: 12px; color: var(--soft); white-space: nowrap; }
+    .puja-custom input {
+      flex: 1; background: var(--deep); border: 1px solid var(--edge);
+      border-radius: var(--radius-sm); padding: 10px;
+      font-family: var(--font-body); font-size: 16px; font-weight: 600;
+      color: var(--gold); text-align: center; outline: none;
+    }
+
+    .modal-saldo-info {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--soft); margin-bottom: 16px;
+      padding: 10px; background: var(--deep); border-radius: var(--radius-sm);
+    }
+    .modal-saldo-valor { color: var(--gold); font-weight: 600; }
+
+    /* Dedicatoria */
+    .dedicatoria-input {
+      width: 100%; background: var(--deep); border: 1px solid var(--edge);
+      border-radius: var(--radius-sm); padding: 14px;
+      font-family: var(--font-body); font-size: 14px; color: var(--txt);
+      outline: none; resize: none; min-height: 80px;
+    }
+    .dedicatoria-counter { text-align: right; font-size: 11px; color: var(--muted); margin-top: 4px; margin-bottom: 16px; }
+
+    /* Utilities */
+    .mt-8  { margin-top: 8px; }
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+    .mb-16 { margin-bottom: 16px; }
+    .text-center { text-align: center; }
+    .text-sm { font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VISTA: BAR SIN SESION ACTIVA
+     URL: vibrra.live/bar/el-parche-manizales
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-espera" class="vista v-espera">
+  <img src="vibrra-logo.svg" class="espera-logo" alt="VIBRRA">
+  <div class="espera-bar-foto">B</div>
+  <h1 class="espera-bar-nombre">Bar El Parche</h1>
+  <p class="espera-bar-tipo">Bar &middot; Manizales</p>
+  <p class="espera-msg">No hay sesion activa en este momento.<br>Pronto habra musica.</p>
+  <span class="espera-slug">vibrra.live/bar/el-parche-manizales</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PASO 1: BIENVENIDA (esNuevo = true)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-bienvenida" class="vista v-bienvenida activa">
+  <img src="vibrra-logo.svg" class="bienvenida-logo" alt="VIBRRA">
+
+  <div class="bienvenida-bar-foto">P</div>
+  <h1 class="bienvenida-bar-nombre">Bar El Parche</h1>
+  <p class="bienvenida-bar-tipo">Bar &middot; Manizales</p>
+
+  <span class="badge badge-live bienvenida-live">&#9679; Sesion activa</span>
+
+  <!-- Bonos de bienvenida (solo si esNuevo) -->
+  <div class="bonos-card">
+    <div class="bonos-card-titulo">Primera vez en VIBRRA</div>
+
+    <div class="bonos-actuales">
+      <div class="bono-item">&#128176; <strong>$2.000</strong> de saldo para pujas</div>
+      <div class="bono-item">&#9889; <strong>1 conexion gratis</strong> a esta sesion</div>
+    </div>
+
+    <div class="registro-teaser">
+      <p class="registro-teaser-titulo">Registrate y ademas recibe:</p>
+      <div class="bono-item">&#9835; 3 nominaciones gratis</div>
+      <div class="bono-item">&#9889; 1 conexion extra</div>
+      <div class="bono-item">&#128176; Saldo que no se pierde entre bares</div>
+      <div class="bono-item">&#128149; VIBRRA Match y Dueto</div>
+    </div>
+  </div>
+
+  <button class="btn btn-gold btn-full" onclick="navegar('registro')">Registrarme &mdash; mas beneficios</button>
+  <button class="btn btn-ghost btn-full mt-8" onclick="navegar('alias')">Continuar sin registrarme</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PASO 2: ALIAS (obligatorio)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-alias" class="vista v-alias">
+  <h2 class="alias-titulo">Como quieres que te conozcan esta noche?</h2>
+  <p class="alias-sub">Tu alias aparece en la cola cuando nominas una cancion. Minimo 2 caracteres.</p>
+
+  <input
+    type="text"
+    id="alias-input"
+    class="alias-input"
+    placeholder="Ej: El Bacan del Parche"
+    maxlength="30"
+    oninput="validarAlias()"
+  >
+  <div class="alias-counter"><span id="alias-count">0</span>/30</div>
+
+  <button id="alias-btn" class="btn btn-gold btn-full btn-disabled" onclick="confirmarAlias()">
+    Entrar a la sala
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PASO 3: CONEXION
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-conexion" class="vista v-conexion">
+  <h2 class="conexion-titulo">Bar El Parche te da la bienvenida</h2>
+
+  <div class="conexion-card">
+    <div class="conexion-label">Conectarse a la sesion</div>
+    <div class="conexion-precio">$1.000 <span style="font-size:14px; color:var(--soft); font-family:var(--font-body);">COP</span></div>
+    <div class="conexion-incluye">Incluye: nominar canciones &middot; pujar &middot; dedicatorias &middot; vetar</div>
+
+    <div class="conexion-wallet">
+      <div class="conexion-wallet-item">&#128176; <strong>$2.000</strong></div>
+      <div class="conexion-wallet-item">&#9889; <strong>&times;1</strong></div>
+    </div>
+  </div>
+
+  <!-- Estado: tiene bono de conexion -->
+  <button class="btn btn-gold btn-full" onclick="navegar('sesion')">Conectarme gratis &#9889;</button>
+
+  <!-- Estado: tiene saldo pero no bono (oculto por defecto) -->
+  <!--
+  <button class="btn btn-gold btn-full" onclick="navegar('sesion')">Conectarme &mdash; $1.000</button>
+  -->
+
+  <!-- Estado: sin saldo (oculto por defecto) -->
+  <!--
+  <div class="conexion-sin-saldo">
+    <p>Sin saldo disponible</p>
+    <p class="hint">Pidele al anfitrion que te recargue saldo</p>
+  </div>
+  -->
+
+  <button class="btn btn-ghost btn-full mt-8" onclick="navegar('sesion')">Solo quiero ver la cola</button>
+
+  <p class="conexion-anon-note">
+    Estas como invitado. Tu saldo se pierde al cerrar el navegador.
+    <a onclick="navegar('perfil')">Registrate</a> para conservarlo.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VISTA: SESION ACTIVA (principal)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-sesion" class="vista">
+  <div class="topbar">
+    <img src="vibrra-logo.svg" class="topbar-logo" alt="VIBRRA">
+    <span class="topbar-title">Bar El Parche</span>
+    <div class="topbar-right">
+      <span class="badge badge-live" style="font-size:10px;">&#9679; EN VIVO</span>
+    </div>
+  </div>
+
+  <!-- Now Playing -->
+  <div class="now-playing">
+    <div class="np-label"><span class="np-dot"></span> SONANDO AHORA</div>
+    <div class="np-card">
+      <div class="np-thumb"><img src="https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg" alt=""></div>
+      <div class="np-info">
+        <div class="np-titulo">Propuesta Indecente</div>
+        <div class="np-artista">Romeo Santos</div>
+        <div class="np-progress"><div class="np-progress-bar" style="width:65%"></div></div>
+        <div class="np-tiempo"><span>2:34</span><span>3:58</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini wallet -->
+  <div class="mini-wallet" onclick="navegar('saldo')">
+    <span class="mw-saldo">$7.500</span>
+    <div class="mw-bonos">
+      <span class="mw-bono">2 nom</span>
+      <span class="mw-bono">1 con</span>
+    </div>
+    <span class="mw-arrow">&rsaquo;</span>
+  </div>
+
+  <!-- Cola -->
+  <div class="cola-header">
+    <h3>En cola</h3>
+    <span class="count">6 canciones</span>
+  </div>
+
+  <div style="flex:1; overflow-y:auto; padding-bottom:180px;">
+
+    <!-- 1 — Cancion con puja (blind: solo ves tu propia puja) -->
+    <div class="cola-item">
+      <div class="cola-pos top">1</div>
+      <div class="cola-thumb"><img src="https://img.youtube.com/vi/RgKAFK5djSk/mqdefault.jpg" alt=""></div>
+      <div class="cola-info">
+        <div class="cola-titulo">See You Again</div>
+        <div class="cola-artista">Wiz Khalifa ft. Charlie Puth</div>
+        <div class="cola-meta">
+          <span class="cola-nominador">@carlos_m</span>
+        </div>
+      </div>
+      <div class="cola-acciones">
+        <button class="cola-puja-btn" onclick="abrirPuja('See You Again', 'Wiz Khalifa')">Pujar</button>
+        <button class="cola-veto-btn" onclick="abrirVeto('See You Again')">Vetar</button>
+      </div>
+    </div>
+
+    <!-- 2 — Tu cancion (resaltada, ves tu puja) -->
+    <div class="cola-item mia">
+      <div class="cola-pos">2</div>
+      <div class="cola-thumb"><img src="https://img.youtube.com/vi/kJQP7kiw5Fk/mqdefault.jpg" alt=""></div>
+      <div class="cola-info">
+        <div class="cola-titulo">Despacito</div>
+        <div class="cola-artista">Luis Fonsi ft. Daddy Yankee</div>
+        <div class="cola-meta">
+          <span class="cola-nominador" style="color:var(--gold-mid);">Tu cancion</span>
+        </div>
+      </div>
+      <div class="cola-acciones">
+        <span class="cola-mi-puja">$3.000</span>
+        <button class="cola-puja-btn" onclick="abrirPuja('Despacito', 'Luis Fonsi')">+ Pujar</button>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="cola-item">
+      <div class="cola-pos">3</div>
+      <div class="cola-thumb"><img src="https://img.youtube.com/vi/JGwWNGJdvx8/mqdefault.jpg" alt=""></div>
+      <div class="cola-info">
+        <div class="cola-titulo">Shape of You</div>
+        <div class="cola-artista">Ed Sheeran</div>
+        <div class="cola-meta">
+          <span class="cola-nominador">@laura_v</span>
+        </div>
+      </div>
+      <div class="cola-acciones">
+        <button class="cola-puja-btn" onclick="abrirPuja('Shape of You', 'Ed Sheeran')">Pujar</button>
+        <button class="cola-veto-btn" onclick="abrirVeto('Shape of You')">Vetar</button>
+      </div>
+    </div>
+
+    <!-- 4 — Bono -->
+    <div class="cola-item">
+      <div class="cola-pos">4</div>
+      <div class="cola-thumb"><img src="https://img.youtube.com/vi/fRh_vgS2dFE/mqdefault.jpg" alt=""></div>
+      <div class="cola-info">
+        <div class="cola-titulo">Sorry</div>
+        <div class="cola-artista">Justin Bieber</div>
+        <div class="cola-meta">
+          <span class="cola-nominador">@andres_p</span>
+          <span class="cola-tipo-badge bono">Bono</span>
+        </div>
+      </div>
+      <div class="cola-acciones">
+        <button class="cola-puja-btn" onclick="abrirPuja('Sorry', 'Justin Bieber')">Pujar</button>
+      </div>
+    </div>
+
+    <!-- 5 — Dueto -->
+    <div class="cola-item">
+      <div class="cola-pos">5</div>
+      <div class="cola-thumb"><img src="https://img.youtube.com/vi/hT_nvWreIhg/mqdefault.jpg" alt=""></div>
+      <div class="cola-info">
+        <div class="cola-titulo">Counting Stars</div>
+        <div class="cola-artista">OneRepublic</div>
+        <div class="cola-meta">
+          <span class="cola-dueto-badge">Dueto</span>
+        </div>
+      </div>
+      <div class="cola-acciones">
+        <button class="cola-puja-btn" onclick="abrirPuja('Counting Stars', 'OneRepublic')">Pujar</button>
+      </div>
+    </div>
+
+    <!-- 6 — Anfitrion -->
+    <div class="cola-item">
+      <div class="cola-pos">6</div>
+      <div class="cola-thumb"><img src="https://img.youtube.com/vi/YQHsXMglC9A/mqdefault.jpg" alt=""></div>
+      <div class="cola-info">
+        <div class="cola-titulo">Hello</div>
+        <div class="cola-artista">Adele</div>
+        <div class="cola-meta">
+          <span class="cola-tipo-badge anfitrion">Anfitrion</span>
+        </div>
+      </div>
+      <div class="cola-acciones">
+        <span style="font-size:11px; color:var(--muted);">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action bar (NOMINAR + DEDICAR) -->
+  <div class="action-bar">
+    <button class="action-btn primary" onclick="navegar('buscar')" style="flex:2;">
+      <span class="action-icon">+</span>
+      Nominar cancion
+    </button>
+    <button class="action-btn" onclick="abrirDedicatoria()">
+      <span class="action-icon">&#9993;</span>
+      Dedicar
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VISTA: BUSCAR / NOMINAR CANCION
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-buscar" class="vista">
+  <div class="topbar">
+    <button class="topbar-back" onclick="navegar('sesion')">&larr;</button>
+    <span class="topbar-title">Nominar cancion</span>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" class="search-input" placeholder="Buscar cancion, artista...">
+  </div>
+
+  <div class="search-filters">
+    <button class="filter-chip activo">Todos</button>
+    <button class="filter-chip">YouTube</button>
+    <button class="filter-chip">Spotify</button>
+    <button class="filter-chip">Tendencias</button>
+  </div>
+
+  <div style="flex:1; overflow-y:auto; padding-bottom:80px;">
+    <div class="resultado-item" onclick="abrirNominar('Flowers', 'Miley Cyrus')">
+      <div class="resultado-thumb"><img src="https://img.youtube.com/vi/G7KNmW9a75Y/mqdefault.jpg" alt=""></div>
+      <div class="resultado-info">
+        <div class="resultado-titulo">Flowers</div>
+        <div class="resultado-artista">Miley Cyrus</div>
+        <div class="resultado-dur">3:20</div>
+      </div>
+      <button class="resultado-add">+</button>
+    </div>
+    <div class="resultado-item" onclick="abrirNominar('Anti-Hero', 'Taylor Swift')">
+      <div class="resultado-thumb"><img src="https://img.youtube.com/vi/b1kbLwvqugk/mqdefault.jpg" alt=""></div>
+      <div class="resultado-info">
+        <div class="resultado-titulo">Anti-Hero</div>
+        <div class="resultado-artista">Taylor Swift</div>
+        <div class="resultado-dur">3:21</div>
+      </div>
+      <button class="resultado-add">+</button>
+    </div>
+    <div class="resultado-item" onclick="abrirNominar('Unholy', 'Sam Smith ft. Kim Petras')">
+      <div class="resultado-thumb"><img src="https://img.youtube.com/vi/Uq9gPaIzbe8/mqdefault.jpg" alt=""></div>
+      <div class="resultado-info">
+        <div class="resultado-titulo">Unholy</div>
+        <div class="resultado-artista">Sam Smith ft. Kim Petras</div>
+        <div class="resultado-dur">2:36</div>
+      </div>
+      <button class="resultado-add">+</button>
+    </div>
+    <div class="resultado-item" onclick="abrirNominar('As It Was', 'Harry Styles')">
+      <div class="resultado-thumb"><img src="https://img.youtube.com/vi/H5v3kku4y6Q/mqdefault.jpg" alt=""></div>
+      <div class="resultado-info">
+        <div class="resultado-titulo">As It Was</div>
+        <div class="resultado-artista">Harry Styles</div>
+        <div class="resultado-dur">2:47</div>
+      </div>
+      <button class="resultado-add">+</button>
+    </div>
+    <div class="resultado-item" onclick="abrirNominar('Heat Waves', 'Glass Animals')">
+      <div class="resultado-thumb"><img src="https://img.youtube.com/vi/mRD0-GxDwSs/mqdefault.jpg" alt=""></div>
+      <div class="resultado-info">
+        <div class="resultado-titulo">Heat Waves</div>
+        <div class="resultado-artista">Glass Animals</div>
+        <div class="resultado-dur">3:59</div>
+      </div>
+      <button class="resultado-add">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VISTA: MI SALDO
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-saldo" class="vista">
+  <div class="topbar">
+    <img src="vibrra-logo.svg" class="topbar-logo" alt="VIBRRA">
+    <span class="topbar-title"></span>
+  </div>
+
+  <div class="saldo-hero">
+    <div class="saldo-eyebrow">Saldo disponible</div>
+    <div class="saldo-amount">$7.500</div>
+    <div class="saldo-currency">COP</div>
+    <div class="saldo-anon-warn">
+      Estas como invitado. Registrate para no perder tu saldo.
+    </div>
+  </div>
+
+  <div class="saldo-bonos">
+    <div class="bono-card">
+      <div class="bono-card-icon">&#9835;</div>
+      <div class="bono-card-valor">2</div>
+      <div class="bono-card-label">Nominaciones gratis</div>
+      <div class="bono-card-expira">Vencen en 22 dias</div>
+    </div>
+    <div class="bono-card">
+      <div class="bono-card-icon">&#9889;</div>
+      <div class="bono-card-valor">1</div>
+      <div class="bono-card-label">Conexion gratis</div>
+      <div class="bono-card-expira">Vencen en 22 dias</div>
+    </div>
+  </div>
+
+  <div class="historial-titulo">Movimientos</div>
+
+  <div style="flex:1; overflow-y:auto; padding-bottom:80px;">
+    <div class="historial-item">
+      <div class="historial-icon conexion">&#9889;</div>
+      <div class="historial-info">
+        <div class="historial-desc">Conexion a sesion</div>
+        <div class="historial-fecha">Hace 5 min &middot; Bar El Parche</div>
+      </div>
+      <div class="historial-monto negativo">-$1.000</div>
+    </div>
+    <div class="historial-item">
+      <div class="historial-icon gasto">&#9835;</div>
+      <div class="historial-info">
+        <div class="historial-desc">Puja: "Despacito"</div>
+        <div class="historial-fecha">Hace 12 min &middot; Bar El Parche</div>
+      </div>
+      <div class="historial-monto negativo">-$2.000</div>
+    </div>
+    <div class="historial-item">
+      <div class="historial-icon gasto">&#9835;</div>
+      <div class="historial-info">
+        <div class="historial-desc">Nominacion: "Despacito"</div>
+        <div class="historial-fecha">Hace 15 min &middot; Bar El Parche</div>
+      </div>
+      <div class="historial-monto negativo">-$500</div>
+    </div>
+    <div class="historial-item">
+      <div class="historial-icon bono">&#127381;</div>
+      <div class="historial-info">
+        <div class="historial-desc">Bono nominacion usado</div>
+        <div class="historial-fecha">Hace 20 min &middot; Bar El Parche</div>
+      </div>
+      <div class="historial-monto" style="color:var(--blue);">Bono</div>
+    </div>
+    <div class="historial-item">
+      <div class="historial-icon recarga">$</div>
+      <div class="historial-info">
+        <div class="historial-desc">Recarga del anfitrion</div>
+        <div class="historial-fecha">Hoy 9:30 PM</div>
+      </div>
+      <div class="historial-monto positivo">+$10.000</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VISTA: PERFIL
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-perfil" class="vista">
+  <div class="topbar">
+    <img src="vibrra-logo.svg" class="topbar-logo" alt="VIBRRA">
+    <span class="topbar-title"></span>
+  </div>
+
+  <div class="perfil-header">
+    <div class="perfil-avatar">SC</div>
+    <div class="perfil-nombre">Santiago Castillo</div>
+    <div class="perfil-alias">@santi_rocks</div>
+    <div class="perfil-email">santiago@email.com</div>
+  </div>
+
+  <!-- VIBRRA Match toggle -->
+  <div class="perfil-match-toggle">
+    <span class="match-toggle-icon">&#128149;</span>
+    <div class="match-toggle-info">
+      <div class="match-toggle-label">VIBRRA Match</div>
+      <div class="match-toggle-desc">Conecta con personas que pujan a la misma cancion</div>
+    </div>
+    <div class="toggle-switch on" onclick="this.classList.toggle('on')"></div>
+  </div>
+
+  <!-- Generos favoritos -->
+  <div class="perfil-generos">
+    <div class="generos-label">Generos favoritos</div>
+    <div class="generos-chips">
+      <span class="genero-chip activo">Salsa</span>
+      <span class="genero-chip activo">Reggaeton</span>
+      <span class="genero-chip activo">Bachata</span>
+      <span class="genero-chip">Rock</span>
+      <span class="genero-chip">Pop</span>
+      <span class="genero-chip">Electronica</span>
+      <span class="genero-chip">Vallenato</span>
+      <span class="genero-chip">Hip Hop</span>
+    </div>
+  </div>
+
+  <div class="perfil-menu">
+    <div class="perfil-menu-item">
+      <span class="perfil-menu-icon">&#9835;</span>
+      <span class="perfil-menu-label">Mis canciones nominadas</span>
+      <span class="perfil-menu-arrow">&rsaquo;</span>
+    </div>
+    <div class="perfil-menu-item">
+      <span class="perfil-menu-icon">&#9733;</span>
+      <span class="perfil-menu-label">Bares favoritos</span>
+      <span class="perfil-menu-arrow">&rsaquo;</span>
+    </div>
+    <div class="perfil-menu-item">
+      <span class="perfil-menu-icon">&#128197;</span>
+      <span class="perfil-menu-label">Historial de sesiones</span>
+      <span class="perfil-menu-arrow">&rsaquo;</span>
+    </div>
+    <div class="perfil-menu-item">
+      <span class="perfil-menu-icon">&#128176;</span>
+      <span class="perfil-menu-label">Historial de pagos</span>
+      <span class="perfil-menu-arrow">&rsaquo;</span>
+    </div>
+    <div class="perfil-menu-item">
+      <span class="perfil-menu-icon">&#127760;</span>
+      <span class="perfil-menu-label">Idioma</span>
+      <span class="perfil-menu-arrow">ES &rsaquo;</span>
+    </div>
+    <div class="perfil-menu-item">
+      <span class="perfil-menu-icon">&#128274;</span>
+      <span class="perfil-menu-label">Privacidad y datos</span>
+      <span class="perfil-menu-arrow">&rsaquo;</span>
+    </div>
+    <div class="perfil-menu-item" style="color:var(--danger);">
+      <span class="perfil-menu-icon" style="color:var(--danger);">&#8618;</span>
+      <span class="perfil-menu-label">Cerrar sesion</span>
+      <span class="perfil-menu-arrow">&rsaquo;</span>
+    </div>
+  </div>
+  <p class="text-center text-sm" style="color:var(--muted); padding:24px;">VIBRRA v1.0</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VISTA: MATCH (chat + dueto)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="v-match" class="vista">
+  <div class="topbar">
+    <button class="topbar-back" onclick="navegar('sesion')">&larr;</button>
+    <span class="topbar-title">VIBRRA Match</span>
+    <div class="topbar-right">
+      <span class="badge badge-pink">Activo</span>
+    </div>
+  </div>
+
+  <div class="match-header">
+    <div class="match-avatars">
+      <div class="match-avatar yo">SC</div>
+      <span class="match-heart">&#128149;</span>
+      <div class="match-avatar otro">VP</div>
+    </div>
+    <div style="font-weight:600;">Tu y Valentina P.</div>
+    <div class="match-cancion">Ambos pujaron a <strong>Despacito</strong></div>
+  </div>
+
+  <!-- Dueto suggestion -->
+  <div class="dueto-card">
+    <div class="dueto-titulo">VIBRRA Dueto</div>
+    <div class="dueto-cancion">Bachata Rosa</div>
+    <div class="dueto-artista">Juan Luis Guerra</div>
+    <div class="dueto-timer">Expira en 1:42</div>
+    <div class="dueto-btns">
+      <button class="btn btn-pink btn-sm">Aceptar Dueto</button>
+      <button class="btn btn-ghost btn-sm">Pasar</button>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="chat-msg otro">
+      Que genial que coincidamos en Despacito! Jaja
+      <div class="chat-time">10:34 PM</div>
+    </div>
+    <div class="chat-msg yo">
+      Sii, buena cancion para un viernes
+      <div class="chat-time">10:35 PM</div>
+    </div>
+    <div class="chat-msg otro">
+      Viste que nos sugirieron Bachata Rosa?
+      <div class="chat-time">10:36 PM</div>
+    </div>
+    <div class="chat-msg yo">
+      Si! La acepto si tu tambien
+      <div class="chat-time">10:36 PM</div>
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+    <button class="chat-send">&#10148;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: NOMINAR CANCION
+     ═══════════════════════════════════════════════════════════ -->
+<div id="modal-nominar" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-titulo">Nominar cancion</div>
+    <div class="modal-sub">Costo de nominacion: $500 COP</div>
+
+    <div class="modal-cancion-preview">
+      <div class="modal-cancion-thumb">&#9835;</div>
+      <div>
+        <div id="nom-titulo" style="font-weight:600; font-size:14px;">Flowers</div>
+        <div id="nom-artista" style="font-size:12px; color:var(--soft);">Miley Cyrus</div>
+      </div>
+    </div>
+
+    <p style="font-size:12px; color:var(--soft); margin-bottom:12px;">
+      Quieres agregar una puja inicial para subir de posicion?
+    </p>
+
+    <div class="puja-options">
+      <div class="puja-option seleccionado" onclick="selectPuja(this, 0)">
+        <div class="puja-option-valor">$0</div>
+        <div class="puja-option-label">Solo nominar</div>
+      </div>
+      <div class="puja-option" onclick="selectPuja(this, 1000)">
+        <div class="puja-option-valor">$1.000</div>
+        <div class="puja-option-label">+ Puja basica</div>
+      </div>
+      <div class="puja-option" onclick="selectPuja(this, 2000)">
+        <div class="puja-option-valor">$2.000</div>
+        <div class="puja-option-label">+ Puja normal</div>
+      </div>
+      <div class="puja-option" onclick="selectPuja(this, 5000)">
+        <div class="puja-option-valor">$5.000</div>
+        <div class="puja-option-label">+ Puja alta</div>
+      </div>
+    </div>
+
+    <div class="modal-saldo-info">
+      <span>Tu saldo: <span class="modal-saldo-valor">$7.500</span></span>
+      <span>Despues: <span>$7.000</span></span>
+    </div>
+
+    <button class="btn btn-gold btn-full" onclick="cerrarModal('modal-nominar'); navegar('sesion')">Nominar &middot; $500</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="cerrarModal('modal-nominar')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: PUJAR
+     ═══════════════════════════════════════════════════════════ -->
+<div id="modal-puja" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-titulo">Pujar por cancion</div>
+    <div class="modal-sub">Las pujas son ciegas. Nadie ve tu monto.</div>
+
+    <div class="modal-cancion-preview">
+      <div class="modal-cancion-thumb">&#9835;</div>
+      <div>
+        <div id="puja-titulo" style="font-weight:600; font-size:14px;">Cancion</div>
+        <div id="puja-artista" style="font-size:12px; color:var(--soft);">Artista</div>
+      </div>
+    </div>
+
+    <div class="puja-options">
+      <div class="puja-option" onclick="selectPuja(this, 500)">
+        <div class="puja-option-valor">$500</div>
+        <div class="puja-option-label">Minima</div>
+      </div>
+      <div class="puja-option seleccionado" onclick="selectPuja(this, 1000)">
+        <div class="puja-option-valor">$1.000</div>
+        <div class="puja-option-label">Normal</div>
+      </div>
+      <div class="puja-option" onclick="selectPuja(this, 3000)">
+        <div class="puja-option-valor">$3.000</div>
+        <div class="puja-option-label">Alta</div>
+      </div>
+      <div class="puja-option" onclick="selectPuja(this, 5000)">
+        <div class="puja-option-valor">$5.000</div>
+        <div class="puja-option-label">Maxima</div>
+      </div>
+    </div>
+
+    <div class="puja-custom">
+      <label>$</label>
+      <input type="number" placeholder="Otro monto" min="100" step="100">
+      <label>COP</label>
+    </div>
+
+    <div class="modal-saldo-info">
+      <span>Tu saldo: <span class="modal-saldo-valor">$7.500</span></span>
+      <span>Despues: <span>$6.500</span></span>
+    </div>
+
+    <button class="btn btn-gold btn-full" onclick="cerrarModal('modal-puja')">Pujar $1.000</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="cerrarModal('modal-puja')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: DEDICATORIA
+     ═══════════════════════════════════════════════════════════ -->
+<div id="modal-dedicatoria" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-titulo">Dedicatoria en pantalla</div>
+    <div class="modal-sub">Tu mensaje aparecera en la pantalla del bar. Costo: $1.500 COP</div>
+
+    <textarea class="dedicatoria-input" maxlength="120" placeholder="Escribe tu dedicatoria..."></textarea>
+    <div class="dedicatoria-counter">0 / 120</div>
+
+    <div class="modal-saldo-info">
+      <span>Tu saldo: <span class="modal-saldo-valor">$7.500</span></span>
+      <span>Despues: <span>$6.000</span></span>
+    </div>
+
+    <button class="btn btn-gold btn-full" onclick="cerrarModal('modal-dedicatoria')">Enviar dedicatoria &middot; $1.500</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="cerrarModal('modal-dedicatoria')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: VETAR
+     ═══════════════════════════════════════════════════════════ -->
+<div id="modal-veto" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-titulo">Vetar cancion</div>
+    <div class="modal-sub">Bloquea esta cancion durante toda la sesion. Costo: $2.000 COP</div>
+
+    <div class="modal-cancion-preview">
+      <div class="modal-cancion-thumb" style="color:var(--danger);">&#10007;</div>
+      <div>
+        <div id="veto-titulo" style="font-weight:600; font-size:14px;">See You Again</div>
+        <div style="font-size:12px; color:var(--soft);">Wiz Khalifa</div>
+      </div>
+    </div>
+
+    <p style="font-size:12px; color:var(--danger); background:rgba(231,76,60,.08); padding:10px; border-radius:8px; margin-bottom:16px;">
+      Esta accion no se puede deshacer. La cancion sera removida de la cola y bloqueada por el resto de la sesion.
+    </p>
+
+    <div class="modal-saldo-info">
+      <span>Tu saldo: <span class="modal-saldo-valor">$7.500</span></span>
+      <span>Despues: <span>$5.500</span></span>
+    </div>
+
+    <button class="btn btn-danger btn-full" onclick="cerrarModal('modal-veto')">Confirmar veto &middot; $2.000</button>
+    <button class="btn btn-ghost btn-full mt-8" onclick="cerrarModal('modal-veto')">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BOTTOM NAV
+     ═══════════════════════════════════════════════════════════ -->
+<nav id="bottom-nav" class="bottom-nav" style="display:none;">
+  <button class="nav-item activo" onclick="navegar('sesion')">
+    <span class="nav-icon">&#9835;</span>
+    <span>Sesion</span>
+  </button>
+  <button class="nav-item" onclick="navegar('buscar')">
+    <span class="nav-icon">&#128269;</span>
+    <span>Buscar</span>
+  </button>
+  <button class="nav-item" onclick="navegar('saldo')">
+    <span class="nav-icon">&#128176;</span>
+    <span>Saldo</span>
+  </button>
+  <button class="nav-item" onclick="navegar('match')">
+    <span class="nav-icon">&#128149;</span>
+    <span>Match</span>
+  </button>
+  <button class="nav-item" onclick="navegar('perfil')">
+    <span class="nav-icon">&#9786;</span>
+    <span>Perfil</span>
+  </button>
+</nav>
+
+<script>
+  const vistas = ['espera', 'bienvenida', 'alias', 'conexion', 'sesion', 'buscar', 'saldo', 'perfil', 'match'];
+  const conNav = ['sesion', 'buscar', 'saldo', 'perfil', 'match'];
+
+  function navegar(id) {
+    vistas.forEach(v => {
+      const el = document.getElementById('v-' + v);
+      if (el) el.classList.toggle('activa', v === id);
+    });
+    const nav = document.getElementById('bottom-nav');
+    nav.style.display = conNav.includes(id) ? 'flex' : 'none';
+    // Update active nav
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('activo'));
+    const navItems = document.querySelectorAll('.nav-item');
+    const idx = conNav.indexOf(id);
+    if (idx >= 0 && navItems[idx]) navItems[idx].classList.add('activo');
+    // Hide action bar except on sesion
+    const ab = document.querySelector('.action-bar');
+    if (ab) ab.style.display = id === 'sesion' ? 'flex' : 'none';
+    // Auto-focus alias input
+    if (id === 'alias') {
+      setTimeout(() => { const inp = document.getElementById('alias-input'); if (inp) inp.focus(); }, 200);
+    }
+  }
+
+  // ─── Alias validation ────────────────────────────────────
+  function validarAlias() {
+    const inp = document.getElementById('alias-input');
+    const btn = document.getElementById('alias-btn');
+    const counter = document.getElementById('alias-count');
+    const len = inp.value.trim().length;
+    counter.textContent = len;
+    if (len >= 2) {
+      btn.classList.remove('btn-disabled');
+    } else {
+      btn.classList.add('btn-disabled');
+    }
+  }
+  function confirmarAlias() {
+    const inp = document.getElementById('alias-input');
+    if (inp.value.trim().length < 2) return;
+    // In production: localStorage.setItem('vibrra_alias', inp.value.trim());
+    navegar('conexion');
+  }
+  // Enter key on alias input
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('v-alias').classList.contains('activa')) {
+      confirmarAlias();
+    }
+  });
+
+  function abrirNominar(titulo, artista) {
+    document.getElementById('nom-titulo').textContent = titulo;
+    document.getElementById('nom-artista').textContent = artista;
+    document.getElementById('modal-nominar').classList.add('activo');
+  }
+  function abrirPuja(titulo, artista) {
+    document.getElementById('puja-titulo').textContent = titulo;
+    document.getElementById('puja-artista').textContent = artista;
+    document.getElementById('modal-puja').classList.add('activo');
+  }
+  function abrirDedicatoria() {
+    document.getElementById('modal-dedicatoria').classList.add('activo');
+  }
+  function abrirVeto(titulo) {
+    if (titulo) document.getElementById('veto-titulo').textContent = titulo;
+    document.getElementById('modal-veto').classList.add('activo');
+  }
+  function cerrarModal(id) {
+    document.getElementById(id).classList.remove('activo');
+  }
+  function selectPuja(el, monto) {
+    el.closest('.puja-options').querySelectorAll('.puja-option').forEach(o => o.classList.remove('seleccionado'));
+    el.classList.add('seleccionado');
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('activo'); });
+  });
+
+  // Dedicatoria counter
+  const dedInput = document.querySelector('.dedicatoria-input');
+  const dedCounter = document.querySelector('.dedicatoria-counter');
+  if (dedInput && dedCounter) {
+    dedInput.addEventListener('input', () => { dedCounter.textContent = dedInput.value.length + ' / 120'; });
+  }
+</script>
+
+</body>
+</html>

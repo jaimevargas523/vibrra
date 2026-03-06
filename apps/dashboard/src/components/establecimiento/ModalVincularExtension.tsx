@@ -33,6 +33,7 @@ export function ModalVincularExtension({
   const [errorMsg, setErrorMsg] = useState("");
   const [successName, setSuccessName] = useState("");
   const [cameraError, setCameraError] = useState(false);
+  const [debugInfo, setDebugInfo] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -69,6 +70,7 @@ export function ModalVincularExtension({
         const msg =
           err instanceof Error ? err.message : t("errorGenerico");
         setErrorMsg(msg);
+        setDebugInfo((prev) => `${prev}\nERR: ${msg}\nTYPE: ${(err as Record<string,unknown>)?.constructor?.name}\nSTATUS: ${(err as Record<string,unknown>)?.status ?? "?"}`);
         setEstado("error");
       }
     },
@@ -127,6 +129,7 @@ export function ModalVincularExtension({
           /(?:vibrra\.live\/vincular\/|vibrra:\/\/ext\/)([0-9a-f-]{36})/i,
         );
         const extensionId = match ? match[1] : raw;
+        setDebugInfo(`RAW: ${raw}\nID: ${extensionId}\nEST: ${establecimientoId}`);
         vincular(extensionId);
         return;
       }
@@ -265,6 +268,11 @@ export function ModalVincularExtension({
             <p className="text-sm text-error text-center">
               {errorMsg || t("errorGenerico")}
             </p>
+            {debugInfo && (
+              <pre className="text-[10px] text-text-muted bg-card-dark rounded p-2 w-full overflow-x-auto whitespace-pre-wrap break-all">
+                {debugInfo}
+              </pre>
+            )}
             <Button variant="ghost" onClick={startScanning}>
               {t("volverEscanear")}
             </Button>

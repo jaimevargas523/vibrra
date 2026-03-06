@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>VIBRRA — Dedicar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold-hi:#FFE566; --gold-mid:#D4A017; --gold-lo:#A97010; --gold-glow:rgba(212,160,23,.22);
+  --bg:#070707; --s1:#0f0f0f; --s2:#171717; --s3:#202020;
+  --border:rgba(255,255,255,.055); --muted:#4e4a46; --soft:#928d88; --text:#EDE9E3;
+  --green:#00D17A;
+  /* mood colors — cambian dinámicamente */
+  --mood-a:#FF6BAE; --mood-b:#FF3D6B; --mood-glow:rgba(255,107,174,.25);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;justify-content:center;}
+
+.phone{width:100%;max-width:420px;height:100dvh;position:relative;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;}
+.phone::after{content:'';position:fixed;inset:0;max-width:420px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.038'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:.5;}
+
+/* ── HEADER ── */
+.header{flex-shrink:0;padding:14px 18px 13px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(7,7,7,.99),rgba(7,7,7,.82));backdrop-filter:blur(24px);border-bottom:1px solid var(--border);position:relative;z-index:20;}
+.h-left{display:flex;align-items:center;gap:10px;}
+.h-back{display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;padding:4px;color:var(--soft);transition:color .2s;}
+.h-back:active{color:var(--text);}
+.h-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);}
+.wallet{display:flex;align-items:center;gap:6px;background:rgba(212,160,23,.11);border:1px solid rgba(212,160,23,.28);border-radius:30px;padding:5px 11px;}
+.wallet-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--gold-hi);}
+
+/* ── BODY ── */
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:120px;scrollbar-width:none;}
+.body::-webkit-scrollbar{display:none;}
+
+/* ══ MOOD SELECTOR ══ */
+.mood-wrap{padding:18px 18px 0;}
+.mood-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+
+.mood-rail{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.mood-rail::-webkit-scrollbar{display:none;}
+
+.mood-btn{
+  flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:10px 14px;border-radius:14px;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--s1);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.mood-btn:active{transform:scale(.94);}
+.mood-btn.on{transform:scale(1.05);}
+
+.mood-emoji{font-size:22px;line-height:1;}
+.mood-name{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--soft);white-space:nowrap;}
+.mood-btn.on .mood-name{font-weight:800;}
+
+/* ══ CARD BUILDER ══ */
+.card-wrap{padding:16px 18px 0;}
+
+/* La tarjeta en sí — preview vivo */
+.ded-card{
+  border-radius:20px;padding:20px;position:relative;overflow:hidden;
+  min-height:160px;display:flex;flex-direction:column;justify-content:space-between;
+  cursor:text;
+  transition:background .4s ease, box-shadow .4s ease;
+  box-shadow:0 8px 32px var(--mood-glow);
+}
+
+/* fondo dinámico según mood */
+.ded-card.mood-romantico{background:linear-gradient(145deg,#2a0a18,#1a0812);}
+.ded-card.mood-fuego    {background:linear-gradient(145deg,#2a1000,#1a0a00);}
+.ded-card.mood-amistad  {background:linear-gradient(145deg,#0a1a2a,#060f1a);}
+.ded-card.mood-fiesta   {background:linear-gradient(145deg,#1a0a2a,#0f0618);}
+.ded-card.mood-misterio  {background:linear-gradient(145deg,#0a100a,#060a06);}
+.ded-card.mood-nostalgia {background:linear-gradient(145deg,#1a1000,#0f0900);}
+.ded-card.mood-tropical  {background:linear-gradient(145deg,#001a14,#000f0a);}
+.ded-card.mood-urbano    {background:linear-gradient(145deg,#0d0d0d,#060606);}
+.ded-card.mood-electro   {background:linear-gradient(145deg,#080018,#04000f);}
+
+/* brillo decorativo en esquina */
+.card-glow{
+  position:absolute;top:-40px;right:-40px;
+  width:160px;height:160px;border-radius:50%;
+  opacity:.35;pointer-events:none;
+  transition:background .4s ease;
+}
+
+.card-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:20px;padding:4px 11px;margin-bottom:12px;
+  font-family:'Syne',sans-serif;font-size:9px;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;
+  transition:background .3s, border-color .3s, color .3s;
+  border:1px solid;align-self:flex-start;
+}
+
+.card-text-display{
+  font-family:'Playfair Display',serif;font-weight:700;font-style:italic;
+  font-size:17px;line-height:1.45;flex:1;margin-bottom:12px;
+  min-height:52px;word-break:break-word;
+  transition:color .3s;
+}
+.card-text-display.placeholder{
+  font-style:italic;font-weight:400;font-family:'DM Sans',sans-serif;
+  font-size:14px;opacity:.4;
+}
+
+.card-footer{display:flex;align-items:flex-end;justify-content:space-between;}
+.card-alias{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;transition:color .3s;}
+.card-dur-bar{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.card-dur-txt{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);}
+.card-pbar{width:60px;height:2px;background:rgba(255,255,255,.1);border-radius:1px;overflow:hidden;}
+.card-pfill{height:100%;border-radius:1px;width:0%;transition:width .1s linear;}
+
+/* scanlines */
+.ded-card::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.08) 3px,rgba(0,0,0,.08) 4px);pointer-events:none;border-radius:20px;}
+
+/* ══ INPUT ÁREA ══ */
+.input-zone{padding:14px 18px 0;}
+.input-row{position:relative;}
+.msg-input{
+  width:100%;background:var(--s1);border:1.5px solid var(--border);
+  border-radius:14px;padding:13px 50px 13px 14px;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
+  outline:none;resize:none;min-height:52px;max-height:120px;line-height:1.5;
+  transition:border-color .2s;
+}
+.msg-input:focus{border-color:rgba(255,255,255,.18);}
+.msg-input::placeholder{color:var(--muted);}
+.msg-counter{
+  position:absolute;bottom:12px;right:14px;
+  font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);
+  transition:color .2s;pointer-events:none;
+}
+.msg-counter.warn{color:var(--gold-mid);}.msg-counter.over{color:#FF6B6B;}
+
+/* ══ QUICK EMOJIS ══ */
+.emoji-section{padding:12px 18px 0;}
+.emoji-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+
+.emoji-rail{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;flex-wrap:nowrap;}
+.emoji-rail::-webkit-scrollbar{display:none;}
+
+.eq{
+  flex-shrink:0;font-size:22px;width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--s1);border:1px solid var(--border);
+  cursor:pointer;transition:all .18s cubic-bezier(.34,1.56,.64,1);
+  user-select:none;
+}
+.eq:active{transform:scale(.82);}
+.eq:hover{background:var(--s2);transform:scale(1.08);}
+
+/* ══ PLANTILLAS ══ */
+.tpl-section{padding:12px 18px 0;}
+.tpl-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+
+.tpl-rail{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.tpl-rail::-webkit-scrollbar{display:none;}
+
+.tpl{
+  flex-shrink:0;background:var(--s1);border:1px solid var(--border);
+  border-radius:12px;padding:10px 13px;cursor:pointer;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);max-width:180px;
+}
+.tpl:active{transform:scale(.96);}
+.tpl-txt{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--soft);line-height:1.4;}
+
+/* ══ DESTINO ══ */
+.dest-section{padding:14px 18px 0;}
+.dest-grid{display:flex;gap:8px;}
+.dest-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:11px 8px;border-radius:13px;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--s1);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.dest-btn:active{transform:scale(.96);}
+.dest-btn.on{border-color:var(--mood-a);background:rgba(255,107,174,.08);box-shadow:0 0 0 1px rgba(255,107,174,.12);}
+.dest-emoji{font-size:18px;line-height:1;}
+.dest-name{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--soft);text-align:center;line-height:1.3;}
+.dest-btn.on .dest-name{color:var(--mood-a);}
+.dest-price{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.dest-btn.on .dest-price{color:var(--gold-mid);}
+
+.alias-wrap{padding:10px 18px 0;display:none;animation:fsIn .25s ease both;}
+.alias-wrap.show{display:block;}
+@keyframes fsIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.alias-input{width:100%;background:var(--s1);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.alias-input:focus{border-color:rgba(255,255,255,.18);}
+.alias-input::placeholder{color:var(--muted);}
+
+/* ══ BOTTOM BAR ══ */
+.bottom-bar{
+  position:fixed;bottom:0;left:50%;translate:-50% 0;
+  width:100%;max-width:420px;
+  background:rgba(7,7,7,.97);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  padding:12px 18px max(14px,env(safe-area-inset-bottom));
+  display:flex;gap:10px;z-index:50;
+}
+.btn-send{
+  flex:1;padding:14px;border:none;border-radius:13px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .2s;
+}
+.btn-send:active{transform:scale(.98);}
+.btn-send:disabled{background:var(--s2)!important;box-shadow:none!important;color:var(--muted);cursor:not-allowed;}
+.cost-chip{
+  display:flex;align-items:center;gap:4px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:11px;padding:10px 14px;flex-shrink:0;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--gold-hi);
+}
+
+/* ══ ÉXITO ══ */
+.exito{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,4,4,.97);backdrop-filter:blur(14px);padding:28px;}
+.exito.show{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.ex-emoji{font-size:64px;margin-bottom:12px;animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes pop{0%{transform:scale(0) rotate(-10deg);opacity:0}60%{transform:scale(1.15) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.ex-title{font-family:'Playfair Display',serif;font-weight:900;font-size:24px;color:var(--text);text-align:center;margin-bottom:6px;}
+.ex-sub{font-size:13px;color:var(--soft);text-align:center;margin-bottom:24px;line-height:1.5;}
+
+/* Mini card en éxito */
+.ex-card{width:100%;border-radius:18px;padding:18px;margin-bottom:24px;position:relative;overflow:hidden;}
+.ex-card::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.08) 3px,rgba(0,0,0,.08) 4px);pointer-events:none;border-radius:18px;}
+.ex-badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;margin-bottom:10px;font-family:'Syne',sans-serif;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid;align-self:flex-start;position:relative;z-index:1;}
+.ex-msg{font-family:'Playfair Display',serif;font-weight:700;font-style:italic;font-size:16px;color:var(--text);line-height:1.45;margin-bottom:8px;position:relative;z-index:1;}
+.ex-alias{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;position:relative;z-index:1;}
+.ex-timer{font-size:13px;color:var(--soft);margin-bottom:22px;display:flex;align-items:center;gap:5px;}
+.ex-timer-n{font-family:'DM Mono',monospace;font-weight:500;font-size:15px;}
+.btn-ex{width:100%;padding:15px;border:none;border-radius:13px;background:linear-gradient(120deg,var(--gold-lo),var(--gold-hi));font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#000;cursor:pointer;box-shadow:0 4px 22px var(--gold-glow);}
+
+.toast{position:fixed;top:74px;left:50%;transform:translateX(-50%) translateY(-16px);background:rgba(18,18,18,.97);border:1px solid rgba(212,160,23,.28);border-radius:10px;padding:10px 18px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--gold-hi);z-index:9999;opacity:0;pointer-events:none;white-space:nowrap;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<header class="header">
+  <div class="h-left">
+    <button class="h-back" onclick="history.back()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="h-title">Crear dedicatoria</span>
+  </div>
+  <div class="wallet">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="8.5" cy="12.5" r="5.5" stroke="#D4A017" stroke-width="1.5" fill="none"/><ellipse cx="8.5" cy="10.2" rx="5.5" ry="1.8" fill="#D4A017" opacity=".35"/><circle cx="15.5" cy="14.5" r="4.5" fill="#080808" stroke="#D4A017" stroke-width="1.5"/><ellipse cx="15.5" cy="12.4" rx="4.5" ry="1.5" fill="#D4A017" opacity=".5"/></svg>
+    <span class="wallet-amt">$2.000</span>
+  </div>
+</header>
+
+<div class="body">
+
+  <!-- ══ MOOD SELECTOR ══ -->
+  <div class="mood-wrap">
+    <div class="mood-label">Ambiente</div>
+    <div class="mood-rail">
+      <div class="mood-btn on" onclick="setMood(this,'romantico','#FF6BAE','#FF3D6B','rgba(255,107,174,.28)')">
+        <span class="mood-emoji">💕</span>
+        <span class="mood-name">Romántico</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'fuego','#FF7A2F','#FF4500','rgba(255,122,47,.28)')">
+        <span class="mood-emoji">🔥</span>
+        <span class="mood-name">Fuego</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'amistad','#2FC4FF','#0090CC','rgba(47,196,255,.28)')">
+        <span class="mood-emoji">🤜</span>
+        <span class="mood-name">Amistad</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'fiesta','#C87AFF','#8B2FFF','rgba(200,122,255,.28)')">
+        <span class="mood-emoji">🎉</span>
+        <span class="mood-name">Fiesta</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'misterio','#7AFF9E','#00CC44','rgba(122,255,158,.28)')">
+        <span class="mood-emoji">🌙</span>
+        <span class="mood-name">Misterio</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'nostalgia','#FFB347','#E07000','rgba(255,179,71,.28)')">
+        <span class="mood-emoji">🌅</span>
+        <span class="mood-name">Nostalgia</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'tropical','#00FFB2','#00B87A','rgba(0,255,178,.28)')">
+        <span class="mood-emoji">🌴</span>
+        <span class="mood-name">Tropical</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'urbano','#C0C0C0','#808080','rgba(192,192,192,.28)')">
+        <span class="mood-emoji">🎤</span>
+        <span class="mood-name">Urbano</span>
+      </div>
+      <div class="mood-btn" onclick="setMood(this,'electro','#BF00FF','#7700CC','rgba(191,0,255,.28)')">
+        <span class="mood-emoji">⚡</span>
+        <span class="mood-name">Electro</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CARD PREVIEW ══ -->
+  <div class="card-wrap">
+    <div class="ded-card mood-romantico" id="dedCard">
+      <div class="card-glow" id="cardGlow" style="background:radial-gradient(circle,rgba(255,107,174,.5),transparent 70%)"></div>
+      <div>
+        <div class="card-badge" id="cardBadge" style="background:rgba(255,107,174,.12);border-color:rgba(255,107,174,.3);color:#FF6BAE;">
+          <span id="cardBadgeEmoji">💕</span> DEDICATORIA
+        </div>
+        <div class="card-text-display placeholder" id="cardText">
+          Escribe algo especial...
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-alias" id="cardAlias" style="color:#FF6BAE">— @ElBacán</span>
+        <div class="card-dur-bar">
+          <span class="card-dur-txt">8 seg en pantalla</span>
+          <div class="card-pbar"><div class="card-pfill" id="cardBar" style="background:#FF6BAE"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INPUT ══ -->
+  <div class="input-zone">
+    <div class="input-row">
+      <textarea
+        class="msg-input" id="msgInput" rows="2"
+        placeholder="Escribe tu mensaje..."
+        maxlength="100"
+        oninput="onMsg(this)"
+      ></textarea>
+      <span class="msg-counter" id="msgCnt">0/100</span>
+    </div>
+  </div>
+
+  <!-- ══ EMOJIS RÁPIDOS ══ -->
+  <div class="emoji-section">
+    <div class="emoji-label">Emojis rápidos</div>
+    <div class="emoji-rail">
+      <div class="eq" onclick="insertEmoji('❤️')">❤️</div>
+      <div class="eq" onclick="insertEmoji('🔥')">🔥</div>
+      <div class="eq" onclick="insertEmoji('💫')">💫</div>
+      <div class="eq" onclick="insertEmoji('🥂')">🥂</div>
+      <div class="eq" onclick="insertEmoji('😍')">😍</div>
+      <div class="eq" onclick="insertEmoji('🎶')">🎶</div>
+      <div class="eq" onclick="insertEmoji('💃')">💃</div>
+      <div class="eq" onclick="insertEmoji('🕺')">🕺</div>
+      <div class="eq" onclick="insertEmoji('✨')">✨</div>
+      <div class="eq" onclick="insertEmoji('💋')">💋</div>
+      <div class="eq" onclick="insertEmoji('🫀')">🫀</div>
+      <div class="eq" onclick="insertEmoji('🌹')">🌹</div>
+      <div class="eq" onclick="insertEmoji('🤝')">🤝</div>
+      <div class="eq" onclick="insertEmoji('👑')">👑</div>
+      <div class="eq" onclick="insertEmoji('🎯')">🎯</div>
+      <div class="eq" onclick="insertEmoji('⚡')">⚡</div>
+      <div class="eq" onclick="insertEmoji('🫶')">🫶</div>
+      <div class="eq" onclick="insertEmoji('🌙')">🌙</div>
+      <div class="eq" onclick="insertEmoji('🍾')">🍾</div>
+      <div class="eq" onclick="insertEmoji('🎸')">🎸</div>
+    </div>
+  </div>
+
+  <!-- ══ PLANTILLAS ══ -->
+  <div class="tpl-section">
+    <div class="tpl-label">Plantillas rápidas</div>
+    <div class="tpl-rail">
+      <div class="tpl" onclick="useTpl('Esta va para ti ❤️ porque hoy lo mereces todo')">
+        <div class="tpl-txt">Esta va para ti ❤️ porque hoy lo mereces todo</div>
+      </div>
+      <div class="tpl" onclick="useTpl('🥂 Por los que están y por los que ya no están')">
+        <div class="tpl-txt">🥂 Por los que están y por los que ya no están</div>
+      </div>
+      <div class="tpl" onclick="useTpl('Para la mesa del fondo 🔥 ¡los mejores de la noche!')">
+        <div class="tpl-txt">Para la mesa del fondo 🔥 ¡los mejores de la noche!</div>
+      </div>
+      <div class="tpl" onclick="useTpl('Mi amor, donde estés esta canción es tuya 💫')">
+        <div class="tpl-txt">Mi amor, donde estés esta canción es tuya 💫</div>
+      </div>
+      <div class="tpl" onclick="useTpl('Feliz cumpleaños 🎉 esta noche bailamos todos')">
+        <div class="tpl-txt">Feliz cumpleaños 🎉 esta noche bailamos todos</div>
+      </div>
+      <div class="tpl" onclick="useTpl('Sin ti esta noche no sería lo mismo 🫶')">
+        <div class="tpl-txt">Sin ti esta noche no sería lo mismo 🫶</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DESTINO ══ -->
+  <div class="dest-section">
+    <div class="mood-label">¿Para quién?</div>
+    <div class="dest-grid">
+      <div class="dest-btn on" onclick="selDest(this,'sala',500)" id="d-sala">
+        <span class="dest-emoji">🎉</span>
+        <span class="dest-name">Toda la sala</span>
+        <span class="dest-price">$500</span>
+      </div>
+      <div class="dest-btn" onclick="selDest(this,'cancion',800)" id="d-cancion">
+        <span class="dest-emoji">🎵</span>
+        <span class="dest-name">Una canción</span>
+        <span class="dest-price">$800</span>
+      </div>
+      <div class="dest-btn" onclick="selDest(this,'persona',1000)" id="d-persona">
+        <span class="dest-emoji">💘</span>
+        <span class="dest-name">A alguien</span>
+        <span class="dest-price">$1.000</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alias-wrap" id="aliasWrap">
+    <input class="alias-input" id="aliasInput" type="text" placeholder="@alias de la persona" maxlength="30" oninput="checkSend()">
+  </div>
+
+</div><!-- body -->
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="cost-chip" id="costChip">$500</div>
+  <button class="btn-send" id="btnSend" onclick="enviar()" disabled>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/></svg>
+    Enviar dedicatoria
+  </button>
+</div>
+
+</div><!-- phone -->
+
+<!-- ══ ÉXITO ══ -->
+<div class="exito" id="exitoEl">
+  <div class="ex-emoji" id="exEmoji">💌</div>
+  <div class="ex-title">¡Dedicatoria enviada!</div>
+  <div class="ex-sub">Aparecerá en la pantalla del bar<br>en unos segundos.</div>
+
+  <div class="ex-card" id="exCard" style="background:linear-gradient(145deg,#2a0a18,#1a0812);">
+    <div class="ex-badge" id="exBadge" style="background:rgba(255,107,174,.12);border-color:rgba(255,107,174,.3);color:#FF6BAE;">
+      <span id="exBadgeEmoji">💕</span> DEDICATORIA
+    </div>
+    <div class="ex-msg" id="exMsg">"..."</div>
+    <div class="ex-alias" id="exAlias" style="color:#FF6BAE">— @ElBacán</div>
+  </div>
+
+  <div class="ex-timer">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--soft)" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    Visible en pantalla por <span class="ex-timer-n" id="exTimerN" style="color:var(--gold-hi)">8</span> segundos
+  </div>
+
+  <button class="btn-ex" onclick="cerrarExito()">Volver a la sala</button>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let moodCurrent = {
+  key:'romantico', a:'#FF6BAE', b:'#FF3D6B',
+  glow:'rgba(255,107,174,.28)', emoji:'💕',
+  cardBg:'linear-gradient(145deg,#2a0a18,#1a0812)'
+};
+let destTipo = 'sala', destCosto = 500;
+let prevBarTimer = null;
+
+/* ═══════════════════════════════════════
+   MOOD
+═══════════════════════════════════════ */
+const moodData = {
+  romantico:{ a:'#FF6BAE', b:'#FF3D6B', glow:'rgba(255,107,174,.25)', emoji:'💕', glowRad:'rgba(255,107,174,.5)', cardBg:'linear-gradient(145deg,#2a0a18,#1a0812)' },
+  fuego:    { a:'#FF7A2F', b:'#FF4500', glow:'rgba(255,122,47,.25)',   emoji:'🔥', glowRad:'rgba(255,122,47,.5)',   cardBg:'linear-gradient(145deg,#2a1000,#1a0800)' },
+  amistad:  { a:'#2FC4FF', b:'#0090CC', glow:'rgba(47,196,255,.25)',   emoji:'🤝', glowRad:'rgba(47,196,255,.5)',  cardBg:'linear-gradient(145deg,#001a2a,#000e1a)' },
+  fiesta:   { a:'#C87AFF', b:'#8B2FFF', glow:'rgba(200,122,255,.25)',  emoji:'🎉', glowRad:'rgba(200,122,255,.5)', cardBg:'linear-gradient(145deg,#1a002a,#0f0018)' },
+  misterio: { a:'#7AFF9E', b:'#00CC44', glow:'rgba(122,255,158,.25)',  emoji:'🌙', glowRad:'rgba(122,255,158,.5)', cardBg:'linear-gradient(145deg,#001a0a,#000d05)' },
+  nostalgia:{ a:'#FFB347', b:'#E07000', glow:'rgba(255,179,71,.25)',   emoji:'🌅', glowRad:'rgba(255,179,71,.5)',  cardBg:'linear-gradient(145deg,#1a1000,#0f0900)' },
+  tropical: { a:'#00FFB2', b:'#00B87A', glow:'rgba(0,255,178,.25)',    emoji:'🌴', glowRad:'rgba(0,255,178,.5)',  cardBg:'linear-gradient(145deg,#001a14,#000f0a)' },
+  urbano:   { a:'#C0C0C0', b:'#888888', glow:'rgba(192,192,192,.18)',  emoji:'🎤', glowRad:'rgba(192,192,192,.4)', cardBg:'linear-gradient(145deg,#0d0d0d,#060606)' },
+  electro:  { a:'#BF00FF', b:'#7700CC', glow:'rgba(191,0,255,.25)',    emoji:'⚡', glowRad:'rgba(191,0,255,.5)',  cardBg:'linear-gradient(145deg,#080018,#04000f)' },
+};
+
+function setMood(btn, key, a, b, glow) {
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+
+  const d = moodData[key];
+  moodCurrent = { key, ...d };
+
+  // Card bg
+  const card = document.getElementById('dedCard');
+  card.style.background = d.cardBg;
+  card.style.boxShadow  = `0 8px 32px ${d.glow}`;
+
+  // Glow blob
+  document.getElementById('cardGlow').style.background =
+    `radial-gradient(circle,${d.glowRad},transparent 70%)`;
+
+  // Badge
+  const badge = document.getElementById('cardBadge');
+  badge.style.background   = d.a + '20';
+  badge.style.borderColor  = d.a + '50';
+  badge.style.color        = d.a;
+  document.getElementById('cardBadgeEmoji').textContent = d.emoji;
+
+  // Alias color
+  document.getElementById('cardAlias').style.color = d.a;
+
+  // Progress bar color
+  document.getElementById('cardBar').style.background = d.a;
+
+  // Mood-btn selected style
+  btn.style.borderColor  = d.a;
+  btn.style.background   = d.a + '15';
+  btn.querySelector('.mood-name').style.color = d.a;
+
+  // Reset otros
+  document.querySelectorAll('.mood-btn').forEach(mb => {
+    if (mb !== btn) {
+      mb.style.borderColor = 'var(--border)';
+      mb.style.background  = 'var(--s1)';
+      mb.querySelector('.mood-name').style.color = 'var(--soft)';
+    }
+  });
+
+  // dest buttons
+  document.querySelectorAll('.dest-btn.on').forEach(db => {
+    db.style.borderColor = d.a;
+    db.style.background  = d.a + '12';
+  });
+
+  // btn-send
+  updateSendBtn();
+}
+
+/* ═══════════════════════════════════════
+   MENSAJE
+═══════════════════════════════════════ */
+const ta = document.getElementById('msgInput');
+
+function onMsg(el) {
+  const len = el.value.length;
+  const cnt = document.getElementById('msgCnt');
+  cnt.textContent = len + '/100';
+  cnt.className   = 'msg-counter' + (len > 90 ? ' over' : len > 75 ? ' warn' : '');
+  updateCard();
+  checkSend();
+}
+
+function updateCard() {
+  const msg  = ta.value.trim();
+  const disp = document.getElementById('cardText');
+  if (msg) {
+    disp.textContent  = '"' + msg + '"';
+    disp.className    = 'card-text-display';
+  } else {
+    disp.textContent  = 'Escribe algo especial...';
+    disp.className    = 'card-text-display placeholder';
+  }
+}
+
+/* ═══════════════════════════════════════
+   EMOJIS RÁPIDOS
+═══════════════════════════════════════ */
+function insertEmoji(emoji) {
+  const start = ta.selectionStart;
+  const end   = ta.selectionEnd;
+  const val   = ta.value;
+  // Insertar en la posición del cursor
+  const newVal = val.slice(0, start) + emoji + val.slice(end);
+  if ([...newVal].length > 100) return; // límite de caracteres
+  ta.value = newVal;
+  // Mover cursor al final del emoji insertado
+  const newPos = start + emoji.length;
+  ta.setSelectionRange(newPos, newPos);
+  ta.focus();
+  onMsg(ta);
+  // Micro-feedback visual
+  const card = document.getElementById('dedCard');
+  card.style.transform = 'scale(1.015)';
+  setTimeout(() => card.style.transform = '', 150);
+}
+
+/* ═══════════════════════════════════════
+   PLANTILLAS
+═══════════════════════════════════════ */
+function useTpl(txt) {
+  ta.value = txt.slice(0, 100);
+  onMsg(ta);
+  ta.focus();
+  // Scroll suave al input
+  ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ═══════════════════════════════════════
+   DESTINO
+═══════════════════════════════════════ */
+function selDest(btn, tipo, costo) {
+  document.querySelectorAll('.dest-btn').forEach(b => {
+    b.classList.remove('on');
+    b.style.borderColor = 'var(--border)';
+    b.style.background  = 'var(--s1)';
+    b.querySelector('.dest-name').style.color  = 'var(--soft)';
+    b.querySelector('.dest-price').style.color = 'var(--muted)';
+  });
+
+  btn.classList.add('on');
+  btn.style.borderColor = moodCurrent.a;
+  btn.style.background  = moodCurrent.a + '12';
+  btn.querySelector('.dest-name').style.color  = moodCurrent.a;
+  btn.querySelector('.dest-price').style.color = 'var(--gold-mid)';
+
+  destTipo  = tipo;
+  destCosto = costo;
+
+  document.getElementById('aliasWrap').classList.toggle('show', tipo === 'persona');
+  document.getElementById('costChip').textContent = '$' + costo.toLocaleString('es-CO');
+  updateSendBtn();
+  checkSend();
+}
+
+/* ═══════════════════════════════════════
+   SEND BUTTON
+═══════════════════════════════════════ */
+function updateSendBtn() {
+  const btn = document.getElementById('btnSend');
+  if (!btn.disabled) {
+    btn.style.background  = `linear-gradient(120deg,${moodCurrent.b},${moodCurrent.a})`;
+    btn.style.boxShadow   = `0 4px 24px ${moodCurrent.glow}`;
+  }
+}
+
+function checkSend() {
+  const msg       = ta.value.trim().length > 0;
+  const aliasOk   = destTipo !== 'persona' ||
+    document.getElementById('aliasInput').value.trim().length > 0;
+  const btn = document.getElementById('btnSend');
+  btn.disabled = !(msg && aliasOk);
+  if (!btn.disabled) updateSendBtn();
+  else { btn.style.background = ''; btn.style.boxShadow = ''; }
+}
+
+/* ═══════════════════════════════════════
+   PROGRESS BAR LOOP
+═══════════════════════════════════════ */
+function startBar() {
+  const bar = document.getElementById('cardBar');
+  clearInterval(prevBarTimer);
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  setTimeout(() => {
+    bar.style.transition = 'width 8s linear';
+    bar.style.width = '100%';
+  }, 60);
+  prevBarTimer = setInterval(() => {
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    setTimeout(() => {
+      bar.style.transition = 'width 8s linear';
+      bar.style.width = '100%';
+    }, 60);
+  }, 8500);
+}
+
+/* ═══════════════════════════════════════
+   ENVIAR
+═══════════════════════════════════════ */
+function enviar() {
+  const msg = ta.value.trim();
+  const d   = moodCurrent;
+
+  // Poblar éxito con el mismo mood
+  document.getElementById('exEmoji').textContent       = d.emoji;
+  document.getElementById('exCard').style.background   = d.cardBg;
+  document.getElementById('exCard').style.boxShadow    = `0 6px 24px ${d.glow}`;
+  document.getElementById('exBadge').style.background  = d.a + '20';
+  document.getElementById('exBadge').style.borderColor = d.a + '50';
+  document.getElementById('exBadge').style.color       = d.a;
+  document.getElementById('exBadgeEmoji').textContent  = d.emoji;
+  document.getElementById('exMsg').textContent         = '"' + msg + '"';
+  document.getElementById('exAlias').style.color       = d.a;
+  document.getElementById('exTimerN').style.color      = d.a;
+
+  let suffix = '';
+  if (destTipo === 'persona') {
+    const alias = document.getElementById('aliasInput').value.trim();
+    suffix = ' · para @' + alias;
+  }
+  if (destTipo === 'cancion') suffix = ' · para la canción';
+  document.getElementById('exAlias').textContent = '— @ElBacán' + suffix;
+
+  document.getElementById('exitoEl').classList.add('show');
+}
+
+function cerrarExito() {
+  document.getElementById('exitoEl').classList.remove('show');
+  ta.value = '';
+  onMsg(ta);
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+let tt;
+function showToast(msg) {
+  const el = document.getElementById('toastEl');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt);
+  tt = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* init */
+startBar();
+// Aplicar estado inicial del mood al botón
+document.querySelector('.mood-btn').style.borderColor = moodData.romantico.a;
+document.querySelector('.mood-btn').style.background  = moodData.romantico.a + '15';
+document.querySelector('.mood-btn .mood-name').style.color = moodData.romantico.a;
+document.querySelector('.dest-btn').style.borderColor = moodData.romantico.a;
+document.querySelector('.dest-btn').style.background  = moodData.romantico.a + '12';
+document.querySelector('.dest-btn .dest-name').style.color  = moodData.romantico.a;
+document.querySelector('.dest-btn .dest-price').style.color = 'var(--gold-mid)';
+</script>
+</body>
+</html>

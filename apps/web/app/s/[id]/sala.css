@@ -1,0 +1,323 @@
+/* ─── Spinner ─── */
+
+.spin-icon {
+  animation: spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Swipe wrapper ─── */
+
+.song-wrapper {
+  position: relative;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Fondos de reveal — siempre presentes, ocultos por defecto */
+.swipe-reveal {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  padding: 0 22px;
+  opacity: 0;
+  transition: opacity 0.05s linear;
+}
+
+.swipe-reveal-left {
+  background: linear-gradient(135deg, #A97010, #D4A017);
+  justify-content: flex-start;
+}
+
+.swipe-reveal-right {
+  background: linear-gradient(135deg, #8B0000, #C0392B);
+  justify-content: flex-end;
+}
+
+.swipe-reveal .reveal-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.swipe-reveal-left .reveal-label {
+  color: #080808;
+}
+
+.swipe-reveal-right .reveal-label {
+  color: #fff;
+}
+
+/* La card se mueve con JS — sin transition durante el drag */
+.song-swipeable {
+  position: relative;
+  will-change: transform;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Animación spring de retorno al soltar */
+.song-swipeable.snapping {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* ─── Hint chips ─── */
+
+.swipe-hint-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-bottom: 12px;
+}
+
+.hint-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.hint-chip.bid {
+  background: rgba(212, 160, 23, 0.1);
+  border: 1px solid rgba(212, 160, 23, 0.2);
+  color: #D4A017;
+}
+
+.hint-chip.veto {
+  background: rgba(192, 57, 43, 0.1);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+  color: #FF6B6B;
+}
+
+/* ─── Tutorial overlay ─── */
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 5, 5, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: tutorialFadeIn 0.4s ease;
+  padding: 24px;
+  font-family: var(--font-montserrat), sans-serif;
+  color: #F0EDE8;
+}
+
+@keyframes tutorialFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.tutorial-title {
+  font-family: var(--font-playfair), serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.tutorial-subtitle {
+  font-size: 13px;
+  color: #9A9590;
+  margin-bottom: 36px;
+}
+
+.tutorial-gestures {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 40px;
+}
+
+.gesture-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gesture-demo {
+  position: relative;
+  width: 160px;
+  height: 64px;
+  border-radius: 14px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.gesture-demo .swipe-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 14px;
+}
+
+.gesture-demo .swipe-bg.left-reveal {
+  background: linear-gradient(135deg, #A97010, #D4A017);
+  justify-content: flex-start;
+}
+
+.gesture-demo .swipe-bg.right-reveal {
+  background: linear-gradient(135deg, #8B0000, #C0392B);
+  justify-content: flex-end;
+}
+
+.gesture-demo .swipe-bg .reveal-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gesture-demo .swipe-bg.left-reveal .reveal-label {
+  color: #080808;
+}
+
+.gesture-demo .swipe-bg.right-reveal .reveal-label {
+  color: #fff;
+}
+
+.gesture-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  height: 100%;
+  z-index: 2;
+}
+
+.gesture-card-emoji {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.gesture-card-info {
+  min-width: 0;
+}
+
+.gesture-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #F0EDE8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gesture-card-artist {
+  font-size: 10px;
+  color: #777;
+}
+
+.gesture-label {
+  flex: 1;
+}
+
+.gesture-label-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.gesture-label-title.gold {
+  color: #FFE566;
+}
+
+.gesture-label-title.red {
+  color: #FF6B6B;
+}
+
+.gesture-label-sub {
+  font-size: 11px;
+  color: #777;
+  line-height: 1.4;
+}
+
+/* Card animada en el tutorial — swipe derecho */
+.bid-demo .gesture-card {
+  animation: swipeRight 2.5s ease-in-out infinite;
+}
+
+/* Card animada en el tutorial — swipe izquierdo */
+.veto-demo .gesture-card {
+  animation: swipeLeft 2.5s ease-in-out infinite;
+}
+
+@keyframes swipeRight {
+  0%, 30%  { transform: translateX(0);   }
+  60%      { transform: translateX(55%); }
+  75%      { transform: translateX(55%); }
+  100%     { transform: translateX(0);   }
+}
+
+@keyframes swipeLeft {
+  0%, 30%  { transform: translateX(0);    }
+  60%      { transform: translateX(-55%); }
+  75%      { transform: translateX(-55%); }
+  100%     { transform: translateX(0);    }
+}
+
+/* ─── Tutorial buttons ─── */
+
+.tutorial-btn {
+  width: 100%;
+  max-width: 300px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #FFE566, #D4A017);
+  color: #080808;
+  font-family: var(--font-montserrat), sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(212, 160, 23, 0.3);
+  margin-bottom: 10px;
+}
+
+.tutorial-skip {
+  background: none;
+  border: none;
+  color: #5A5A5A;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.tutorial-skip:hover {
+  color: #9A9590;
+}

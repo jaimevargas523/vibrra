@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VIBRRA — Recargar cliente</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Montserrat:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ─── Variables ─────────────────────────── */
+:root {
+  --gold:    #FFE566;
+  --gm:      #D4A017;
+  --gd:      #A97010;
+  --bg:      #070707;
+  --s1:      #0D0D0D;
+  --s2:      #131313;
+  --s3:      #1A1A1A;
+  --s4:      #202020;
+  --border:  rgba(255,255,255,0.07);
+  --borderg: rgba(212,160,23,0.25);
+  --white:   #FFFFFF;
+  --muted:   #666;
+  --green:   #00D9A3;
+  --greend:  rgba(0,217,163,0.10);
+  --blue:    #60A5FA;
+  --blued:   rgba(96,165,250,0.10);
+  --orange:  #FF8F00;
+  --r:       14px;
+  --rsm:     10px;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bg); color: var(--white);
+  min-height: 100vh; max-width: 430px;
+  margin: 0 auto; padding-bottom: 100px;
+  overflow-x: hidden;
+}
+
+/* ─── Topbar ─────────────────────────────── */
+.topbar {
+  position: sticky; top:0; z-index:100;
+  background: rgba(7,7,7,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 13px 18px;
+  display:flex; align-items:center; gap:12px;
+}
+.tb-back {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--s2); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:15px; flex-shrink:0;
+}
+.tb-title { flex:1; font-size:14px; font-weight:700; }
+.tb-saldo { text-align:right; font-size:10px; color:var(--muted); line-height:1.3; }
+.tb-saldo strong {
+  display:block; font-family:'JetBrains Mono',monospace;
+  font-size:14px; color:var(--gold); font-weight:700;
+}
+
+/* ─── Barra de saldo ─────────────────────── */
+.saldo-bar {
+  margin:14px 18px 0;
+  padding:12px 14px;
+  border-radius:var(--rsm);
+  background:var(--s2); border:1px solid var(--borderg);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.sb-label { font-size:10px; color:var(--muted); }
+.sb-amount {
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px; font-weight:700; color:var(--gold);
+}
+.sb-hint { font-size:9px; color:var(--muted); text-align:right; margin-top:1px; }
+
+/* ─── Sección ────────────────────────────── */
+.sec { padding:18px 18px 0; }
+.sec-label {
+  font-size:9px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.sec-num {
+  width:18px; height:18px; border-radius:50%;
+  background:var(--s2); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:700; color:var(--muted); flex-shrink:0;
+  transition:all .2s;
+}
+.sec-num.done { background:var(--greend); border-color:var(--green); color:var(--green); }
+
+/* ─── Paso 1: montos ─────────────────────── */
+.amounts-row {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.amounts-row .acard:last-child { grid-column:span 3; }
+
+.acard {
+  position:relative;
+  padding:14px 10px 12px;
+  border-radius:var(--rsm);
+  background:var(--s2); border:2px solid var(--border);
+  cursor:pointer; text-align:center;
+  transition:all .18s; overflow:hidden;
+}
+.acard.wide {
+  padding:12px 18px; text-align:left;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.acard::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(212,160,23,.07),transparent);
+  opacity:0; transition:opacity .18s;
+}
+.acard.selected { border-color:var(--gm); }
+.acard.selected::after { opacity:1; }
+.acard.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.acard.disabled .a-val { color: var(--muted); }
+
+.a-val {
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px; font-weight:700; line-height:1; margin-bottom:3px;
+}
+.acard.wide .a-val { font-size:20px; margin-bottom:0; }
+.a-lbl { font-size:9px; color:var(--muted); }
+
+.a-check {
+  position:absolute; top:6px; right:6px;
+  width:16px; height:16px; border-radius:50%;
+  border:1.5px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:transparent; transition:all .18s;
+}
+.acard.selected .a-check { background:var(--gm); border-color:var(--gm); color:#000; }
+.acard.wide .a-check { position:static; flex-shrink:0; }
+
+/* ─── Paso 2: mood ───────────────────────── */
+.moods-row {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+}
+.mcard {
+  position:relative;
+  padding:14px 10px 12px;
+  border-radius:var(--rsm);
+  background:var(--s2); border:2px solid var(--border);
+  cursor:pointer; text-align:center;
+  transition:all .18s; overflow:hidden;
+}
+.mcard:active { transform:scale(0.96); }
+.mcard.sel-pesimista { border-color:var(--blue); }
+.mcard.sel-moderada  { border-color:var(--gm); }
+.mcard.sel-generosa  { border-color:var(--green); }
+
+.m-emoji { font-size:26px; line-height:1; margin-bottom:5px; }
+.m-name  { font-size:11px; font-weight:700; margin-bottom:5px; }
+.mcard.sel-pesimista .m-name { color:var(--blue); }
+.mcard.sel-moderada  .m-name { color:var(--gm); }
+.mcard.sel-generosa  .m-name { color:var(--green); }
+
+.m-chips { display:flex; flex-direction:column; gap:3px; }
+.mchip {
+  font-size:8px; font-weight:700;
+  padding:2px 5px; border-radius:4px; text-align:left;
+}
+.mchip.c { background:var(--blued);  color:var(--blue); }
+.mchip.x { background:var(--greend); color:var(--green); }
+.mchip.n { background:var(--s3);     color:var(--muted); }
+
+.m-badge {
+  position:absolute; top:5px; right:5px;
+  font-size:7px; font-weight:700; padding:2px 5px; border-radius:3px;
+}
+.m-badge.sug { background:rgba(212,160,23,.12); color:var(--gm); border:1px solid rgba(212,160,23,.25); }
+.m-badge.ext { background:rgba(255,143,0,.10);  color:var(--orange); border:1px solid rgba(255,143,0,.2); }
+
+.nota-generosa {
+  margin:8px 0 0; padding:8px 12px;
+  border-radius:var(--rsm);
+  background:rgba(255,143,0,.06); border:1px solid rgba(255,143,0,.18);
+  font-size:10px; color:var(--orange); line-height:1.5;
+  display:none;
+}
+.nota-generosa.show { display:block; }
+
+/* ─── Bonificaciones ─────────────────────── */
+
+/* Header colapsable */
+.bonus-header {
+  display:flex; align-items:center; justify-content:space-between;
+  cursor:pointer; padding:14px 18px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  margin-top:18px;
+  user-select:none;
+  background:var(--s2);
+}
+.bonus-header-left { display:flex; align-items:center; gap:10px; }
+.bonus-header-ico {
+  width:30px; height:30px; border-radius:8px;
+  background:rgba(212,160,23,.08); border:1px solid var(--borderg);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+.bonus-header-title { font-size:13px; font-weight:700; }
+.bonus-header-sub   { font-size:10px; color:var(--muted); margin-top:1px; }
+.bonus-chevron {
+  font-size:12px; color:var(--muted);
+  transition:transform .25s;
+}
+.bonus-chevron.open { transform:rotate(180deg); }
+
+/* Cuerpo colapsable */
+.bonus-body {
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .35s cubic-bezier(0.4,0,0.2,1);
+}
+.bonus-body.open { max-height:1200px; }
+
+.bonus-inner { padding:0 18px 18px; }
+
+/* Leyenda de columnas */
+.matrix-legend {
+  display:grid; grid-template-columns:80px repeat(3,1fr);
+  gap:6px; margin-bottom:8px;
+}
+.ml-blank { /* celda vacía */ }
+.ml-col {
+  text-align:center; font-size:9px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+  padding:5px 4px; border-radius:var(--rsm);
+}
+.ml-col.p { background:var(--blued);                    color:var(--blue); }
+.ml-col.m { background:rgba(212,160,23,.08);            color:var(--gm); }
+.ml-col.g { background:var(--greend);                   color:var(--green); }
+
+/* Fila de la matriz */
+.matrix-row {
+  display:grid; grid-template-columns:80px repeat(3,1fr);
+  gap:6px; margin-bottom:6px; align-items:stretch;
+}
+.matrix-row:last-child { margin-bottom:0; }
+
+/* Etiqueta de monto en la fila */
+.mr-label {
+  display:flex; align-items:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; font-weight:700; color:var(--gold);
+  padding:0 4px;
+}
+
+/* Celda de bonos editables */
+.bcell {
+  background:var(--s3); border:1px solid var(--border);
+  border-radius:var(--rsm);
+  padding:8px 6px;
+  display:flex; flex-direction:column; gap:4px;
+  cursor:default;
+  transition:border-color .15s;
+}
+.bcell:focus-within { border-color:var(--gm); }
+
+/* Fila dentro de la celda: emoji + stepper */
+.bcell-row {
+  display:flex; align-items:center; justify-content:space-between;
+}
+.bcell-ico { font-size:11px; }
+.stepper {
+  display:flex; align-items:center; gap:4px;
+}
+.step-btn {
+  width:18px; height:18px; border-radius:4px;
+  background:var(--s4); border:1px solid var(--border);
+  color:var(--white); font-size:12px; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  line-height:1; flex-shrink:0;
+  transition:background .15s;
+  /* impide selección de texto al tocar rápido */
+  user-select:none;
+}
+.step-btn:active { background:var(--s2); }
+.step-val {
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px; font-weight:700; min-width:14px; text-align:center;
+  color:var(--white);
+}
+
+/* Separador visual y costo extra (Generosa) */
+.bonus-callout {
+  margin-top:12px; padding:10px 12px;
+  border-radius:var(--rsm);
+  background:rgba(255,143,0,.05); border:1px solid rgba(255,143,0,.15);
+  font-size:10px; color:var(--orange); line-height:1.6;
+}
+.bonus-callout strong { color:var(--white); }
+
+/* Botón de resetear a defaults */
+.btn-reset {
+  width:100%; margin-top:12px; padding:10px;
+  border-radius:var(--rsm);
+  background:var(--s3); border:1px solid var(--border);
+  color:var(--muted); font-family:'Montserrat',sans-serif;
+  font-size:11px; font-weight:700; cursor:pointer;
+  transition:color .15s;
+}
+.btn-reset:active { color:var(--white); }
+
+/* ─── Resumen dinámico ───────────────────── */
+.resumen {
+  margin:18px 18px 0; padding:14px;
+  border-radius:var(--r); background:var(--s2);
+  border:1px solid var(--border); transition:border-color .25s;
+}
+.resumen.ready { border-color:var(--borderg); }
+
+.rrow {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:12px; padding:6px 0;
+}
+.rrow:not(:last-child) { border-bottom:1px solid var(--border); }
+.rrow .rl { color:var(--muted); }
+.rrow .rv { font-family:'JetBrains Mono',monospace; font-weight:700; }
+.rv.gold   { color:var(--gold); }
+.rv.blue   { color:var(--blue); }
+.rv.green  { color:var(--green); }
+.rv.orange { color:var(--orange); }
+
+/* ─── CTA fijo ───────────────────────────── */
+.cta-bar {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px;
+  background:rgba(7,7,7,.97); backdrop-filter:blur(16px);
+  border-top:1px solid var(--border); padding:14px 18px;
+}
+.btn-scan {
+  width:100%; padding:16px; border-radius:var(--r);
+  background:linear-gradient(135deg,var(--gm),var(--gd));
+  border:none; color:#000;
+  font-family:'Montserrat',sans-serif;
+  font-size:15px; font-weight:800;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:all .18s;
+}
+.btn-scan:active:not(:disabled) { transform:scale(0.98); }
+.btn-scan:disabled { background:var(--s3); color:var(--muted); cursor:not-allowed; }
+
+/* ─── Modales ────────────────────────────── */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.82); backdrop-filter:blur(8px);
+  z-index:200; align-items:flex-end;
+}
+.overlay.open { display:flex; }
+
+.sheet {
+  background:var(--s1); border-radius:22px 22px 0 0;
+  width:100%; max-width:430px; margin:0 auto;
+  padding:18px 20px 40px;
+  animation:slideUp .28s cubic-bezier(0.34,1.56,0.64,1);
+  border-top:1px solid var(--border);
+  max-height:88vh; overflow-y:auto;
+}
+@keyframes slideUp {
+  from { transform:translateY(100%); opacity:0; }
+  to   { transform:translateY(0);    opacity:1; }
+}
+.handle {
+  width:38px; height:4px; border-radius:2px;
+  background:var(--border); margin:0 auto 18px;
+}
+.sh-title { font-size:17px; font-weight:800; margin-bottom:4px; }
+.sh-sub   { font-size:11px; color:var(--muted); margin-bottom:18px; line-height:1.5; }
+
+/* Escáner */
+.scanner-wrap {
+  border-radius:var(--r); overflow:hidden;
+  background:#000; height:220px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; border:2px solid var(--border);
+  margin-bottom:14px; cursor:pointer;
+}
+.sc-c { position:absolute; width:22px; height:22px; border-style:solid; border-color:var(--gm); border-width:0; }
+.sc-c.tl { top:16px; left:16px;   border-top-width:3px; border-left-width:3px;   border-radius:4px 0 0 0; }
+.sc-c.tr { top:16px; right:16px;  border-top-width:3px; border-right-width:3px;  border-radius:0 4px 0 0; }
+.sc-c.bl { bottom:16px; left:16px;  border-bottom-width:3px; border-left-width:3px;  border-radius:0 0 0 4px; }
+.sc-c.br { bottom:16px; right:16px; border-bottom-width:3px; border-right-width:3px; border-radius:0 0 4px 0; }
+.sc-line {
+  position:absolute; left:16px; right:16px; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gm),transparent);
+  animation:sc 2s ease-in-out infinite;
+  box-shadow:0 0 8px rgba(212,160,23,.5);
+}
+@keyframes sc {
+  0%   { top:16px; }
+  50%  { top:calc(100% - 18px); }
+  100% { top:16px; }
+}
+.sc-idle { text-align:center; z-index:1; pointer-events:none; }
+.si { font-size:34px; opacity:.3; margin-bottom:8px; }
+.st { font-size:11px; color:var(--muted); }
+
+/* Éxito */
+.suc-icon {
+  width:68px; height:68px; border-radius:50%;
+  background:var(--greend); border:2px solid rgba(0,217,163,.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px; margin:4px auto 16px;
+  animation:pop .45s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pop {
+  from { transform:scale(0); opacity:0; }
+  to   { transform:scale(1); opacity:1; }
+}
+.suc-title { font-size:20px; font-weight:800; text-align:center; margin-bottom:4px; }
+.suc-sub   { font-size:11px; color:var(--muted); text-align:center; margin-bottom:18px; line-height:1.5; }
+
+.client-card {
+  padding:14px; border-radius:var(--r);
+  background:var(--s2); border:1px solid var(--border); margin-bottom:12px;
+}
+.client-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.client-av {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,var(--gm),var(--gd));
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.client-name { font-size:13px; font-weight:700; }
+.client-code { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+
+.brow {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 10px; border-radius:var(--rsm); margin-bottom:6px; font-size:12px;
+}
+.brow:last-child { margin-bottom:0; }
+.brow.s { background:rgba(212,160,23,.06); border:1px solid rgba(212,160,23,.14); }
+.brow.c { background:var(--blued);          border:1px solid rgba(96,165,250,.14); }
+.brow.x { background:var(--greend);          border:1px solid rgba(0,217,163,.14); }
+.brow .bl { color:var(--muted); }
+.brow .bv { font-family:'JetBrains Mono',monospace; font-weight:700; }
+.brow.s .bv { color:var(--gold); }
+.brow.c .bv { color:var(--blue); }
+.brow.x .bv { color:var(--green); }
+
+.post-saldo {
+  padding:10px 12px; border-radius:var(--rsm);
+  background:var(--s3); border:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:18px;
+}
+.ps-label { font-size:10px; color:var(--muted); }
+.ps-val { font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; color:var(--gold); }
+
+.btn-otra {
+  width:100%; padding:14px; border-radius:var(--r);
+  background:linear-gradient(135deg,var(--gm),var(--gd));
+  border:none; color:#000; font-family:'Montserrat',sans-serif;
+  font-size:13px; font-weight:800; cursor:pointer; margin-bottom:8px; transition:transform .18s;
+}
+.btn-otra:active { transform:scale(0.98); }
+.btn-cerrar {
+  width:100%; padding:12px; border-radius:var(--r);
+  background:var(--s2); border:1.5px solid var(--border); color:var(--white);
+  font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700;
+  cursor:pointer; transition:transform .18s;
+}
+.btn-cerrar:active { transform:scale(0.98); }
+</style>
+</head>
+<body>
+
+<!-- ══════ TOPBAR ══════════════════════════ -->
+<div class="topbar">
+  <div class="tb-back" onclick="history.back()">←</div>
+  <div class="tb-title">Recargar cliente</div>
+  <div class="tb-saldo">Tu saldo <strong id="top-saldo">$87.000</strong></div>
+</div>
+
+<!-- ══════ BARRA SALDO ════════════════════ -->
+<div class="saldo-bar">
+  <div>
+    <div class="sb-label">Saldo total</div>
+    <div class="sb-amount" id="bar-saldo">$87.000</div>
+  </div>
+  <div style="text-align:right">
+    <div class="sb-label">Disponible para recargas</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#00D9A3" id="bar-disponible">$67.000</div>
+    <div class="sb-hint" style="color:#555">Mín. bloqueado: $20.000</div>
+  </div>
+</div>
+
+<!-- ══════ PASO 1 — MONTO ════════════════ -->
+<div class="sec">
+  <div class="sec-label">
+    <div class="sec-num" id="num1">1</div>
+    Monto a recargar
+  </div>
+  <div class="amounts-row">
+    <div class="acard" id="card-2000"  onclick="selMonto(this,2000)">
+      <div class="a-check">✓</div>
+      <div class="a-val">$2K</div>
+      <div class="a-lbl">Mínimo</div>
+    </div>
+    <div class="acard" id="card-5000"  onclick="selMonto(this,5000)">
+      <div class="a-check">✓</div>
+      <div class="a-val">$5K</div>
+      <div class="a-lbl">Básico</div>
+    </div>
+    <div class="acard" id="card-10000" onclick="selMonto(this,10000)">
+      <div class="a-check">✓</div>
+      <div class="a-val">$10K</div>
+      <div class="a-lbl">Estándar</div>
+    </div>
+    <div class="acard" id="card-20000" onclick="selMonto(this,20000)">
+      <div class="a-check">✓</div>
+      <div class="a-val">$20K</div>
+      <div class="a-lbl">Noche</div>
+    </div>
+    <div class="acard wide" id="card-50000" onclick="selMonto(this,50000)">
+      <div><div class="a-val">$50.000</div><div class="a-lbl">Cliente VIP</div></div>
+      <div class="a-check">✓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PASO 2 — ESTADO DE ÁNIMO ══════ -->
+<div class="sec" style="margin-top:18px">
+  <div class="sec-label">
+    <div class="sec-num" id="num2">2</div>
+    ¿Qué tan generoso?
+  </div>
+  <div class="moods-row">
+    <div class="mcard" id="mood-pesimista" onclick="selMood(this,'pesimista')">
+      <div class="m-emoji">😐</div>
+      <div class="m-name">Pesimista</div>
+      <div class="m-chips">
+        <span class="mchip c" id="chip-p-c">🎵 ×2</span>
+        <span class="mchip n" id="chip-p-x">🔌 ×0</span>
+      </div>
+    </div>
+    <div class="mcard" id="mood-moderada" onclick="selMood(this,'moderada')">
+      <div class="m-badge sug">★ Sugerida</div>
+      <div class="m-emoji">😊</div>
+      <div class="m-name">Moderada</div>
+      <div class="m-chips">
+        <span class="mchip c" id="chip-m-c">🎵 ×1</span>
+        <span class="mchip x" id="chip-m-x">🔌 ×1</span>
+      </div>
+    </div>
+    <div class="mcard" id="mood-generosa" onclick="selMood(this,'generosa')">
+      <div class="m-badge ext" id="badge-generosa">+$332</div>
+      <div class="m-emoji">🤩</div>
+      <div class="m-name">Generosa</div>
+      <div class="m-chips">
+        <span class="mchip c" id="chip-g-c">🎵 ×2</span>
+        <span class="mchip x" id="chip-g-x">🔌 ×1</span>
+      </div>
+    </div>
+  </div>
+  <div class="nota-generosa" id="nota-gen">
+    ⚠ Modo Generosa: el exceso de $332 sobre el presupuesto de bonos sale de tu saldo como inversión en fidelización.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ESTRUCTURA DE BONIFICACIÓN (colapsable)
+     Matriz monto × estado de ánimo.
+     Cada celda tiene steppers editables para
+     canciones y conexiones gratis.
+     Los cambios se reflejan en tiempo real
+     en los chips del paso 2 y en el resumen.
+══════════════════════════════════════════ -->
+<div class="bonus-header" onclick="toggleBonus()">
+  <div class="bonus-header-left">
+    <div class="bonus-header-ico">🎁</div>
+    <div>
+      <div class="bonus-header-title">Estructura de bonificación</div>
+      <div class="bonus-header-sub">Configura bonos por monto y generosidad</div>
+    </div>
+  </div>
+  <div class="bonus-chevron" id="chevron">▼</div>
+</div>
+
+<div class="bonus-body" id="bonus-body">
+  <div class="bonus-inner">
+
+    <!-- Leyenda de columnas -->
+    <div class="matrix-legend" style="margin-top:14px">
+      <div class="ml-blank"></div>
+      <div class="ml-col p">😐<br>Pesimista</div>
+      <div class="ml-col m">😊<br>Moderada</div>
+      <div class="ml-col g">🤩<br>Generosa</div>
+    </div>
+
+    <!-- Filas: una por monto -->
+    <!-- Cada celda: stepper de 🎵 canciones y 🔌 conexiones -->
+
+    <div class="matrix-row" id="mrow-2000">
+      <div class="mr-label">$2K</div>
+      <div class="bcell" id="cell-2000-p">
+        <div class="bcell-row">
+          <span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('2000','p','c',-1)">−</button>
+            <span class="step-val" id="sv-2000-p-c">1</span>
+            <button class="step-btn" onclick="step('2000','p','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row">
+          <span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('2000','p','x',-1)">−</button>
+            <span class="step-val" id="sv-2000-p-x">0</span>
+            <button class="step-btn" onclick="step('2000','p','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell" id="cell-2000-m">
+        <div class="bcell-row">
+          <span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('2000','m','c',-1)">−</button>
+            <span class="step-val" id="sv-2000-m-c">1</span>
+            <button class="step-btn" onclick="step('2000','m','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row">
+          <span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('2000','m','x',-1)">−</button>
+            <span class="step-val" id="sv-2000-m-x">1</span>
+            <button class="step-btn" onclick="step('2000','m','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell" id="cell-2000-g">
+        <div class="bcell-row">
+          <span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('2000','g','c',-1)">−</button>
+            <span class="step-val" id="sv-2000-g-c">2</span>
+            <button class="step-btn" onclick="step('2000','g','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row">
+          <span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('2000','g','x',-1)">−</button>
+            <span class="step-val" id="sv-2000-g-x">1</span>
+            <button class="step-btn" onclick="step('2000','g','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="matrix-row" id="mrow-5000">
+      <div class="mr-label">$5K</div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('5000','p','c',-1)">−</button>
+            <span class="step-val" id="sv-5000-p-c">2</span>
+            <button class="step-btn" onclick="step('5000','p','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('5000','p','x',-1)">−</button>
+            <span class="step-val" id="sv-5000-p-x">0</span>
+            <button class="step-btn" onclick="step('5000','p','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('5000','m','c',-1)">−</button>
+            <span class="step-val" id="sv-5000-m-c">2</span>
+            <button class="step-btn" onclick="step('5000','m','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('5000','m','x',-1)">−</button>
+            <span class="step-val" id="sv-5000-m-x">1</span>
+            <button class="step-btn" onclick="step('5000','m','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('5000','g','c',-1)">−</button>
+            <span class="step-val" id="sv-5000-g-c">4</span>
+            <button class="step-btn" onclick="step('5000','g','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('5000','g','x',-1)">−</button>
+            <span class="step-val" id="sv-5000-g-x">1</span>
+            <button class="step-btn" onclick="step('5000','g','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="matrix-row" id="mrow-10000">
+      <div class="mr-label">$10K</div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('10000','p','c',-1)">−</button>
+            <span class="step-val" id="sv-10000-p-c">2</span>
+            <button class="step-btn" onclick="step('10000','p','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('10000','p','x',-1)">−</button>
+            <span class="step-val" id="sv-10000-p-x">0</span>
+            <button class="step-btn" onclick="step('10000','p','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('10000','m','c',-1)">−</button>
+            <span class="step-val" id="sv-10000-m-c">3</span>
+            <button class="step-btn" onclick="step('10000','m','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('10000','m','x',-1)">−</button>
+            <span class="step-val" id="sv-10000-m-x">1</span>
+            <button class="step-btn" onclick="step('10000','m','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('10000','g','c',-1)">−</button>
+            <span class="step-val" id="sv-10000-g-c">5</span>
+            <button class="step-btn" onclick="step('10000','g','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('10000','g','x',-1)">−</button>
+            <span class="step-val" id="sv-10000-g-x">1</span>
+            <button class="step-btn" onclick="step('10000','g','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="matrix-row" id="mrow-20000">
+      <div class="mr-label">$20K</div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('20000','p','c',-1)">−</button>
+            <span class="step-val" id="sv-20000-p-c">3</span>
+            <button class="step-btn" onclick="step('20000','p','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('20000','p','x',-1)">−</button>
+            <span class="step-val" id="sv-20000-p-x">0</span>
+            <button class="step-btn" onclick="step('20000','p','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('20000','m','c',-1)">−</button>
+            <span class="step-val" id="sv-20000-m-c">4</span>
+            <button class="step-btn" onclick="step('20000','m','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('20000','m','x',-1)">−</button>
+            <span class="step-val" id="sv-20000-m-x">1</span>
+            <button class="step-btn" onclick="step('20000','m','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('20000','g','c',-1)">−</button>
+            <span class="step-val" id="sv-20000-g-c">6</span>
+            <button class="step-btn" onclick="step('20000','g','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('20000','g','x',-1)">−</button>
+            <span class="step-val" id="sv-20000-g-x">2</span>
+            <button class="step-btn" onclick="step('20000','g','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="matrix-row" id="mrow-50000">
+      <div class="mr-label">$50K</div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('50000','p','c',-1)">−</button>
+            <span class="step-val" id="sv-50000-p-c">5</span>
+            <button class="step-btn" onclick="step('50000','p','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('50000','p','x',-1)">−</button>
+            <span class="step-val" id="sv-50000-p-x">1</span>
+            <button class="step-btn" onclick="step('50000','p','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('50000','m','c',-1)">−</button>
+            <span class="step-val" id="sv-50000-m-c">8</span>
+            <button class="step-btn" onclick="step('50000','m','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('50000','m','x',-1)">−</button>
+            <span class="step-val" id="sv-50000-m-x">2</span>
+            <button class="step-btn" onclick="step('50000','m','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bcell">
+        <div class="bcell-row"><span class="bcell-ico">🎵</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('50000','g','c',-1)">−</button>
+            <span class="step-val" id="sv-50000-g-c">10</span>
+            <button class="step-btn" onclick="step('50000','g','c',+1)">+</button>
+          </div>
+        </div>
+        <div class="bcell-row"><span class="bcell-ico">🔌</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('50000','g','x',-1)">−</button>
+            <span class="step-val" id="sv-50000-g-x">3</span>
+            <button class="step-btn" onclick="step('50000','g','x',+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nota sobre Generosa -->
+    <div class="bonus-callout">
+      <strong>Modo Generosa:</strong> si la suma de bonos supera el presupuesto del fee de pasarela, el exceso lo asumes tú como inversión en fidelización del cliente.
+    </div>
+
+    <!-- Resetear a valores por defecto -->
+    <button class="btn-reset" onclick="resetBonus()">↺ Restaurar valores por defecto</button>
+
+  </div>
+</div>
+
+<!-- ══════ RESUMEN DINÁMICO ═══════════════ -->
+<div class="resumen" id="resumen">
+  <div class="rrow">
+    <span class="rl">Monto</span>
+    <span class="rv gold" id="r-monto">— selecciona</span>
+  </div>
+  <div class="rrow">
+    <span class="rl">🎵 Canciones gratis</span>
+    <span class="rv blue" id="r-canciones">—</span>
+  </div>
+  <div class="rrow">
+    <span class="rl">🔌 Conexiones gratis</span>
+    <span class="rv green" id="r-conexiones">—</span>
+  </div>
+  <div class="rrow">
+    <span class="rl">Sale de tu saldo</span>
+    <span class="rv" id="r-total">—</span>
+  </div>
+</div>
+
+<!-- ══════ CTA ════════════════════════════ -->
+<div class="cta-bar">
+  <button class="btn-scan" id="btn-scan" onclick="abrirEscaner()" disabled>
+    📷 Escanear QR del cliente
+  </button>
+</div>
+
+
+<!-- ══════ MODAL: ESCANEO ════════════════ -->
+<div class="overlay" id="modal-scan" onclick="cerrar('modal-scan')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div class="sh-title">Escanear QR del cliente</div>
+    <div class="sh-sub">Apunta la cámara al código QR del cliente para transferirle el saldo.</div>
+    <div class="scanner-wrap" onclick="simEscaneo()">
+      <div class="sc-c tl"></div><div class="sc-c tr"></div>
+      <div class="sc-c bl"></div><div class="sc-c br"></div>
+      <div class="sc-line"></div>
+      <div class="sc-idle" id="sc-idle">
+        <div class="si">📷</div>
+        <div class="st">Toca para escanear<br>(simulado)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════ MODAL: ÉXITO ══════════════════ -->
+<div class="overlay" id="modal-ok">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div class="suc-icon">✓</div>
+    <div class="suc-title">¡Recarga exitosa!</div>
+    <div class="suc-sub">El saldo y los bonos están disponibles<br>de inmediato en la cuenta del cliente.</div>
+
+    <div class="client-card">
+      <div class="client-head">
+        <div class="client-av">👤</div>
+        <div>
+          <div class="client-name">Cliente V·4827</div>
+          <div class="client-code">Sesión activa · Bar El Parche</div>
+        </div>
+      </div>
+      <div class="brow s">
+        <span class="bl">💰 Saldo acreditado</span>
+        <span class="bv" id="ok-saldo">—</span>
+      </div>
+      <div class="brow c">
+        <span class="bl">🎵 Canciones gratis</span>
+        <span class="bv" id="ok-canciones">—</span>
+      </div>
+      <div class="brow x" id="ok-cx-row">
+        <span class="bl">🔌 Conexiones gratis</span>
+        <span class="bv" id="ok-conexiones">—</span>
+      </div>
+    </div>
+
+    <div class="post-saldo">
+      <div class="ps-label">Tu saldo después de la transferencia</div>
+      <div class="ps-val" id="ok-nuevo">—</div>
+    </div>
+
+    <button class="btn-otra"   onclick="reiniciar()">Recargar otro cliente</button>
+    <button class="btn-cerrar" onclick="cerrar('modal-ok')">Cerrar</button>
+  </div>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════
+   ESTADO GLOBAL
+══════════════════════════════════════════ */
+let saldo = 87000;   // saldo total del anfitrión
+let monto = 0;       // monto seleccionado
+let mood  = '';      // 'p' | 'm' | 'g'
+
+/** Saldo mínimo que siempre debe permanecer en la cuenta del anfitrión */
+const MINIMO_BLOQUEADO = 20000;
+
+/** Saldo que el anfitrión puede gastar (saldo total − mínimo bloqueado) */
+const disponible = () => Math.max(0, saldo - MINIMO_BLOQUEADO);
+
+/** fmt: formato moneda COP */
+const fmt = n => '$' + Math.round(n).toLocaleString('es-CO');
+
+/** Actualiza las barras de saldo en pantalla */
+function actualizarDisplaySaldo() {
+  document.getElementById('bar-saldo').textContent      = fmt(saldo);
+  document.getElementById('bar-disponible').textContent = fmt(disponible());
+  document.getElementById('top-saldo').textContent      = fmt(saldo);
+}
+
+/** Habilita/deshabilita tarjetas de monto según saldo disponible */
+function actualizarTarjetas() {
+  const disp = disponible();
+  const montos = [2000, 5000, 10000, 20000, 50000];
+  montos.forEach(m => {
+    const card = document.getElementById(`card-${m}`);
+    if (!card) return;
+    if (m > disp) {
+      card.classList.add('disabled');
+      // Si el monto activo queda bloqueado, deseleccionarlo
+      if (monto === m) { monto = 0; card.classList.remove('selected'); }
+    } else {
+      card.classList.remove('disabled');
+    }
+  });
+}
+
+/**
+ * Tabla de bonificación configurable.
+ * Estructura: bonos[monto][mood] = { c: canciones, x: conexiones }
+ * El anfitrión puede editar cada celda con los steppers.
+ */
+const bonos = {
+  2000:  { p:{c:1,x:0}, m:{c:1,x:1}, g:{c:2,x:1}  },
+  5000:  { p:{c:2,x:0}, m:{c:2,x:1}, g:{c:4,x:1}  },
+  10000: { p:{c:2,x:0}, m:{c:3,x:1}, g:{c:5,x:1}  },
+  20000: { p:{c:3,x:0}, m:{c:4,x:1}, g:{c:6,x:2}  },
+  50000: { p:{c:5,x:1}, m:{c:8,x:2}, g:{c:10,x:3} },
+};
+
+const DEFAULT = JSON.parse(JSON.stringify(bonos));
+
+/* ──────────────────────────────────────────
+   STEPPER — editar celdas de la matriz
+   @param mKey  - clave de monto ('2000', '5000', …)
+   @param mMode - columna de mood ('p', 'm', 'g')
+   @param type  - tipo de bono ('c'=canciones, 'x'=conexiones)
+   @param delta - +1 o -1
+   ────────────────────────────────────────── */
+function step(mKey, mMode, type, delta) {
+  const cell = bonos[+mKey][mMode];
+  cell[type] = Math.max(0, cell[type] + delta);
+
+  // Actualizar valor en pantalla
+  document.getElementById(`sv-${mKey}-${mMode}-${type}`).textContent = cell[type];
+
+  // Actualizar chips del paso 2 si el monto activo es este
+  if (+mKey === monto) actualizarChips();
+
+  // Recalcular resumen si hay monto y mood seleccionados
+  actualizarResumen();
+}
+
+/** Restaura todos los valores al default */
+function resetBonus() {
+  Object.keys(DEFAULT).forEach(m => {
+    ['p','m','g'].forEach(md => {
+      ['c','x'].forEach(t => {
+        bonos[+m][md][t] = DEFAULT[m][md][t];
+        const el = document.getElementById(`sv-${m}-${md}-${t}`);
+        if (el) el.textContent = DEFAULT[m][md][t];
+      });
+    });
+  });
+  actualizarChips();
+  actualizarResumen();
+}
+
+/* ──────────────────────────────────────────
+   SELECCIÓN DE MONTO
+   ────────────────────────────────────────── */
+function selMonto(el, m) {
+  if (m > disponible()) return;   // bloqueo por saldo insuficiente
+  document.querySelectorAll('.acard').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  monto = m;
+  marcaDone('num1');
+  actualizarChips();   // actualiza chips del paso 2 con bonos de este monto
+  actualizarResumen();
+  actualizarBoton();
+}
+
+/* ──────────────────────────────────────────
+   SELECCIÓN DE MOOD
+   ────────────────────────────────────────── */
+function selMood(el, m) {
+  document.querySelectorAll('.mcard').forEach(c => {
+    c.classList.remove('sel-pesimista','sel-moderada','sel-generosa');
+  });
+  el.classList.add(`sel-${m}`);
+  mood = { pesimista:'p', moderada:'m', generosa:'g' }[m];
+  marcaDone('num2');
+  document.getElementById('nota-gen').classList.toggle('show', m === 'generosa');
+  actualizarResumen();
+  actualizarBoton();
+}
+
+/** Marca el indicador de paso como completado */
+function marcaDone(id) {
+  const el = document.getElementById(id);
+  el.classList.add('done');
+  el.textContent = '✓';
+}
+
+/* ──────────────────────────────────────────
+   ACTUALIZAR CHIPS DEL PASO 2
+   Muestra los bonos configurados para el
+   monto actualmente seleccionado.
+   ────────────────────────────────────────── */
+function actualizarChips() {
+  if (!monto) return;
+  const b = bonos[monto];
+
+  // Pesimista
+  const pC = document.getElementById('chip-p-c');
+  const pX = document.getElementById('chip-p-x');
+  pC.textContent = `🎵 ×${b.p.c}`;
+  pX.textContent = `🔌 ×${b.p.x}`;
+  pX.className   = `mchip ${b.p.x > 0 ? 'x' : 'n'}`;
+
+  // Moderada
+  const mC = document.getElementById('chip-m-c');
+  const mX = document.getElementById('chip-m-x');
+  mC.textContent = `🎵 ×${b.m.c}`;
+  mX.textContent = `🔌 ×${b.m.x}`;
+  mX.className   = `mchip ${b.m.x > 0 ? 'x' : 'n'}`;
+
+  // Generosa
+  const gC = document.getElementById('chip-g-c');
+  const gX = document.getElementById('chip-g-x');
+  gC.textContent = `🎵 ×${b.g.c}`;
+  gX.textContent = `🔌 ×${b.g.x}`;
+  gX.className   = `mchip ${b.g.x > 0 ? 'x' : 'n'}`;
+}
+
+/* ──────────────────────────────────────────
+   ACTUALIZAR RESUMEN
+   ────────────────────────────────────────── */
+function actualizarResumen() {
+  const res = document.getElementById('resumen');
+
+  document.getElementById('r-monto').textContent = monto ? fmt(monto) : '— selecciona';
+
+  if (!monto || !mood) {
+    document.getElementById('r-canciones').textContent  = '—';
+    document.getElementById('r-conexiones').textContent = '—';
+    document.getElementById('r-total').textContent      = monto ? fmt(monto) : '—';
+    document.getElementById('r-total').className        = 'rv';
+    res.classList.remove('ready');
+    return;
+  }
+
+  const b = bonos[monto][mood];
+  document.getElementById('r-canciones').textContent  = `×${b.c}`;
+  document.getElementById('r-conexiones').textContent = b.x > 0 ? `×${b.x}` : '—';
+
+  // El costo extra de Generosa es fijo ($332) independiente del monto
+  const extra   = (mood === 'g') ? 332 : 0;
+  const total   = monto + extra;
+  const rtotal  = document.getElementById('r-total');
+  rtotal.textContent = fmt(total);
+  rtotal.className   = extra > 0 ? 'rv orange' : 'rv gold';
+
+  res.classList.toggle('ready', !!(monto && mood));
+}
+
+function actualizarBoton() {
+  // Activo solo si hay monto, mood, y el monto cabe en el saldo disponible
+  document.getElementById('btn-scan').disabled = !(monto && mood && monto <= disponible());
+}
+
+/* ──────────────────────────────────────────
+   COLAPSAR / EXPANDIR BONIFICACIONES
+   ────────────────────────────────────────── */
+function toggleBonus() {
+  const body    = document.getElementById('bonus-body');
+  const chevron = document.getElementById('chevron');
+  const open    = body.classList.toggle('open');
+  chevron.classList.toggle('open', open);
+}
+
+/* ──────────────────────────────────────────
+   ESCANEO Y TRANSFERENCIA
+   ────────────────────────────────────────── */
+function abrirEscaner() {
+  document.getElementById('modal-scan').classList.add('open');
+}
+function cerrar(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function simEscaneo() {
+  const idle = document.getElementById('sc-idle');
+  idle.innerHTML = '<div style="font-size:24px;color:var(--gold);margin-bottom:8px">⏳</div><div style="font-size:11px;color:var(--muted)">Procesando...</div>';
+  setTimeout(() => {
+    cerrar('modal-scan');
+    transferir();
+  }, 1400);
+}
+
+/**
+ * Aplica la transferencia:
+ * · descuenta monto (+ extra si Generosa) del saldo del anfitrión
+ * · actualiza las vistas
+ * · abre el modal de éxito
+ */
+function transferir() {
+  const b     = bonos[monto][mood];
+  const extra = (mood === 'g') ? 332 : 0;
+  saldo -= (monto + extra);
+
+  // Llenar modal de éxito
+  document.getElementById('ok-saldo').textContent     = fmt(monto);
+  document.getElementById('ok-canciones').textContent = `×${b.c}`;
+  document.getElementById('ok-nuevo').textContent     = fmt(saldo);
+
+  const cxRow = document.getElementById('ok-cx-row');
+  cxRow.style.display = b.x > 0 ? 'flex' : 'none';
+  document.getElementById('ok-conexiones').textContent = `×${b.x}`;
+
+  // Actualizar displays y tarjetas según nuevo saldo
+  actualizarDisplaySaldo();
+  actualizarTarjetas();
+
+  document.getElementById('modal-ok').classList.add('open');
+}
+
+/* ──────────────────────────────────────────
+   REINICIAR
+   ────────────────────────────────────────── */
+function reiniciar() {
+  cerrar('modal-ok');
+  monto = 0; mood = '';
+
+  document.querySelectorAll('.acard').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.mcard').forEach(c => {
+    c.classList.remove('sel-pesimista','sel-moderada','sel-generosa');
+  });
+  document.getElementById('nota-gen').classList.remove('show');
+
+  // Resetear indicadores de paso
+  ['num1','num2'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('done');
+    el.textContent = i + 1;
+  });
+
+  // Restaurar escáner
+  document.getElementById('sc-idle').innerHTML =
+    '<div class="si">📷</div><div class="st">Toca para escanear<br>(simulado)</div>';
+
+  actualizarResumen();
+  actualizarBoton();
+  actualizarTarjetas();
+}
+
+// ── Inicialización ────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  actualizarDisplaySaldo();
+  actualizarTarjetas();
+});
+</script>
+</body>
+</html>

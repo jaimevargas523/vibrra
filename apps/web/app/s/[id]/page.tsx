@@ -21,50 +21,52 @@ export default async function SesionPage({ params }: Props) {
   const ciudad = data.ciudad ?? "";
   const fotoUrl = data.fotoUrl ?? null;
   const precioConexion = data.precio_conexion ?? 0;
+  const precioNominacion = data.precio_nominacion ?? 500;
 
   // 2. Revisar si hay sesion activa en RTDB
   const rtdb = adminRtdb();
   const sesionSnap = await rtdb.ref(`sesiones/${id}/activa`).get();
   const sesionActiva = sesionSnap.val() === true;
 
-  // 3. Leer cancion actual, cola y playlist si hay sesion
+  // 3. Leer cancion actual y playlist si hay sesion
   let cancionActual = null;
-  let cola: Array<{
-    id: string;
+  let playlist: Array<{
+    videoId: string;
     titulo: string;
     artista: string;
-    fuente: string;
-    fuente_id: string;
-    duracion_ms: number;
-    puja_mayor: number;
-    tipo: string;
+    imagen: string;
+    origen: string;
+    duracion: string;
+    puja: number;
     timestamp: number;
   }> = [];
 
   if (sesionActiva) {
-    const [cancionSnap, colaSnap] = await Promise.all([
-      rtdb.ref(`sesiones/${id}/cancion_actual`).get(),
-      rtdb.ref(`sesiones/${id}/cola`).get(),
+    const [cancionSnap, playlistSnap] = await Promise.all([
+      rtdb.ref(`sesiones/${id}/Cancion_reproduccion`).get(),
+      rtdb.ref(`sesiones/${id}/playlist`).get(),
     ]);
     cancionActual = cancionSnap.val();
-    const colaData = colaSnap.val();
-    if (colaData) {
-      cola = Object.entries(colaData).map(([key, val]: [string, any]) => ({
-        id: key,
+
+    // Si hay canción sonando, asegurar que la playlist no esté bloqueada
+    if (cancionActual) {
+      await rtdb.ref(`sesiones/${id}/playlist/bloqueado`).set(false);
+    }
+
+    const plData = playlistSnap.val();
+    if (plData?.items && typeof plData.items === "object") {
+      playlist = Object.entries(plData.items).map(([videoId, val]: [string, any]) => ({
+        videoId,
         titulo: val.titulo ?? "",
         artista: val.artista ?? "",
-        fuente: val.fuente ?? "youtube",
-        fuente_id: val.fuente_id ?? "",
-        duracion_ms: val.duracion_ms ?? 0,
-        puja_mayor: val.puja_mayor ?? 0,
-        tipo: val.tipo ?? "normal",
+        imagen: val.imagen ?? "",
+        origen: val.origen ?? "youtube",
+        duracion: val.duracion ?? "",
+        puja: val.puja ?? 0,
         timestamp: val.timestamp ?? 0,
       }));
-      // Ordenar: pujas más altas primero, luego por timestamp
-      cola.sort((a, b) => {
-        if (a.puja_mayor !== b.puja_mayor) return b.puja_mayor - a.puja_mayor;
-        return a.timestamp - b.timestamp;
-      });
+      // Ordenar: mayor puja primero, misma puja → el que llegó primero
+      playlist.sort((a, b) => b.puja - a.puja || a.timestamp - b.timestamp);
     }
   }
 
@@ -77,10 +79,11 @@ export default async function SesionPage({ params }: Props) {
         ciudad,
         fotoUrl,
         precioConexion,
+        precioNominacion,
       }}
       sesionActiva={sesionActiva}
       cancionActual={cancionActual}
-      cola={cola}
+      playlist={playlist}
     />
   );
 }
