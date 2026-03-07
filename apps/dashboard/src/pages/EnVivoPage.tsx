@@ -2,18 +2,18 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Play,
+  Pause,
   SkipForward,
   Trash2,
   Copy,
   Users,
   Music,
-  DollarSign,
+  ArrowUp,
+  Zap,
+  Heart,
+  ListMusic,
+  X,
 } from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-} from "recharts";
 import clsx from "clsx";
 
 import { StatusDot } from "@/components/ui/StatusDot";
@@ -22,16 +22,14 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { EmptyState } from "@/components/ui/EmptyState";
 
-import { useActiveSession } from "@/hooks/api/useActiveSession";
-import { useSessionStore, type QueueItem } from "@/stores/session.store";
+import { useSessionRTDB } from "@/hooks/useSessionRTDB";
 import { useEstablishmentStore } from "@/stores/establishment.store";
-import { useSessionSocket } from "@/hooks/useSessionSocket";
 import { formatDurationLive, formatRelativeTime } from "@/lib/format";
 import { useCurrencyFormatter } from "@/hooks/useCurrencyFormatter";
 
 /* ── Live timer ──────────────────────────────────────────────── */
 
-function LiveTimer({ startedAt }: { startedAt: string }) {
+function LiveTimer({ startedAt }: { startedAt: number }) {
   const [display, setDisplay] = useState("00:00:00");
 
   useEffect(() => {
@@ -51,36 +49,39 @@ function LiveTimer({ startedAt }: { startedAt: string }) {
 
 export default function EnVivoPage() {
   const { t } = useTranslation("envivo");
-  const { data: activeSession } = useActiveSession();
-  const {
-    isLive,
-    sessionId,
-    queue: storeQueue,
-    connectedUsers,
-    totalRecaudado,
-    startedAt,
-    currentSong,
-  } = useSessionStore();
   const establishments = useEstablishmentStore((s) => s.establishments);
   const selectedEst = useEstablishmentStore((s) => s.getSelected());
   const selectEst = useEstablishmentStore((s) => s.select);
 
+  const estId = selectedEst?.id ?? null;
+
+  const {
+    sesionActiva,
+    isVibrra,
+    cancionActual,
+    playlist,
+    cancionesSonadas,
+    ultimaActividad,
+    dedicatorias,
+    totalRecaudado,
+    maxPuja,
+    iniciarVibrra,
+    detenerVibrra,
+    eliminarCancion,
+    limpiarCola,
+    moverAlFrente,
+  } = useSessionRTDB(estId);
+
   const fmt = useCurrencyFormatter();
-  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [showClearModal, setShowClearModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  useSessionSocket(sessionId, selectedEst?.id ?? null);
+  const shareUrl = `vibrra.live/s/${estId ?? ""}`;
 
-  const hasSession = isLive || !!activeSession;
-  const sessionStartedAt = startedAt || activeSession?.startedAt;
-  const liveUsers = connectedUsers || activeSession?.connectedUsers || 0;
-  const liveRecaudado = totalRecaudado || activeSession?.totalRecaudado || 0;
-  const queue = storeQueue;
-  const shareUrl = `vibrra.live/s/${selectedEst?.id ?? ""}`;
-
-  const playingItem = queue.find((q) => q.status === "playing");
-  const pendingItems = queue.filter((q) => q.status === "pending");
-  const maxBid = queue.length > 0 ? Math.max(...queue.map((q) => q.amount)) : 0;
+  // Filter: canción actual fuera de la playlist pendiente
+  const pendingItems = cancionActual?.videoId
+    ? playlist.filter((item) => item.videoId !== cancionActual.videoId)
+    : playlist;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`https://${shareUrl}`).catch(() => {});
@@ -88,18 +89,30 @@ export default function EnVivoPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleLimpiarCola = () => {
+    limpiarCola();
+    setShowClearModal(false);
+  };
+
+  const handleWhatsApp = () => {
+    const text = encodeURIComponent(
+      `🎵 ¡Entra a la sesión VIBRRA!\nPide canciones y haz pujas en tiempo real.\n\nhttps://${shareUrl}`
+    );
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
+
   /* ── No active session state ────────────────────────── */
-  if (!hasSession) {
+  if (!sesionActiva) {
     return (
       <div className="max-w-md mx-auto mt-20 text-center">
         <div className="flex justify-center mb-6">
           <Play className="w-16 h-16 text-text-muted" />
         </div>
         <h2 className="text-xl font-semibold text-text-primary mb-2">
-          No hay sesion activa
+          {t("noSession.title")}
         </h2>
         <p className="text-sm text-text-secondary mb-6">
-          Inicia una sesion para que tus clientes puedan pedir canciones y hacer pujas en tiempo real.
+          {t("noSession.desc")}
         </p>
 
         {establishments.length > 1 && (
@@ -108,7 +121,7 @@ export default function EnVivoPage() {
               ESTABLECIMIENTO
             </label>
             <select
-              value={selectedEst?.id ?? ""}
+              value={estId ?? ""}
               onChange={(e) => selectEst(e.target.value)}
               className="w-full bg-card-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-gold outline-none"
             >
@@ -123,9 +136,10 @@ export default function EnVivoPage() {
 
         <button
           type="button"
+          onClick={iniciarVibrra}
           className="h-14 w-full bg-green text-black font-bold rounded-xl text-base hover:bg-green/90 transition-colors cursor-pointer"
         >
-          Iniciar sesion
+          {t("noSession.start")}
         </button>
       </div>
     );
@@ -139,16 +153,35 @@ export default function EnVivoPage() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <StatusDot status="live" />
-            <Badge variant="live" pulsing>EN SESION</Badge>
+            <Badge variant="live" pulsing>{t("header.live")}</Badge>
           </div>
           <span className="text-sm text-text-secondary">
-            {selectedEst?.name ?? activeSession?.establishmentName ?? "Establecimiento"}
+            {selectedEst?.name ?? "Establecimiento"}
           </span>
-          {sessionStartedAt && <LiveTimer startedAt={sessionStartedAt} />}
-          <Badge variant="info" size="sm">
-            <Users className="w-3 h-3" />
-            {liveUsers}
-          </Badge>
+          {ultimaActividad > 0 && <LiveTimer startedAt={ultimaActividad} />}
+        </div>
+
+        {/* VIBRRA toggle */}
+        <div className="flex items-center gap-2">
+          {isVibrra ? (
+            <button
+              type="button"
+              onClick={detenerVibrra}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gold/15 border border-gold/30 text-gold text-sm font-bold hover:bg-gold/25 transition-colors cursor-pointer"
+            >
+              <Zap className="w-4 h-4" />
+              VIBRRA ON
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={iniciarVibrra}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface border border-border text-text-muted text-sm font-bold hover:border-gold hover:text-gold transition-colors cursor-pointer"
+            >
+              <Pause className="w-4 h-4" />
+              MANUAL
+            </button>
+          )}
         </div>
       </div>
 
@@ -156,119 +189,118 @@ export default function EnVivoPage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left panel - Queue */}
         <div className="lg:w-3/5 space-y-3">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
-              COLA DE CANCIONES
-            </span>
-            <Badge variant="neutral" size="sm">{queue.length}</Badge>
+          {/* Cola header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] uppercase tracking-[2px] text-text-muted font-semibold">
+                {t("cola.title")}
+              </span>
+              <Badge variant="neutral" size="sm">{playlist.length}</Badge>
+            </div>
+            {playlist.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowClearModal(true)}
+                className="flex items-center gap-1 text-xs text-error/70 hover:text-error transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3 h-3" />
+                Limpiar cola
+              </button>
+            )}
           </div>
 
-          {queue.length === 0 ? (
+          {/* Canción actual (from Cancion_reproduccion) */}
+          {cancionActual && cancionActual.titulo && (
+            <div className="relative bg-surface-elevated rounded-xl border-l-[3px] border-gold p-4 overflow-hidden">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  {cancionActual.imagen && (
+                    <img
+                      src={cancionActual.imagen}
+                      alt=""
+                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                    />
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm font-semibold text-text-primary">
+                        {cancionActual.titulo}
+                      </p>
+                      <Badge variant="gold" size="sm" pulsing>
+                        {t("cola.sonando")}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-text-secondary">
+                      {cancionActual.artista}
+                    </p>
+                    {cancionActual.duracion && (
+                      <p className="text-xs text-text-muted mt-0.5">
+                        {cancionActual.duracion}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pending queue */}
+          {pendingItems.length === 0 ? (
             <EmptyState
               icon={<Music className="w-12 h-12" />}
-              title="Cola vacia"
-              description="Las canciones pedidas por tus clientes apareceran aqui"
+              title="Cola vacía"
+              description={t("cola.empty")}
             />
           ) : (
             <div className="space-y-2">
-              {/* Song #1 - currently playing */}
-              {playingItem && (
-                <div className="relative bg-surface-elevated rounded-xl border-l-[3px] border-gold p-4 overflow-hidden">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-gold font-mono">1</span>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="text-sm font-semibold text-text-primary">
-                            {playingItem.songTitle}
-                          </p>
-                          <Badge variant="gold" size="sm" pulsing>
-                            SONANDO
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-text-secondary">
-                          {playingItem.artistName}
-                        </p>
-                        <p className="text-xs text-text-muted mt-0.5">
-                          {playingItem.requestedBy} &middot;{" "}
-                          {formatRelativeTime(new Date(playingItem.createdAt))}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-gold text-right font-semibold">
-                        {fmt(playingItem.amount)}
-                      </span>
-                      <div className="flex gap-1">
-                        <button
-                          type="button"
-                          className="p-1.5 rounded-lg text-text-muted hover:bg-warning/10 hover:text-warning transition-colors"
-                        >
-                          <SkipForward className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          className="p-1.5 rounded-lg text-text-muted hover:bg-error/10 hover:text-error transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Progress bar */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-border">
-                    <div
-                      className="h-full bg-gold rounded-full animate-pulse"
-                      style={{ width: "45%" }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Remaining songs */}
               {pendingItems.map((item, idx) => (
                 <div
-                  key={item.id}
+                  key={item.videoId}
                   className="bg-surface rounded-xl border border-border p-4 hover:bg-surface-hover transition-colors group"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-text-muted font-mono">
-                        {idx + 2}
+                      <span className="text-lg font-bold text-text-muted font-mono w-6 text-center">
+                        {idx + 1}
                       </span>
+                      {item.imagen && (
+                        <img
+                          src={item.imagen}
+                          alt=""
+                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                        />
+                      )}
                       <div>
                         <p className="text-sm font-semibold text-text-primary">
-                          {item.songTitle}
+                          {item.titulo}
                         </p>
                         <p className="text-sm text-text-secondary">
-                          {item.artistName}
+                          {item.artista}
                         </p>
                         <p className="text-xs text-text-muted mt-0.5">
-                          {item.requestedBy} &middot;{" "}
-                          {formatRelativeTime(new Date(item.createdAt))}
+                          {item.origen} &middot;{" "}
+                          {formatRelativeTime(new Date(item.timestamp))}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-gold text-right font-semibold">
-                        {fmt(item.amount)}
+                      <span className="font-mono text-gold text-right font-semibold text-sm">
+                        {fmt(item.puja)}
                       </span>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           type="button"
-                          className="p-1.5 rounded-lg text-text-muted hover:bg-success/10 hover:text-success transition-colors"
+                          onClick={() => moverAlFrente(item.videoId)}
+                          title="Mover al frente"
+                          className="p-1.5 rounded-lg text-text-muted hover:bg-gold/10 hover:text-gold transition-colors cursor-pointer"
                         >
-                          <Play className="w-4 h-4" />
+                          <ArrowUp className="w-4 h-4" />
                         </button>
                         <button
                           type="button"
-                          className="p-1.5 rounded-lg text-text-muted hover:bg-warning/10 hover:text-warning transition-colors"
-                        >
-                          <SkipForward className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          className="p-1.5 rounded-lg text-text-muted hover:bg-error/10 hover:text-error transition-colors"
+                          onClick={() => eliminarCancion(item.videoId)}
+                          title={t("cola.acciones.delete")}
+                          className="p-1.5 rounded-lg text-text-muted hover:bg-error/10 hover:text-error transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -287,64 +319,96 @@ export default function EnVivoPage() {
           <div className="space-y-3">
             <div className="bg-surface rounded-xl border border-border p-4">
               <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                USUARIOS EN VIVO
-              </span>
-              <p className="text-[32px] font-bold text-green mt-1 leading-tight">
-                {liveUsers}
-              </p>
-            </div>
-            <div className="bg-surface rounded-xl border border-border p-4">
-              <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                RECAUDADO
+                {t("stats.recaudado")}
               </span>
               <p className="text-[32px] font-bold font-mono text-gold mt-1 leading-tight">
-                {fmt(liveRecaudado)}
+                {fmt(totalRecaudado)}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-surface rounded-xl border border-border p-4">
                 <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                  TOTAL PUJAS
+                  <ListMusic className="w-3 h-3 inline mr-1" />
+                  {t("stats.pujas")}
                 </span>
                 <p className="text-xl font-bold text-text-primary mt-1">
-                  {queue.length}
+                  {playlist.length}
                 </p>
               </div>
               <div className="bg-surface rounded-xl border border-border p-4">
                 <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                  PUJA MAXIMA
+                  {t("stats.pujaMax")}
                 </span>
                 <p className="text-xl font-bold font-mono text-gold mt-1">
-                  {fmt(maxBid)}
+                  {fmt(maxPuja)}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-surface rounded-xl border border-border p-4">
+                <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
+                  <Music className="w-3 h-3 inline mr-1" />
+                  CANCIONES SONADAS
+                </span>
+                <p className="text-xl font-bold text-text-primary mt-1">
+                  {cancionesSonadas}
+                </p>
+              </div>
+              <div className="bg-surface rounded-xl border border-border p-4">
+                <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
+                  <Heart className="w-3 h-3 inline mr-1" />
+                  DEDICATORIAS
+                </span>
+                <p className="text-xl font-bold text-text-primary mt-1">
+                  {dedicatorias.length}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Mini area chart */}
-          <div className="bg-surface rounded-xl border border-border p-4">
-            <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-              ACTIVIDAD EN TIEMPO REAL
-            </span>
-            <div className="mt-2 h-[120px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={[]}>
-                  <defs>
-                    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#D4A017" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="#D4A017" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#D4A017"
-                    strokeWidth={2}
-                    fill="url(#goldGrad)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+          {/* Dedicatorias recientes */}
+          {dedicatorias.length > 0 && (
+            <div className="bg-surface rounded-xl border border-border p-4">
+              <span className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold block mb-3">
+                DEDICATORIAS RECIENTES
+              </span>
+              <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                {dedicatorias.slice(0, 5).map((d) => (
+                  <div key={d.id} className="flex items-start gap-2 text-xs">
+                    <Heart className="w-3 h-3 text-gold flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-text-primary">{d.alias_emisor}</span>
+                      <span className="text-text-muted"> · {d.mood}</span>
+                      <p className="text-text-secondary mt-0.5">"{d.mensaje}"</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+          )}
+
+          {/* Estado reproductor */}
+          <div className={clsx(
+            "rounded-xl border p-4 text-center",
+            isVibrra
+              ? "bg-gold/5 border-gold/20"
+              : "bg-surface border-border"
+          )}>
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Zap className={clsx("w-4 h-4", isVibrra ? "text-gold" : "text-text-muted")} />
+              <span className={clsx(
+                "text-sm font-bold",
+                isVibrra ? "text-gold" : "text-text-muted"
+              )}>
+                {isVibrra ? "VIBRRA activo" : "Modo manual"}
+              </span>
+            </div>
+            <p className="text-xs text-text-muted">
+              {isVibrra
+                ? "La extensión controla la reproducción"
+                : "Reproducción pausada — activa VIBRRA para continuar"
+              }
+            </p>
           </div>
         </div>
       </div>
@@ -360,68 +424,49 @@ export default function EnVivoPage() {
             type="button"
             onClick={handleCopy}
             className={clsx(
-              "flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-colors",
+              "flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-colors cursor-pointer",
               copied
                 ? "bg-success/15 text-success"
                 : "bg-surface border border-border text-text-primary hover:border-gold"
             )}
           >
             <Copy className="w-4 h-4" />
-            {copied ? "Copiado" : "Copiar"}
+            {copied ? "Copiado" : t("share.copiar")}
           </button>
         </div>
 
-        {/* Share + close buttons */}
+        {/* Share buttons */}
         <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-whatsapp text-white text-sm font-semibold hover:bg-whatsapp/90 transition-colors"
+            onClick={handleWhatsApp}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-whatsapp text-white text-sm font-semibold hover:bg-whatsapp/90 transition-colors cursor-pointer"
           >
-            WhatsApp
+            {t("share.whatsapp")}
           </button>
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-instagram text-white text-sm font-semibold hover:bg-instagram/90 transition-colors"
-          >
-            Instagram
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors"
-          >
-            TikTok
-          </button>
-          <div className="flex-1" />
-          <Button variant="danger" onClick={() => setShowCloseModal(true)}>
-            Cerrar sesion
-          </Button>
         </div>
       </div>
 
-      {/* ── Close session modal ───────────────────────── */}
+      {/* ── Clear queue modal ─────────────────────────── */}
       <Modal
-        open={showCloseModal}
-        onClose={() => setShowCloseModal(false)}
-        title="Cerrar sesion"
+        open={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        title="Limpiar cola"
         size="sm"
         actions={
           <>
-            <Button variant="secondary" onClick={() => setShowCloseModal(false)}>
+            <Button variant="secondary" onClick={() => setShowClearModal(false)}>
               Cancelar
             </Button>
-            <Button variant="danger">
-              Si, cerrar sesion
+            <Button variant="danger" onClick={handleLimpiarCola}>
+              Sí, limpiar
             </Button>
           </>
         }
       >
         <p className="text-sm text-text-secondary">
-          Hay <span className="font-semibold text-text-primary">{liveUsers}</span> usuarios
-          conectados y <span className="font-semibold text-text-primary">{pendingItems.length}</span> canciones
-          pendientes en la cola. Al cerrar la sesion, se perderan las pujas pendientes.
-        </p>
-        <p className="text-sm text-warning mt-3">
-          Esta accion no se puede deshacer.
+          Se eliminarán las <span className="font-semibold text-text-primary">{playlist.length}</span> canciones
+          de la cola. Esta acción no se puede deshacer.
         </p>
       </Modal>
     </div>

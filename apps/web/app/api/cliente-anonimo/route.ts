@@ -1,37 +1,31 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { adminDb, adminRtdb } from "@/lib/api/firebase-admin";
+import { adminRtdb } from "@/lib/api/firebase-admin";
 
 const SALDO_INICIAL = 2000;
 
 /**
  * POST /api/cliente-anonimo
- * Registra un cliente anónimo en Firestore (Anonimos/{fingerprint})
- * y RTDB (Anonimos/{fingerprint}) si no existe.
+ * Registra un cliente anónimo en RTDB (Anonimos/{fingerprint}) si no existe.
  *
- * Body: { visitorId: string, estId: string, alias?: string }
+ * Body: { visitorId: string, estId: string }
  * Returns: { saldo, bonos, isNew }
  */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { visitorId, estId, alias } = body;
+    const { visitorId, estId } = body;
 
     if (!visitorId || typeof visitorId !== "string") {
       return NextResponse.json({ error: "visitorId requerido" }, { status: 400 });
     }
 
-    const db = adminDb();
     const rtdb = adminRtdb();
+    const anonRef = rtdb.ref(`Anonimos/${visitorId}`);
+    const snap = await anonRef.get();
 
-    // Verificar si ya existe en Firestore
-    const docRef = db.collection("Anonimos").doc(visitorId);
-    const doc = await docRef.get();
-
-    if (doc.exists) {
-      // Ya existe — leer saldo actual de RTDB
-      const snap = await rtdb.ref(`Anonimos/${visitorId}`).get();
-      const data = snap.val() ?? {};
+    if (snap.exists()) {
+      const data = snap.val();
       return NextResponse.json({
         saldo: data.saldo ?? 0,
         bonos: data.bonos ?? { conexionesGratis: 0, nominacionesGratis: 0 },
@@ -39,25 +33,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Nuevo cliente anónimo
-    const now = Date.now();
+    // Nuevo cliente anónimo — solo RTDB
     const bonos = { conexionesGratis: 1, nominacionesGratis: 0 };
-
-    // Crear en Firestore (Anonimos/{fingerprint})
-    await docRef.set({
-      alias: alias || "",
+    await anonRef.set({
       saldo: SALDO_INICIAL,
       bonos,
       primer_establecimiento: estId || null,
-      fecha_registro: new Date(),
-    });
-
-    // Crear en RTDB (Anonimos/{fingerprint})
-    await rtdb.ref(`Anonimos/${visitorId}`).set({
-      alias: alias || "",
-      saldo: SALDO_INICIAL,
-      bonos,
-      created_at: now,
+      created_at: Date.now(),
     });
 
     return NextResponse.json({

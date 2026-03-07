@@ -22,9 +22,11 @@ import {
   Plus,
   ArrowLeft,
   QrCode,
+  SignIn,
 } from "@phosphor-icons/react";
 import { QRCodeSVG } from "qrcode.react";
 import { DedicarPage } from "./dedicar/DedicarPage";
+import { RegistroScreen } from "./RegistroScreen";
 import "./sala.css";
 
 interface Establecimiento {
@@ -74,7 +76,7 @@ export function SalaCliente(props: Props) {
 }
 
 // ─── Vista types ────────────────────────────────────────────
-type Vista = "espera" | "bienvenida" | "alias" | "conexion" | "sala";
+type Vista = "espera" | "bienvenida" | "registro" | "alias" | "conexion" | "sala";
 type Tab = "sesion" | "buscar" | "saldo" | "perfil";
 
 function SalaClienteInner({
@@ -83,7 +85,7 @@ function SalaClienteInner({
   cancionActual: initialCancionActual,
   playlist: initialPlaylist,
 }: Props) {
-  const { visitorId, fpLoading, alias, setAlias, persistAlias, isFirstVisit, saldo, gastarSaldo, bonos, spotifyPrefs, disconnectSpotify } = useCliente();
+  const { visitorId, uid, isRegistered, fpLoading, authLoading, authUser, alias, setAlias, persistAlias, displayName, photoURL, isFirstVisit, saldo, gastarSaldo, bonos, qrValue, spotifyPrefs, disconnectSpotify } = useCliente();
 
   // Tiempo real desde RTDB
   const { sesionActiva, cancionActual, playlist, estadoReproductor, bloqueado, vetadas } = useSessionRTDB(est.id, {
@@ -139,19 +141,22 @@ function SalaClienteInner({
   });
 
   useEffect(() => {
-    if (fpLoading) return;
+    if (fpLoading || authLoading) return;
     if (!sesionActiva) {
       setVista("espera");
       return;
     }
     if (vista === "espera" && sesionActiva) {
-      if (!isFirstVisit) {
+      if (isRegistered) {
+        // Returning registered user → skip welcome
+        setVista("alias");
+      } else if (!isFirstVisit) {
         setVista("alias");
       } else {
         setVista("bienvenida");
       }
     }
-  }, [fpLoading, sesionActiva]);
+  }, [fpLoading, authLoading, sesionActiva, isRegistered]);
 
   useEffect(() => {
     if (!sesionActiva && vista === "sala") {
@@ -353,16 +358,31 @@ function SalaClienteInner({
             </div>
           </div>
 
-          <button style={styles.btnPrimario} onClick={() => {/* TODO: navegar a registro */}}>
-            Registrarme — más beneficios
+          <button style={styles.btnPrimario} onClick={() => setVista("registro")}>
+            Registrarme — mas beneficios
           </button>
           <button
-            style={styles.btnSecundario}
+            style={{ ...styles.btnGhost, marginTop: 12, fontSize: 13, color: "#5A5A5A", display: "flex", alignItems: "center", gap: 6, justifyContent: "center" }}
             onClick={() => setVista("alias")}
           >
-            Continuar sin registrarme
+            <SignIn size={16} weight="bold" />
+            Anónimo
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // ─── REGISTRO ──────────────────────────────────────────────
+  if (vista === "registro") {
+    return (
+      <div style={styles.container}>
+        <RegistroScreen
+          estId={est.id}
+          visitorId={visitorId}
+          onRegistered={() => setVista("alias")}
+          onSkip={() => setVista("alias")}
+        />
       </div>
     );
   }
@@ -439,9 +459,11 @@ function SalaClienteInner({
           )}
           <button style={{ ...styles.btnGhost, marginTop: 8 }} onClick={() => setVista("sala")}>Solo quiero ver la cola</button>
 
-          <p style={{ fontSize: 11, color: "#5A5A5A", maxWidth: 280, lineHeight: 1.5, marginTop: 12 }}>
-            Estas como invitado. Tu saldo se pierde al cerrar el navegador.
-          </p>
+          {!isRegistered && (
+            <p style={{ fontSize: 11, color: "#5A5A5A", maxWidth: 280, lineHeight: 1.5, marginTop: 12 }}>
+              Estas como invitado. Tu saldo se pierde al cerrar el navegador.
+            </p>
+          )}
         </div>
       </div>
     );
@@ -879,11 +901,11 @@ function SalaClienteInner({
             <p style={{ fontSize: 12, fontWeight: 600, color: "#9A9590", textAlign: "center", marginBottom: 16 }}>
               Muestra este QR para recargar
             </p>
-            {visitorId ? (
+            {qrValue ? (
               <div style={styles.qrFrame}>
                 <div style={styles.qrContainer}>
                   <QRCodeSVG
-                    value={`anon:${visitorId}`}
+                    value={qrValue}
                     size={200}
                     bgColor="#FFFFFF"
                     fgColor="#000000"
@@ -891,7 +913,7 @@ function SalaClienteInner({
                   />
                 </div>
                 <p style={{ fontSize: 9, color: "#555", marginTop: 10, fontFamily: "monospace", wordBreak: "break-all", textAlign: "center", letterSpacing: 0.5 }}>
-                  anon:{visitorId}
+                  {qrValue}
                 </p>
               </div>
             ) : (
@@ -924,7 +946,11 @@ function SalaClienteInner({
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 1 }}>
               <div style={styles.perfilAvatarRing}>
                 <div style={styles.perfilAvatarInner}>
-                  <UserCircle size={38} weight="duotone" color="#D4A017" />
+                  {photoURL ? (
+                    <img src={photoURL} alt="" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                  ) : (
+                    <UserCircle size={38} weight="duotone" color="#D4A017" />
+                  )}
                 </div>
               </div>
               <p style={styles.perfilAlias}>{alias || "Anónimo"}</p>
@@ -1036,18 +1062,51 @@ function SalaClienteInner({
             )}
           </div>
 
-          {/* Guest notice */}
-          <div style={styles.perfilGuestNotice}>
-            <p style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 11, fontWeight: 700, color: "#9A9590", marginBottom: 6 }}>
-              Modo Invitado
-            </p>
-            <p style={{ fontSize: 11, color: "#5A5A5A", lineHeight: 1.6, marginBottom: 14 }}>
-              Tu saldo y alias se pierden al cerrar el navegador. Registrate para conservar todo.
-            </p>
-            <button style={styles.perfilRegisterBtn}>
-              Crear cuenta VIBRRA
-            </button>
-          </div>
+          {/* Account section */}
+          {isRegistered ? (
+            <div style={{ ...styles.perfilGuestNotice, borderStyle: "solid", borderColor: "rgba(212,160,23,.15)" }}>
+              <p style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 11, fontWeight: 700, color: "#D4A017", marginBottom: 6 }}>
+                Cuenta VIBRRA
+              </p>
+              <div style={{ fontSize: 12, color: "#9A9590", lineHeight: 1.8, marginBottom: 14 }}>
+                {authUser?.phoneNumber && (
+                  <p style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A9590" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    {authUser.phoneNumber}
+                  </p>
+                )}
+                {authUser?.email && (
+                  <p style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9A9590" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    {authUser.email}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={async () => {
+                  const { signOut } = await import("firebase/auth");
+                  const { auth: fireAuth } = await import("@/lib/firebase");
+                  await signOut(fireAuth);
+                  window.location.reload();
+                }}
+                style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1px solid rgba(239,68,68,.3)", background: "transparent", color: "#EF4444", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Cerrar sesion
+              </button>
+            </div>
+          ) : (
+            <div style={styles.perfilGuestNotice}>
+              <p style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 11, fontWeight: 700, color: "#9A9590", marginBottom: 6 }}>
+                Modo Invitado
+              </p>
+              <p style={{ fontSize: 11, color: "#5A5A5A", lineHeight: 1.6, marginBottom: 14 }}>
+                Tu saldo y alias se pierden al cerrar el navegador. Registrate para conservar todo.
+              </p>
+              <button style={styles.perfilRegisterBtn} onClick={() => setVista("registro")}>
+                Crear cuenta VIBRRA
+              </button>
+            </div>
+          )}
         </div>
       )}
 

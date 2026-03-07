@@ -50,8 +50,14 @@
 }
 
 /* ── Mood rail ── */
-.mood-rail { scrollbar-width: none; }
+.mood-rail {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
 .mood-rail::-webkit-scrollbar { display: none; }
+.mood-btn { scroll-snap-align: start; }
 
 .mood-btn {
   flex-shrink: 0;
@@ -191,8 +197,14 @@
 .msg-counter.over { color: #FF6B6B; }
 
 /* ── Emoji rail ── */
-.emoji-rail { scrollbar-width: none; }
+.emoji-rail {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
 .emoji-rail::-webkit-scrollbar { display: none; }
+.emoji-btn { scroll-snap-align: start; }
 
 .emoji-btn {
   flex-shrink: 0;
@@ -213,8 +225,14 @@
 .emoji-btn:hover { background: var(--s2); transform: scale(1.08); }
 
 /* ── Plantillas ── */
-.tpl-rail { scrollbar-width: none; }
+.tpl-rail {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
 .tpl-rail::-webkit-scrollbar { display: none; }
+.tpl-card { scroll-snap-align: start; }
 
 .tpl-card {
   flex-shrink: 0;
@@ -304,6 +322,33 @@
   box-shadow: none !important;
   color: var(--muted);
   cursor: not-allowed;
+}
+
+/* Sin saldo — sad wiggle */
+@keyframes sadWiggle {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-3px) rotate(-1deg); }
+  40%      { transform: translateX(3px) rotate(1deg); }
+  60%      { transform: translateX(-2px) rotate(-0.5deg); }
+  80%      { transform: translateX(2px) rotate(0.5deg); }
+}
+
+@keyframes sadPulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.btn-send-sin-saldo {
+  background: linear-gradient(120deg, #8B0000, #C0392B) !important;
+  box-shadow: 0 4px 20px rgba(192,57,43,.3) !important;
+  color: #FFB3B3 !important;
+  animation: sadWiggle 2s ease-in-out infinite, sadPulse 2s ease-in-out infinite;
+}
+
+.btn-send-sin-saldo .sad-face {
+  display: inline-block;
+  animation: sadWiggle 1.5s ease-in-out infinite;
+  animation-delay: 0.3s;
 }
 
 /* ── Éxito overlay ── */

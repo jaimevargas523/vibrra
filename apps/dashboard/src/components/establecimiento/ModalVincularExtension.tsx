@@ -6,7 +6,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import jsQR from "jsqr";
+import { Html5Qrcode } from "html5-qrcode";
 
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +20,8 @@ interface Props {
   establecimientoId: string;
   establecimientoName: string;
 }
+
+const SCANNER_ID = "vincular-qr-reader";
 
 export function ModalVincularExtension({
   open,
@@ -35,19 +37,21 @@ export function ModalVincularExtension({
   const [cameraError, setCameraError] = useState(false);
   const [debugInfo, setDebugInfo] = useState("");
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const rafRef = useRef<number>(0);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const decodedRef = useRef(false);
 
-  const stopCamera = useCallback(() => {
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = 0;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-      streamRef.current = null;
+  const stopScanner = useCallback(async () => {
+    if (scannerRef.current) {
+      try {
+        const state = scannerRef.current.getState();
+        if (state === 2 /* SCANNING */) {
+          await scannerRef.current.stop();
+        }
+      } catch {
+        // ignore
+      }
+      scannerRef.current.clear();
+      scannerRef.current = null;
     }
   }, []);
 
@@ -65,7 +69,6 @@ export function ModalVincularExtension({
         );
         setSuccessName(res.establecimiento || establecimientoName);
         setEstado("success");
-        stopCamera();
       } catch (err) {
         const msg =
           err instanceof Error ? err.message : t("errorGenerico");
@@ -74,96 +77,69 @@ export function ModalVincularExtension({
         setEstado("error");
       }
     },
-    [establecimientoId, establecimientoName, stopCamera, t],
+    [establecimientoId, establecimientoName, t],
   );
 
   const startScanning = useCallback(() => {
     setEstado("scanning");
     setCameraError(false);
+    decodedRef.current = false;
 
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "environment" } })
-      .catch(() => navigator.mediaDevices.getUserMedia({ video: true }))
-      .then((stream) => {
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(() => {});
-        }
-      })
-      .catch(() => {
-        setCameraError(true);
-      });
-  }, []);
+    // Delay to let DOM mount the container
+    setTimeout(async () => {
+      try {
+        const scanner = new Html5Qrcode(SCANNER_ID);
+        scannerRef.current = scanner;
 
-  // QR scanning loop
-  useEffect(() => {
-    if (estado !== "scanning" || cameraError) return;
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 15,
+            qrbox: (vw: number, vh: number) => {
+              const size = Math.min(vw, vh) * 0.7;
+              return { width: size, height: size };
+            },
+          },
+          (decodedText) => {
+            if (decodedRef.current) return;
+            decodedRef.current = true;
+            stopScanner();
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) return;
-
-    let active = true;
-
-    const scan = () => {
-      if (!active || video.readyState < video.HAVE_ENOUGH_DATA) {
-        rafRef.current = requestAnimationFrame(scan);
-        return;
-      }
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-      if (code && code.data) {
-        const raw = code.data;
-        // Extract UUID from known formats:
-        // https://vibrra.live/vincular/UUID  or  vibrra://ext/UUID  or raw UUID
-        const match = raw.match(
-          /(?:vibrra\.live\/vincular\/|vibrra:\/\/ext\/)([0-9a-f-]{36})/i,
+            // Extract UUID from known formats
+            const match = decodedText.match(
+              /(?:vibrra\.live\/vincular\/|vibrra:\/\/ext\/)([0-9a-f-]{36})/i,
+            );
+            const extensionId = match ? match[1] : decodedText;
+            setDebugInfo(`RAW: ${decodedText}\nID: ${extensionId}\nEST: ${establecimientoId}`);
+            vincular(extensionId);
+          },
+          () => {
+            // no QR found in frame — ignore
+          },
         );
-        const extensionId = match ? match[1] : raw;
-        setDebugInfo(`RAW: ${raw}\nID: ${extensionId}\nEST: ${establecimientoId}`);
-        vincular(extensionId);
-        return;
+      } catch {
+        setCameraError(true);
       }
-
-      rafRef.current = requestAnimationFrame(scan);
-    };
-
-    rafRef.current = requestAnimationFrame(scan);
-
-    return () => {
-      active = false;
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = 0;
-      }
-    };
-  }, [estado, cameraError, vincular]);
+    }, 100);
+  }, [establecimientoId, vincular, stopScanner]);
 
   // Auto-start scanning when modal opens; reset on close
   useEffect(() => {
     if (open) {
       startScanning();
     } else {
-      stopCamera();
+      stopScanner();
       setEstado("idle");
       setErrorMsg("");
       setSuccessName("");
       setCameraError(false);
+      decodedRef.current = false;
     }
-  }, [open, stopCamera, startScanning]);
+  }, [open, stopScanner, startScanning]);
 
   useEffect(() => {
-    return () => stopCamera();
-  }, [stopCamera]);
+    return () => { stopScanner(); };
+  }, [stopScanner]);
 
   return (
     <Modal open={open} onClose={onClose} title={t("title")} size="md">
@@ -191,43 +167,27 @@ export function ModalVincularExtension({
         {/* Estado: scanning — cámara activa */}
         {estado === "scanning" && (
           <div className="rounded-xl border border-border overflow-hidden">
-            <div className="relative aspect-square bg-black max-h-[300px]">
-              {!cameraError ? (
-                <>
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
-                  <canvas ref={canvasRef} className="hidden" />
-                  {/* Scan frame overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-40 h-40 relative">
-                      <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold rounded-tl" />
-                      <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold rounded-tr" />
-                      <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold rounded-bl" />
-                      <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold rounded-br" />
-                      <div className="absolute left-2 right-2 h-0.5 bg-gold/60 animate-pulse top-1/2" />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full gap-3 p-4">
-                  <Camera className="w-10 h-10 text-text-muted" />
-                  <p className="text-xs text-text-muted text-center">
-                    {t("errorCamara")}
-                  </p>
-                  <Button variant="ghost" size="sm" onClick={startScanning}>
-                    {t("reintentar")}
-                  </Button>
-                </div>
-              )}
-            </div>
-            <p className="text-xs text-text-muted text-center py-3">
-              {t("instruccion")}
-            </p>
+            {!cameraError ? (
+              <>
+                <div
+                  id={SCANNER_ID}
+                  className="max-h-[300px] overflow-hidden"
+                />
+                <p className="text-xs text-text-muted text-center py-3">
+                  {t("instruccion")}
+                </p>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[200px] gap-3 p-4">
+                <Camera className="w-10 h-10 text-text-muted" />
+                <p className="text-xs text-text-muted text-center">
+                  {t("errorCamara")}
+                </p>
+                <Button variant="ghost" size="sm" onClick={startScanning}>
+                  {t("reintentar")}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 

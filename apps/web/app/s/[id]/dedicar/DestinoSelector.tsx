@@ -42,15 +42,6 @@ export function DestinoSelector({ selected, mood, aliasDestinatario, onSelect, o
               >
                 {d.label}
               </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-dm-mono), monospace",
-                  fontSize: 10,
-                  color: active ? "var(--gold-mid)" : "var(--muted)",
-                }}
-              >
-                ${d.precio.toLocaleString("es-CO")}
-              </span>
             </button>
           );
         })}

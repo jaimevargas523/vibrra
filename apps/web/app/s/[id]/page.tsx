@@ -20,13 +20,19 @@ export default async function SesionPage({ params }: Props) {
   const tipo = data.tipo ?? "bar";
   const ciudad = data.ciudad ?? "";
   const fotoUrl = data.fotoUrl ?? null;
-  const precioConexion = data.precio_conexion ?? 0;
-  const precioNominacion = data.precio_nominacion ?? 500;
+  const precioConexion = data.precio_conexion ?? 3000;
+  const precioNominacion = data.precio_nominacion ?? 5000;
+  const precioPujaMin = data.precio_puja_minima ?? 2000;
+  const precioDedicatoria = data.precio_dedicatoria ?? 10000;
 
   // 2. Revisar si hay sesion activa en RTDB
   const rtdb = adminRtdb();
-  const sesionSnap = await rtdb.ref(`sesiones/${id}/activa`).get();
-  const sesionActiva = sesionSnap.val() === true;
+  const [sesionSnap, estadoSnap] = await Promise.all([
+    rtdb.ref(`sesiones/${id}/activa`).get(),
+    rtdb.ref(`sesiones/${id}/estado_reproductor`).get(),
+  ]);
+  const estadoReproductor = estadoSnap.val() ?? "";
+  const sesionActiva = estadoReproductor !== "MANUAL";
 
   // 3. Leer cancion actual y playlist si hay sesion
   let cancionActual = null;
@@ -80,6 +86,8 @@ export default async function SesionPage({ params }: Props) {
         fotoUrl,
         precioConexion,
         precioNominacion,
+        precioPujaMin,
+        precioDedicatoria,
       }}
       sesionActiva={sesionActiva}
       cancionActual={cancionActual}

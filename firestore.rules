@@ -12,6 +12,15 @@ service cloud.firestore {
         && !("saldo" in request.resource.data.diff(resource.data).affectedKeys());
     }
 
+    // ── Clientes ──────────────────────────────────────────────────────────
+    match /Clientes/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && request.auth.uid == uid
+        && !("saldo" in request.resource.data.diff(resource.data).affectedKeys())
+        && !("bonos_canciones" in request.resource.data.diff(resource.data).affectedKeys())
+        && !("bonos_conexiones" in request.resource.data.diff(resource.data).affectedKeys());
+    }
+
     // ── Anfitriones ─────────────────────────────────────────────────────────
     // Financial fields are only writable by Cloud Functions (Admin SDK).
     // Client writes must not touch: recaudo_mes, comisiones_mes,

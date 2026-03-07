@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { X, Camera, Loader2 } from "lucide-react";
+import { Html5Qrcode } from "html5-qrcode";
 import type { RecargaStatus } from "@/hooks/useRecargaCliente";
 
 interface Props {
@@ -10,52 +11,77 @@ interface Props {
 }
 
 export function ModalEscanerQR({ open, status, onQrDecodificado, onCancelar }: Props) {
-  const [manualId, setManualId] = useState("");
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const decodedRef = useRef(false);
   const [cameraError, setCameraError] = useState(false);
+  const containerId = "qr-reader";
+
+  const stopScanner = useCallback(async () => {
+    if (scannerRef.current) {
+      try {
+        const state = scannerRef.current.getState();
+        if (state === 2 /* SCANNING */) {
+          await scannerRef.current.stop();
+        }
+      } catch {
+        // ignore
+      }
+      scannerRef.current.clear();
+      scannerRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
-    if (!open) {
-      // Cleanup camera on close
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
+    if (!open || status === "processing") {
+      stopScanner();
+      if (!open) {
+        setCameraError(false);
+        decodedRef.current = false;
       }
-      setCameraError(false);
-      setManualId("");
       return;
     }
 
-    // Try to access camera
-    navigator.mediaDevices
-      ?.getUserMedia({ video: { facingMode: "environment" } })
-      .then((stream) => {
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      })
-      .catch(() => {
+    decodedRef.current = false;
+
+    // Pequeño delay para que el DOM monte el contenedor
+    const timer = setTimeout(async () => {
+      try {
+        const scanner = new Html5Qrcode(containerId);
+        scannerRef.current = scanner;
+
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 15,
+            qrbox: (vw: number, vh: number) => {
+              const size = Math.min(vw, vh) * 0.7;
+              return { width: size, height: size };
+            },
+          },
+          (decodedText) => {
+            if (decodedRef.current) return;
+            decodedRef.current = true;
+            stopScanner();
+            onQrDecodificado(decodedText);
+          },
+          () => {
+            // frame sin QR detectado — ignorar
+          },
+        );
+      } catch {
         setCameraError(true);
-      });
+      }
+    }, 100);
 
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
-      }
+      clearTimeout(timer);
+      stopScanner();
     };
-  }, [open]);
+  }, [open, status, onQrDecodificado, stopScanner]);
 
   if (!open) return null;
 
   const isProcessing = status === "processing";
-
-  const handleManualSubmit = () => {
-    const id = manualId.trim();
-    if (id) onQrDecodificado(id);
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -85,73 +111,28 @@ export function ModalEscanerQR({ open, status, onQrDecodificado, onCancelar }: P
         </div>
 
         {/* Scanner area */}
-        <div className="p-4 space-y-4">
+        <div className="p-4">
           {isProcessing ? (
             <div className="flex flex-col items-center gap-3 py-8">
               <Loader2 className="w-10 h-10 text-gold animate-spin" />
               <p className="text-sm text-text-secondary">Procesando recarga...</p>
             </div>
+          ) : cameraError ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-2">
+              <Camera className="w-10 h-10 text-text-muted" />
+              <p className="text-xs text-text-muted text-center">
+                No se pudo acceder a la cámara.
+              </p>
+            </div>
           ) : (
             <>
-              {/* Camera preview */}
-              <div className="relative aspect-square bg-black rounded-xl overflow-hidden">
-                {!cameraError ? (
-                  <>
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Scan frame overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-48 h-48 relative">
-                        {/* Corners */}
-                        <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-gold rounded-tl" />
-                        <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-gold rounded-tr" />
-                        <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-gold rounded-bl" />
-                        <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-gold rounded-br" />
-                        {/* Scan line */}
-                        <div className="absolute left-2 right-2 h-0.5 bg-gold/60 animate-pulse top-1/2" />
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full gap-2 p-4">
-                    <Camera className="w-10 h-10 text-text-muted" />
-                    <p className="text-xs text-text-muted text-center">
-                      No se pudo acceder a la camara.
-                      Ingresa el ID del cliente manualmente.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Manual input fallback */}
-              <div className="space-y-2">
-                <label className="text-[9px] uppercase tracking-[1.5px] text-text-muted font-semibold">
-                  O INGRESA EL CODIGO DEL CLIENTE
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={manualId}
-                    onChange={(e) => setManualId(e.target.value)}
-                    placeholder="ID o codigo del cliente"
-                    className="flex-1 bg-card-dark border border-border rounded-lg px-3 py-2.5 text-sm text-text-primary focus:border-gold outline-none placeholder-text-muted"
-                    onKeyDown={(e) => e.key === "Enter" && handleManualSubmit()}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleManualSubmit}
-                    disabled={!manualId.trim()}
-                    className="px-4 py-2.5 rounded-lg bg-gold text-[#0A0A0A] text-sm font-bold disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    OK
-                  </button>
-                </div>
-              </div>
+              <div
+                id={containerId}
+                className="rounded-xl overflow-hidden"
+              />
+              <p className="text-center text-xs text-text-muted mt-3">
+                Apunta al QR del cliente
+              </p>
             </>
           )}
         </div>

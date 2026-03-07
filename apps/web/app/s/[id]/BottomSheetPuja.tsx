@@ -5,14 +5,14 @@ import { ArrowFatUp, X, CurrencyDollar } from "@phosphor-icons/react";
 
 interface Props {
   cancion: { titulo: string; artista: string; imagen?: string };
+  pujaMinima: number;
   saldo: number;
   onConfirm: (monto: number) => void;
   onClose: () => void;
 }
 
-const MONTOS = [500, 1000, 2000, 5000];
-
-export function BottomSheetPuja({ cancion, saldo, onConfirm, onClose }: Props) {
+export function BottomSheetPuja({ cancion, pujaMinima, saldo, onConfirm, onClose }: Props) {
+  const MONTOS = [pujaMinima, pujaMinima * 2, pujaMinima * 5, pujaMinima * 10];
   const [seleccionado, setSeleccionado] = useState<number | null>(null);
 
   return (

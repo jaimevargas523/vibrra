@@ -10,20 +10,22 @@ import {
   RefreshCw,
   MapPin,
   ImagePlus,
+  Loader2,
 } from "lucide-react";
 import clsx from "clsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Badge } from "@/components/ui/Badge";
-import { StatusDot } from "@/components/ui/StatusDot";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ModalVincularExtension } from "@/components/establecimiento/ModalVincularExtension";
 
-import { useEstablecimientos, type EstablecimientoListItem } from "@/hooks/api/useEstablecimientos";
+import { useEstablecimientos } from "@/hooks/api/useEstablecimientos";
 import { useSessionStore } from "@/stores/session.store";
+import { apiPost } from "@/lib/api-client";
 
 const emojiOptions = [
   "\uD83C\uDF1F", "\uD83C\uDFB5", "\uD83C\uDFB6", "\uD83C\uDF7A", "\uD83C\uDF78",
@@ -38,15 +40,70 @@ const estEmojis: Record<string, string> = {
   default: "\uD83C\uDFB5",
 };
 
+const initialForm = {
+  nombre: "",
+  descripcion: "",
+  direccion: "",
+  ciudad: "",
+  zona: "",
+};
+
 export default function EstablecimientosPage() {
   const { t } = useTranslation("establecimientos");
   const { data: establecimientos, isLoading } = useEstablecimientos();
   const isLive = useSessionStore((s) => s.isLive);
+  const queryClient = useQueryClient();
+
   const [showModal, setShowModal] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState(emojiOptions[0]);
   const [syncEst, setSyncEst] = useState<{ id: string; name: string } | null>(null);
+  const [form, setForm] = useState(initialForm);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const estData = establecimientos ?? [];
+
+  const handleChange = (field: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setError("");
+  };
+
+  const handleSubmit = async () => {
+    if (!form.nombre.trim()) {
+      setError("El nombre es obligatorio.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      await apiPost("/api/negocios", {
+        nombre: form.nombre.trim(),
+        descripcion: form.descripcion.trim(),
+        direccion: form.direccion.trim(),
+        ciudad: form.ciudad.trim() || "Bogota",
+        zona: form.zona.trim(),
+        icono: selectedEmoji,
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ["establecimientos"] });
+      setShowModal(false);
+      setForm(initialForm);
+      setSelectedEmoji(emojiOptions[0]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al crear establecimiento.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setForm(initialForm);
+    setSelectedEmoji(emojiOptions[0]);
+    setError("");
+  };
 
   return (
     <div className="space-y-6">
@@ -91,12 +148,9 @@ export default function EstablecimientosPage() {
               >
                 <div className="p-4">
                   <div className="flex items-start gap-3">
-                    {/* Avatar */}
                     <div className="flex items-center justify-center w-11 h-11 rounded-full bg-surface-elevated text-xl shrink-0">
                       {emoji}
                     </div>
-
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-base font-semibold text-text-primary truncate">
                         {est.name}
@@ -122,7 +176,6 @@ export default function EstablecimientosPage() {
                   </div>
                 </div>
 
-                {/* Separator + Actions */}
                 <div className="border-t border-border grid grid-cols-4">
                   <Link
                     to={`/anfitrion/establecimientos/${est.id}`}
@@ -171,15 +224,24 @@ export default function EstablecimientosPage() {
       {/* ── Add establishment modal ───────────────────── */}
       <Modal
         open={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={handleCloseModal}
         title="Nuevo establecimiento"
         size="lg"
         actions={
           <>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
+            <Button variant="secondary" onClick={handleCloseModal} disabled={submitting}>
               Cancelar
             </Button>
-            <Button>Crear establecimiento</Button>
+            <Button onClick={handleSubmit} disabled={submitting || !form.nombre.trim()}>
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Creando...
+                </>
+              ) : (
+                "Crear establecimiento"
+              )}
+            </Button>
           </>
         }
       >
@@ -226,8 +288,11 @@ export default function EstablecimientosPage() {
             </label>
             <input
               type="text"
+              value={form.nombre}
+              onChange={(e) => handleChange("nombre", e.target.value)}
               placeholder="Ej: La Terraza Rooftop"
               className="w-full bg-card-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-gold outline-none placeholder-text-muted"
+              onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).nextElementSibling?.querySelector("textarea")?.focus()}
             />
           </div>
 
@@ -238,6 +303,8 @@ export default function EstablecimientosPage() {
             </label>
             <textarea
               rows={2}
+              value={form.descripcion}
+              onChange={(e) => handleChange("descripcion", e.target.value)}
               placeholder="Describe brevemente tu establecimiento"
               className="w-full bg-card-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-gold outline-none placeholder-text-muted resize-none"
             />
@@ -250,6 +317,8 @@ export default function EstablecimientosPage() {
             </label>
             <input
               type="text"
+              value={form.direccion}
+              onChange={(e) => handleChange("direccion", e.target.value)}
               placeholder="Ej: Cra 7 #85-24"
               className="w-full bg-card-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-gold outline-none placeholder-text-muted"
             />
@@ -263,6 +332,8 @@ export default function EstablecimientosPage() {
               </label>
               <input
                 type="text"
+                value={form.ciudad}
+                onChange={(e) => handleChange("ciudad", e.target.value)}
                 placeholder="Ej: Bogota"
                 className="w-full bg-card-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-gold outline-none placeholder-text-muted"
               />
@@ -273,11 +344,21 @@ export default function EstablecimientosPage() {
               </label>
               <input
                 type="text"
+                value={form.zona}
+                onChange={(e) => handleChange("zona", e.target.value)}
                 placeholder="Ej: Zona G"
                 className="w-full bg-card-dark border border-border rounded-lg px-4 py-3 text-text-primary text-sm focus:border-gold outline-none placeholder-text-muted"
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               />
             </div>
           </div>
+
+          {/* Error */}
+          {error && (
+            <div className="bg-error/10 border border-error/30 rounded-xl p-3 text-sm text-error">
+              {error}
+            </div>
+          )}
         </div>
       </Modal>
     </div>

@@ -8,7 +8,7 @@ let ytmusic: YTMusic | null = null;
 async function getYTMusic(): Promise<YTMusic> {
   if (!ytmusic) {
     ytmusic = new YTMusic();
-    await ytmusic.initialize();
+    await ytmusic.initialize({ GL: "CO", HL: "es" });
   }
   return ytmusic;
 }

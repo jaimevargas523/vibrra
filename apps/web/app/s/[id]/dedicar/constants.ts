@@ -23,12 +23,7 @@ export const MOODS: MoodDef[] = [
 ];
 
 // ─── Costos ──────────────────────────────────────────────────
-
-export const COSTOS_DEDICATORIA: Record<string, number> = {
-  sala: 500,
-  cancion: 800,
-  persona: 1000,
-};
+// El precio de dedicatoria viene del establecimiento (precio_dedicatoria).
 
 export const DURACION_DEDICATORIA = 8;
 export const MAX_DEDICATORIAS_SESION = 3;
@@ -55,9 +50,9 @@ export const EMOJIS_RAPIDOS = [
 // ─── Destinos ────────────────────────────────────────────────
 
 export const DESTINOS = [
-  { key: "sala",    emoji: "🎉", label: "Toda la sala", precio: 500 },
-  { key: "cancion", emoji: "🎵", label: "Una canción",  precio: 800 },
-  { key: "persona", emoji: "💘", label: "A alguien",    precio: 1000 },
+  { key: "sala",    emoji: "🎉", label: "Toda la sala" },
+  { key: "cancion", emoji: "🎵", label: "Una canción" },
+  { key: "persona", emoji: "💘", label: "A alguien" },
 ] as const;
 
 // ─── Errores ─────────────────────────────────────────────────

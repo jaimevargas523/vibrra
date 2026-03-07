@@ -11,7 +11,6 @@ import { DestinoSelector } from "./DestinoSelector";
 import { ExitoOverlay } from "./ExitoOverlay";
 import {
   MOODS,
-  COSTOS_DEDICATORIA,
   MAX_CARACTERES_MENSAJE,
   ERRORES_DEDICAR,
 } from "./constants";
@@ -20,12 +19,13 @@ import "./dedicar.css";
 
 interface Props {
   estId: string;
+  precioDedicatoria: number;
   cancionActual: { titulo?: string; artista?: string; imagen?: string } | null;
   playlist: PlaylistItem[];
   onClose: () => void;
 }
 
-export function DedicarPage({ estId, cancionActual, playlist, onClose }: Props) {
+export function DedicarPage({ estId, precioDedicatoria, cancionActual, playlist, onClose }: Props) {
   const { visitorId, alias, saldo } = useCliente();
 
   const [mood, setMood] = useState("romantico");
@@ -41,7 +41,7 @@ export function DedicarPage({ estId, cancionActual, playlist, onClose }: Props) 
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const m = MOODS.find((x) => x.key === mood) ?? MOODS[0];
-  const costo = COSTOS_DEDICATORIA[destino] ?? 500;
+  const costo = precioDedicatoria;
   const charCount = [...mensaje].length;
 
   const puedeEnviar =
@@ -341,7 +341,7 @@ export function DedicarPage({ estId, cancionActual, playlist, onClose }: Props) 
       <div className="ded-bottom-bar">
         <div className="cost-chip">{formatSaldo(costo)}</div>
         <button
-          className="btn-send"
+          className={`btn-send${saldo < costo && !enviando ? " btn-send-sin-saldo" : ""}`}
           onClick={handleEnviar}
           disabled={!puedeEnviar}
           style={
@@ -355,6 +355,11 @@ export function DedicarPage({ estId, cancionActual, playlist, onClose }: Props) 
         >
           {enviando ? (
             <SpinnerGap size={16} weight="bold" className="spin-icon" />
+          ) : saldo < costo ? (
+            <>
+              <span className="sad-face" style={{ fontSize: 16 }}>{"\uD83D\uDE22"}</span>
+              Sin saldo — necesitas {formatSaldo(costo - saldo)} más
+            </>
           ) : (
             <>
               <PaperPlaneTilt size={14} weight="fill" />

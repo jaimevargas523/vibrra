@@ -1,31 +1,50 @@
 import { Router } from "express";
-import { adminDb } from "../config/firebase-admin.js";
+import { adminDb, adminRtdb } from "../config/firebase-admin.js";
 import { FieldValue } from "firebase-admin/firestore";
 import { getPaisConfig } from "./mi-pais.js";
 
 const router = Router();
 
+/* ── Helpers ─────────────────────────────────────────────── */
+
+type ClienteTipo = "anon" | "client";
+
+function parseClienteId(raw: string): { tipo: ClienteTipo; id: string } | null {
+  if (raw.startsWith("anon:")) return { tipo: "anon", id: raw.slice(5) };
+  if (raw.startsWith("client:")) return { tipo: "client", id: raw.slice(7) };
+  return null;
+}
+
 /**
  * POST /recarga-cliente/transferir
- * Transfiere saldo del anfitrion al cliente dentro de una Firestore transaction.
- * Reads montos, bonos, fees from Paises/{code} config.
+ *
+ * Recarga saldo a un cliente (anónimo o registrado).
+ * El QR del cliente incluye un prefijo:
+ *   - "anon:{visitorId}"   → saldo en RTDB  Anonimos/{visitorId}
+ *   - "client:{clienteId}" → saldo en Firestore Clientes/{clienteId}
  */
 router.post("/transferir", async (req, res) => {
   try {
     const anfitrionId = req.uid!;
-    const { clienteId, montoId, modoId } = req.body as {
+    const { clienteId: rawClienteId, montoId, modoId } = req.body as {
       clienteId: string;
       montoId: string;
       modoId: string;
     };
 
-    // Validate inputs
-    if (!clienteId || !montoId || !modoId) {
+    if (!rawClienteId || !montoId || !modoId) {
       res.status(400).json({ error: "Faltan campos requeridos: clienteId, montoId, modoId." });
       return;
     }
 
-    // Get host's country config
+    const parsed = parseClienteId(rawClienteId);
+    if (!parsed) {
+      res.status(400).json({ error: "Formato de clienteId inválido. Use anon:{id} o client:{id}." });
+      return;
+    }
+
+    const { tipo: clienteTipo, id: clienteId } = parsed;
+
     const db = adminDb();
     const anfitrionRef = db.collection("Anfitriones").doc(anfitrionId);
     const anfitrionPreSnap = await anfitrionRef.get();
@@ -43,7 +62,6 @@ router.post("/transferir", async (req, res) => {
 
     const { recarga } = paisConfig;
 
-    // Find monto by id
     const monto = recarga.montos.find((m: { id: string; valor: number; etiqueta: string }) => m.id === montoId);
     if (!monto) {
       res.status(400).json({ error: `Monto invalido: ${montoId}` });
@@ -57,13 +75,52 @@ router.post("/transferir", async (req, res) => {
     }
 
     const costoTotal = monto.valor + (modoId === "generosa" ? recarga.costoExtraGenerosa : 0);
-    const clienteRef = db.collection("Usuarios").doc(clienteId);
+    const comision = Math.round(costoTotal * 0.10);
+
+    /* ── Acreditar saldo según tipo de cliente ─────────── */
+
+    let clienteNombre = "Cliente";
+
+    if (clienteTipo === "anon") {
+      const rtdb = adminRtdb();
+      const anonRef = rtdb.ref(`Anonimos/${clienteId}`);
+      const anonSnap = await anonRef.get();
+
+      if (!anonSnap.exists()) {
+        res.status(404).json({ error: "Cliente anónimo no encontrado." });
+        return;
+      }
+
+      const anonData = anonSnap.val();
+      clienteNombre = anonData.alias ?? "Anónimo";
+      const saldoActual = anonData.saldo ?? 0;
+
+      await anonRef.update({
+        saldo: saldoActual + monto.valor,
+        "bonos/nominacionesGratis": (anonData.bonos?.nominacionesGratis ?? 0) + (bonos.canciones ?? 0),
+        "bonos/conexionesGratis": (anonData.bonos?.conexionesGratis ?? 0) + (bonos.conexiones ?? 0),
+      });
+    } else {
+      const clienteRef = db.collection("Clientes").doc(clienteId);
+      const cliSnap = await clienteRef.get();
+      const cliData = cliSnap.exists ? cliSnap.data()! : {};
+      clienteNombre = cliData.nombre ?? cliData.displayName ?? "Cliente";
+
+      await clienteRef.set(
+        {
+          saldo: FieldValue.increment(monto.valor),
+          bonos_canciones: FieldValue.increment(bonos.canciones),
+          bonos_conexiones: FieldValue.increment(bonos.conexiones),
+        },
+        { merge: true },
+      );
+    }
+
+    /* ── Actualizar anfitrión + movimientos (Firestore tx) */
 
     const resultado = await db.runTransaction(async (tx) => {
       const anfitrionSnap = await tx.get(anfitrionRef);
-      if (!anfitrionSnap.exists) {
-        throw new Error("Anfitrion no encontrado.");
-      }
+      if (!anfitrionSnap.exists) throw new Error("Anfitrion no encontrado.");
 
       const anfitrionData = anfitrionSnap.data()!;
       const saldoActual = (anfitrionData.saldoReal ?? 0) + (anfitrionData.saldoBono ?? 0);
@@ -74,37 +131,27 @@ router.post("/transferir", async (req, res) => {
         throw new Error(`Saldo insuficiente. Debes mantener un minimo de ${symbol}${min} en tu cuenta.`);
       }
 
-      const clienteSnap = await tx.get(clienteRef);
-      const clienteData = clienteSnap.exists ? clienteSnap.data()! : {};
-      const clienteNombre = clienteData.nombre ?? clienteData.displayName ?? "Cliente";
-
-      // Deduct from host (prefer saldoReal first)
       const saldoReal = anfitrionData.saldoReal ?? 0;
-      let descuentoReal = Math.min(saldoReal, costoTotal);
-      let descuentoBono = costoTotal - descuentoReal;
+      const descuentoReal = Math.min(saldoReal, costoTotal);
+      const descuentoBono = costoTotal - descuentoReal;
+
+      const nuevoRecaudo = (anfitrionData.recaudo_mes ?? 0) + costoTotal;
+      const nuevasComisiones = (anfitrionData.comisiones_mes ?? 0) + comision;
 
       tx.update(anfitrionRef, {
         saldoReal: FieldValue.increment(-descuentoReal),
         saldoBono: FieldValue.increment(-descuentoBono),
+        recaudo_mes: nuevoRecaudo,
+        comisiones_mes: nuevasComisiones,
       });
 
-      // Credit client
-      tx.set(
-        clienteRef,
-        {
-          saldo: FieldValue.increment(monto.valor),
-          bonos_canciones: FieldValue.increment(bonos.canciones),
-          bonos_conexiones: FieldValue.increment(bonos.conexiones),
-        },
-        { merge: true },
-      );
-
-      // Record movement
+      // Movimiento
       const movRef = db.collection("Movimientos").doc();
       tx.set(movRef, {
         tipo: "recarga_anfitrion",
         anfitrion_uid: anfitrionId,
-        clienteId,
+        clienteId: rawClienteId,
+        cliente_tipo: clienteTipo,
         clienteNombre,
         montoId,
         modoId,
@@ -116,10 +163,12 @@ router.post("/transferir", async (req, res) => {
       });
 
       return {
-        nuevoSaldoAnfitrion: saldoActual - costoTotal,
+        comisionAcumulada: nuevasComisiones,
+        recaudoMes: nuevoRecaudo,
         clienteNombre,
         montoAcreditado: monto.valor,
         bonos,
+        comisionEsta: comision,
       };
     });
 

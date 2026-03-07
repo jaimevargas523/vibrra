@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { adminDb, adminRtdb } from "@/lib/api/firebase-admin";
+import { adminRtdb, adminDb } from "@/lib/api/firebase-admin";
 
-const COSTOS: Record<string, number> = { sala: 500, cancion: 800, persona: 1000 };
 const MAX_CHARS = 100;
 const MAX_POR_SESION = 3;
 
 /**
  * POST /api/dedicar
- * Valida saldo, debita y crea dedicatoria en Firestore.
+ * Valida saldo, debita y crea dedicatoria en RTDB.
  *
  * Body: { visitorId, sesionId, mood, mensaje, destino, cancionId?, aliasDestinatario? }
  */
@@ -29,9 +28,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Mensaje inválido", code: "mensaje-invalido" }, { status: 400 });
     }
 
-    // Validar destino y costo
-    const costo = COSTOS[destino];
-    if (!costo) {
+    // Validar destino
+    const destinosValidos = ["sala", "cancion", "persona"];
+    if (!destinosValidos.includes(destino)) {
       return NextResponse.json({ error: "Destino inválido" }, { status: 400 });
     }
 
@@ -40,52 +39,50 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Alias requerido", code: "alias-requerido" }, { status: 400 });
     }
 
-    const db = adminDb();
     const rtdb = adminRtdb();
 
-    // Verificar sesión activa en RTDB
-    const sesionSnap = await rtdb.ref(`sesiones/${sesionId}/activa`).get();
-    if (sesionSnap.val() !== true) {
+    // Verificar sesión activa + no MANUAL
+    const [activaSnap, estadoSnap] = await Promise.all([
+      rtdb.ref(`sesiones/${sesionId}/activa`).get(),
+      rtdb.ref(`sesiones/${sesionId}/estado_reproductor`).get(),
+    ]);
+    if (activaSnap.val() !== true || estadoSnap.val() === "MANUAL") {
       return NextResponse.json({ error: "Sesión inactiva", code: "sesion-inactiva" }, { status: 400 });
     }
 
-    // Verificar límite de dedicatorias por sesión
-    const dedSnap = await db
-      .collection("Sesiones").doc(sesionId)
-      .collection("Dedicatorias")
-      .where("cliente_id", "==", visitorId)
-      .get();
+    // Leer precio_dedicatoria del establecimiento
+    const db = adminDb();
+    const estDoc = await db.collection("Negocios").doc(sesionId).get();
+    const costo = estDoc.exists ? (estDoc.data()?.precio_dedicatoria ?? 10000) : 10000;
 
-    if (dedSnap.size >= MAX_POR_SESION) {
-      return NextResponse.json({ error: "Límite alcanzado", code: "limite-alcanzado" }, { status: 400 });
+    // Verificar límite de dedicatorias por sesión (en RTDB)
+    const dedsSnap = await rtdb.ref(`sesiones/${sesionId}/dedicatorias`).get();
+    if (dedsSnap.exists()) {
+      const deds = dedsSnap.val();
+      const misDedsCount = Object.values(deds).filter(
+        (d: any) => d.cliente_id === visitorId
+      ).length;
+      if (misDedsCount >= MAX_POR_SESION) {
+        return NextResponse.json({ error: "Límite alcanzado", code: "limite-alcanzado" }, { status: 400 });
+      }
     }
 
-    // Leer saldo del anónimo desde RTDB
-    const saldoSnap = await rtdb.ref(`Anonimos/${visitorId}/saldo`).get();
-    const saldoActual = saldoSnap.val() ?? 0;
+    // Leer saldo y alias del anónimo desde RTDB
+    const anonSnap = await rtdb.ref(`Anonimos/${visitorId}`).get();
+    const anonData = anonSnap.val() ?? {};
+    const saldoActual = anonData.saldo ?? 0;
+    const aliasEmisor = anonData.alias || "anónimo";
 
     if (saldoActual < costo) {
       return NextResponse.json({ error: "Saldo insuficiente", code: "saldo-insuficiente" }, { status: 400 });
     }
 
-    // Leer alias del anónimo
-    const aliasSnap = await rtdb.ref(`Anonimos/${visitorId}/alias`).get();
-    const aliasEmisor = aliasSnap.val() || "anónimo";
-
-    // Debitar saldo en RTDB
+    // Debitar saldo
     const nuevoSaldo = saldoActual - costo;
     await rtdb.ref(`Anonimos/${visitorId}/saldo`).set(nuevoSaldo);
 
-    // También actualizar en Firestore
-    const anonDocRef = db.collection("Anonimos").doc(visitorId);
-    await anonDocRef.update({ saldo: nuevoSaldo });
-
-    // Crear dedicatoria en Firestore
-    const dedRef = db
-      .collection("Sesiones").doc(sesionId)
-      .collection("Dedicatorias")
-      .doc();
-
+    // Crear dedicatoria en RTDB
+    const dedRef = rtdb.ref(`sesiones/${sesionId}/dedicatorias`).push();
     await dedRef.set({
       cliente_id: visitorId,
       alias_emisor: aliasEmisor,
@@ -97,23 +94,10 @@ export async function POST(req: NextRequest) {
       costo,
       duracion_segundos: 8,
       estado: "pending",
-      creado_en: new Date(),
-    });
-
-    // Escribir en RTDB para que la pantalla del bar la detecte
-    await rtdb.ref(`sesiones/${sesionId}/dedicatorias/${dedRef.id}`).set({
-      alias_emisor: aliasEmisor,
-      mood,
-      mensaje: mensaje.trim(),
-      destino,
-      cancion_id: cancionId ?? null,
-      alias_destinatario: aliasDestinatario?.trim() ?? null,
-      duracion_segundos: 8,
-      estado: "pending",
       creado_en: Date.now(),
     });
 
-    return NextResponse.json({ dedicatoriaId: dedRef.id });
+    return NextResponse.json({ dedicatoriaId: dedRef.key });
   } catch {
     return NextResponse.json({ error: "Error al enviar dedicatoria" }, { status: 500 });
   }

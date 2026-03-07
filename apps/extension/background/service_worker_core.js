@@ -229,6 +229,7 @@ async function restoreState() {
             STATE.reproductor = det;
             console.log('[VIBRRA] Active session restored — player found:', det.label);
             startQueuePolling(STATE.establecimientoId);
+            startHeartbeat(STATE.establecimientoId);
           } else {
             // Player gone → close zombie session in RTDB
             console.log('[VIBRRA] RTDB says active but no player found — closing zombie session');
@@ -279,6 +280,7 @@ async function _restoreFromRTDB() {
         STATE.reproductor = det;
         console.log('[VIBRRA] Active session restored — player found:', det.label);
         startQueuePolling(estId);
+        startHeartbeat(estId);
       } else {
         // Player gone → close zombie session
         console.log('[VIBRRA] RTDB says active but no player found — closing zombie session');
@@ -306,6 +308,7 @@ function clearAuthState() {
   STATE.reproductor = null;
   STATE.sesionActiva = false;
   stopQueuePolling();
+  stopHeartbeat();
   chrome.storage.local.remove('vibrra_auth');
 }
 
@@ -382,6 +385,28 @@ function stopQueuePolling() {
   if (STATE._pollInterval) {
     clearInterval(STATE._pollInterval);
     STATE._pollInterval = null;
+  }
+}
+
+// ─── Heartbeat (ultima_actividad) ────────────────────────────────
+
+function startHeartbeat(estId) {
+  stopHeartbeat();
+  STATE._heartbeatInterval = setInterval(async () => {
+    if (!STATE.sesionActiva) return;
+    try {
+      const hasAuth = await _tryEnsureAuth();
+      await rtdbWrite(RTDB_PATHS.ultimaActividad(estId), Date.now(), hasAuth);
+    } catch (err) {
+      console.warn('[VIBRRA] Heartbeat error:', err.message);
+    }
+  }, 30000);
+}
+
+function stopHeartbeat() {
+  if (STATE._heartbeatInterval) {
+    clearInterval(STATE._heartbeatInterval);
+    STATE._heartbeatInterval = null;
   }
 }
 
@@ -621,6 +646,7 @@ async function handleIniciarSesion() {
   console.log('[VIBRRA] Session started:', estId, reproductor.label);
 
   startQueuePolling(estId);
+  startHeartbeat(estId);
   setTimeout(() => triggerPlaylistRead(estId), 3000);
 
   return { ok: true };
@@ -630,6 +656,7 @@ async function handleCerrarSesion() {
   const estId = STATE.establecimientoId;
 
   stopQueuePolling();
+  stopHeartbeat();
   limpiarCola();
 
   if (estId) {
