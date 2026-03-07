@@ -5,7 +5,6 @@ import {
   onAuthStateChanged,
   signInWithPhoneNumber,
   signInWithPopup,
-  signInWithRedirect,
   linkWithPopup,
   linkWithCredential,
   PhoneAuthProvider,
@@ -57,12 +56,17 @@ export function useClienteAuth() {
     } catch (err: any) {
       clearRecaptcha();
       const code = err?.code ?? "";
+      console.error("Phone auth error:", code, err);
       if (code === "auth/too-many-requests") {
         setError("Demasiados intentos. Espera unos minutos.");
       } else if (code === "auth/invalid-phone-number") {
         setError("Numero de telefono invalido.");
+      } else if (code === "auth/operation-not-allowed") {
+        setError("Autenticacion por telefono no habilitada en Firebase.");
+      } else if (code === "auth/captcha-check-failed") {
+        setError("Error de verificacion reCAPTCHA. Recarga la pagina.");
       } else {
-        setError("Error al enviar el codigo. Intenta de nuevo.");
+        setError(`Error al enviar codigo: ${code || err?.message || "desconocido"}`);
       }
       return false;
     }
@@ -94,11 +98,6 @@ export function useClienteAuth() {
     setError(null);
     try {
       const provider = new GoogleAuthProvider();
-      const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-      if (isMobile) {
-        await signInWithRedirect(auth, provider);
-        return null; // Will complete after redirect
-      }
       const result = await signInWithPopup(auth, provider);
       return result.user;
     } catch (err: any) {
@@ -106,7 +105,14 @@ export function useClienteAuth() {
       if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
         return null; // User cancelled
       }
-      setError("Error al iniciar con Google. Intenta de nuevo.");
+      if (code === "auth/unauthorized-domain") {
+        setError("Dominio no autorizado. Agrega este dominio en Firebase Console.");
+      } else if (code === "auth/operation-not-allowed") {
+        setError("Google Sign-In no esta habilitado en Firebase.");
+      } else {
+        setError(`Error al iniciar con Google: ${code || err?.message || "desconocido"}`);
+      }
+      console.error("Google sign-in error:", code, err);
       return null;
     }
   }, []);
