@@ -45,7 +45,7 @@ export function BottomSheetVeto({ cancion, precioVeto, saldo, onConfirm, onClose
         <div style={warningBox}>
           <WarningCircle size={18} weight="duotone" color="#E74C3C" />
           <p style={{ fontSize: 12, color: "#CC9999", lineHeight: 1.5, flex: 1 }}>
-            El veto elimina esta canción de la cola. Se necesitan varios vetos para que surta efecto. Esta acción no se puede deshacer.
+            El veto elimina esta canción de la cola y la bloquea para que no pueda volver a sonar. Esta acción no se puede deshacer.
           </p>
         </div>
 

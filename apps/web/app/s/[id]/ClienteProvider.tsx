@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { ref, onValue, set as rtdbSet } from "firebase/database";
+import { ref, onValue, remove, set as rtdbSet } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
 import { useFingerprint } from "./useFingerprint";
 
@@ -10,15 +10,27 @@ interface Bonos {
   nominacionesGratis: number;
 }
 
+export interface SpotifyPrefs {
+  connected: boolean;
+  importedAt: number;
+  displayName: string;
+  topArtists: Array<{ name: string; genres: string[]; imageUrl: string }>;
+  topTracks: Array<{ name: string; artist: string; album: string; imageUrl: string }>;
+  playlists: Array<{ name: string; trackCount: number; imageUrl: string }>;
+}
+
 interface ClienteState {
   visitorId: string | null;
   fpLoading: boolean;
   alias: string;
   setAlias: (v: string) => void;
+  persistAlias: (v: string) => void;
   isFirstVisit: boolean;
   saldo: number;
   gastarSaldo: (monto: number) => boolean;
   bonos: Bonos;
+  spotifyPrefs: SpotifyPrefs | null;
+  disconnectSpotify: () => void;
 }
 
 const ClienteContext = createContext<ClienteState | null>(null);
@@ -31,20 +43,38 @@ function visitedKey(estId: string) {
 
 export function ClienteProvider({ estId, children }: { estId: string; children: ReactNode }) {
   const { visitorId, loading: fpLoading } = useFingerprint();
-  const [alias, setAlias] = useState("");
+  const [alias, _setAlias] = useState("");
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const [saldo, setSaldo] = useState(0);
   const [bonos, setBonos] = useState<Bonos>({ conexionesGratis: 0, nominacionesGratis: 0 });
   const [registrado, setRegistrado] = useState(false);
+  const [spotifyPrefs, setSpotifyPrefs] = useState<SpotifyPrefs | null>(null);
 
-  // Recuperar alias desde localStorage
+  const setAlias = useCallback((v: string) => _setAlias(v), []);
+
+  /** Persiste alias en localStorage y RTDB (llamar solo al confirmar) */
+  const persistAlias = useCallback((v: string) => {
+    const trimmed = v.trim();
+    _setAlias(trimmed);
+    localStorage.setItem(ALIAS_KEY, trimmed);
+    if (visitorId && trimmed) {
+      rtdbSet(ref(rtdb, `Anonimos/${visitorId}/alias`), trimmed);
+    }
+  }, [visitorId]);
+
+  // Recuperar alias desde localStorage y sincronizar a RTDB
   useEffect(() => {
     const savedAlias = localStorage.getItem(ALIAS_KEY);
-    if (savedAlias) setAlias(savedAlias);
+    if (savedAlias) {
+      _setAlias(savedAlias);
+      if (visitorId) {
+        rtdbSet(ref(rtdb, `Anonimos/${visitorId}/alias`), savedAlias);
+      }
+    }
 
     const visited = localStorage.getItem(visitedKey(estId));
     if (visited) setIsFirstVisit(false);
-  }, [estId]);
+  }, [estId, visitorId]);
 
   // Registrar cliente anónimo en Firebase cuando tenemos fingerprint
   useEffect(() => {
@@ -110,6 +140,34 @@ export function ClienteProvider({ estId, children }: { estId: string; children: 
     };
   }, [visitorId]);
 
+  // Escuchar preferencias de Spotify en tiempo real
+  useEffect(() => {
+    if (!visitorId) return;
+    const spotifyRef = ref(rtdb, `Anonimos/${visitorId}/spotify`);
+    const unsub = onValue(spotifyRef, (snap) => {
+      const val = snap.val();
+      if (val?.connected) {
+        setSpotifyPrefs({
+          connected: true,
+          importedAt: val.importedAt ?? 0,
+          displayName: val.displayName ?? "Spotify",
+          topArtists: val.topArtists ?? [],
+          topTracks: val.topTracks ?? [],
+          playlists: val.playlists ?? [],
+        });
+      } else {
+        setSpotifyPrefs(null);
+      }
+    });
+    return () => unsub();
+  }, [visitorId]);
+
+  const disconnectSpotify = useCallback(() => {
+    if (!visitorId) return;
+    remove(ref(rtdb, `Anonimos/${visitorId}/spotify`));
+    setSpotifyPrefs(null);
+  }, [visitorId]);
+
   /** Descuenta del saldo si hay suficiente. Escribe a RTDB. */
   const gastarSaldo = useCallback((monto: number): boolean => {
     if (saldo < monto || !visitorId) return false;
@@ -122,7 +180,7 @@ export function ClienteProvider({ estId, children }: { estId: string; children: 
 
   return (
     <ClienteContext.Provider
-      value={{ visitorId, fpLoading, alias, setAlias, isFirstVisit, saldo, gastarSaldo, bonos }}
+      value={{ visitorId, fpLoading, alias, setAlias, persistAlias, isFirstVisit, saldo, gastarSaldo, bonos, spotifyPrefs, disconnectSpotify }}
     >
       {children}
     </ClienteContext.Provider>

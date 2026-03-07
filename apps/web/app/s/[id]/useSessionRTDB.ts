@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ref, onValue } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
 
@@ -32,11 +32,18 @@ interface UseSessionRTDBOptions {
 }
 
 export function useSessionRTDB(estId: string, options: UseSessionRTDBOptions) {
-  const [sesionActiva, setSesionActiva] = useState(options.initialSesionActiva);
+  const [flagActiva, setFlagActiva] = useState(options.initialSesionActiva);
   const [cancionActual, setCancionActual] = useState<CancionActual | null>(options.initialCancionActual);
   const [playlist, setPlaylist] = useState<PlaylistItem[]>(options.initialPlaylist);
   const [estadoReproductor, setEstadoReproductor] = useState<string>("");
   const [bloqueado, setBloqueado] = useState(false);
+  const [vetadas, setVetadas] = useState<Set<string>>(new Set());
+
+  // Sesión activa = estado_reproductor no es MANUAL
+  const sesionActiva = useMemo(
+    () => estadoReproductor !== "MANUAL",
+    [estadoReproductor],
+  );
 
   useEffect(() => {
     const activaRef = ref(rtdb, `sesiones/${estId}/activa`);
@@ -46,7 +53,7 @@ export function useSessionRTDB(estId: string, options: UseSessionRTDBOptions) {
     const bloqueadoRef = ref(rtdb, `sesiones/${estId}/playlist/bloqueado`);
 
     const unsubActiva = onValue(activaRef, (snap) => {
-      setSesionActiva(snap.val() === true);
+      setFlagActiva(snap.val() === true);
     });
 
     const unsubCancion = onValue(cancionRef, (snap) => {
@@ -71,7 +78,6 @@ export function useSessionRTDB(estId: string, options: UseSessionRTDBOptions) {
           timestamp: val.timestamp ?? 0,
         })
       );
-      // Ordenar: mayor puja primero, misma puja → el que llegó primero
       items.sort((a, b) => b.puja - a.puja || a.timestamp - b.timestamp);
       setPlaylist(items);
     });
@@ -84,14 +90,21 @@ export function useSessionRTDB(estId: string, options: UseSessionRTDBOptions) {
       setBloqueado(snap.val() === true);
     });
 
+    const vetadasRef = ref(rtdb, `sesiones/${estId}/vetadas`);
+    const unsubVetadas = onValue(vetadasRef, (snap) => {
+      const data = snap.val();
+      setVetadas(data ? new Set(Object.keys(data)) : new Set());
+    });
+
     return () => {
       unsubActiva();
       unsubCancion();
       unsubPlaylist();
       unsubEstado();
       unsubBloqueado();
+      unsubVetadas();
     };
   }, [estId]);
 
-  return { sesionActiva, cancionActual, playlist, estadoReproductor, bloqueado };
+  return { sesionActiva, cancionActual, playlist, estadoReproductor, bloqueado, vetadas };
 }

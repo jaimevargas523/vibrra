@@ -1,3 +1,7 @@
+/* ─── Hide scrollbar ─── */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ─── Spinner ─── */
 
 .spin-icon {
@@ -320,4 +324,204 @@
 
 .tutorial-skip:hover {
   color: #9A9590;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FAB — Gold Ember Bar
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fabGlowPulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.8; }
+}
+
+@keyframes fabBorderShimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  15%      { transform: scale(1.25); }
+  30%      { transform: scale(1); }
+  45%      { transform: scale(1.15); }
+  60%      { transform: scale(1); }
+}
+
+@keyframes goldShimmerSweep {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fabSlideUp {
+  from { transform: translateX(-50%) translateY(30px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+.fab-enter {
+  animation: fabSlideUp 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+.fab-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,.06) 3px,
+    rgba(0,0,0,.06) 4px
+  );
+  pointer-events: none;
+  border-radius: 18px;
+}
+
+.fab-ambient-glow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(212,160,23,.2) 0%, transparent 70%);
+  animation: fabGlowPulse 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.fab-border-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 19px;
+  background: linear-gradient(
+    90deg,
+    rgba(212,160,23,.05),
+    rgba(255,229,102,.4),
+    rgba(212,160,23,.05),
+    rgba(255,243,163,.3),
+    rgba(212,160,23,.05)
+  );
+  background-size: 200% 100%;
+  animation: fabBorderShimmer 4s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 1px;
+}
+
+.fab-heart-icon {
+  animation: heartBeat 2.5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.fab-dedicar-text {
+  background: linear-gradient(
+    90deg,
+    #080808 0%,
+    #080808 40%,
+    #FFF3A3 50%,
+    #080808 60%,
+    #080808 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldShimmerSweep 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Perfil Tab — VIP Badge Card
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes perfilCardGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes perfilFloatUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes saldoGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(255,229,102,.2); }
+  50%      { text-shadow: 0 0 40px rgba(255,229,102,.4); }
+}
+
+@keyframes bokehFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+  33%      { transform: translate(15px, -20px) scale(1.2); opacity: 0.3; }
+  66%      { transform: translate(-10px, -10px) scale(0.9); opacity: 0.1; }
+}
+
+@keyframes bokehFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+  40%      { transform: translate(-20px, 15px) scale(1.3); opacity: 0.25; }
+  70%      { transform: translate(10px, -5px) scale(0.8); opacity: 0.08; }
+}
+
+@keyframes bokehFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+  50%      { transform: translate(12px, 10px) scale(1.1); opacity: 0.35; }
+}
+
+.perfil-card-scanlines {
+  position: relative;
+}
+
+.perfil-card-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,.08) 3px,
+    rgba(0,0,0,.08) 4px
+  );
+  pointer-events: none;
+  border-radius: 22px;
+}
+
+.perfil-card-glow {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,229,102,.25) 0%, transparent 70%);
+  pointer-events: none;
+  animation: fabGlowPulse 4s ease-in-out infinite;
+}
+
+.perfil-bokeh {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 22px;
+}
+
+.perfil-bokeh .bokeh-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,160,23,.5) 0%, transparent 70%);
+}
+
+.stat-chip {
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+}
+
+.stat-chip:active {
+  transform: scale(.95);
 }
